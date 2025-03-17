@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
@@ -10,11 +10,12 @@ app.use(cors());           // Enable CORS
 app.use(express.json());   // Parse JSON bodies
 app.use(bodyParser.json());
 
+// MySQL database connection
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "login_db",
+  database: "userinfo",  // Make sure this matches your DB name
 });
 
 db.connect((err) => {
@@ -22,10 +23,11 @@ db.connect((err) => {
   console.log("MySQL Connected...");
 });
 
+// Login route
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const sql = "SELECT * FROM users WHERE email = ?";
- 
+
   db.query(sql, [email], async (err, results) => {
     if (err) return res.status(500).json({ error: "Database error" });
     if (results.length === 0) return res.status(401).json({ message: "User not found" });
@@ -35,23 +37,18 @@ app.post("/login", (req, res) => {
 
     if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
 
+    // JWT token generation
     const token = jwt.sign({ id: user.id }, "secret_key", { expiresIn: "1h" });
     res.json({ message: "Login successful", token });
   });
 });
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
-
 
 // Simple test route
 app.get('/', (req, res) => {
   res.send('Hello from the RUHousing Express server!');
 });
 
-// Start server on port 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001; // Ensure server is running on port 5001
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
