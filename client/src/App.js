@@ -1,17 +1,26 @@
 import React from 'react';
 import './App.css';
-import logo from './images/R.png';
+import logo from './images/RuLogo.png';
+import background from './images/background.png'; 
 
 function App() {
   return (
-    <div className="App bg-secondary bg-gradient">
+    <div 
+      className="App"
+      style={{
+        backgroundImage: `url(${background})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        height: '100vh'
+      }}
+    >
       <div> 
-      <img className="h-20 w-10 mt-5" src={logo} alt="RUHousing Logo"/>
+        <img className="mt-5" src={logo} alt="RUHousing Logo" style={{ width: '250px', height: '230px' }}/>
       </div>
       <div className="margin-top"> 
         <button className="btn btn-primary">RU A NEW USER</button>
         <br/>
-        <button className="btn btn-danger mt-2">RU Landlord</button>
+        <button className="btn btn-primary mt-2">RU Landlord</button>
       </div>
     </div>
   );
