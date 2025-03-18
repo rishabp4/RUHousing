@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
 .App-logo {
@@ -36,3 +37,19 @@
     transform: rotate(360deg);
   }
 }
+
+
+.button-primary {
+  background-color: yellowgreen;
+  width: 150px;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.margin-top {
+  margin-top: 100px;
+}
+
+/*.btn-primary{
+  background-color: orangered !important;
+}*/
