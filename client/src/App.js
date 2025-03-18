@@ -20,11 +20,11 @@ function Home() {
       </div>
       <div className="margin-top"> 
         <Link to="/new-user">
-        <button className="btn btn-primary">RU A NEW USER</button>
+        <button className="btn btn-primary">NEW USER</button>
         </Link>
         <br/>
-        <Link to="/landlord">
-        <button className="btn btn-primary mt-2">RU Landlord</button>
+        <Link to="/login">
+        <button className="btn btn-primary mt-2">LOGIN</button>
         </Link>
       </div>
     </div>
@@ -32,11 +32,45 @@ function Home() {
 }
 
 function NewUser() {
-  return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Welcome, New User!</h2>;
+  return (
+  <h2 style={{ textAlign: 'center', marginTop: '100px' }}>
+    WELCOME, NEW USER!
+      <div className="margin-top"> 
+        <Link to="/student">
+        <button className="btn btn-danger">RU STUDENT</button>
+        </Link>
+        <br/>
+        <Link to="/landlord">
+        <button className="btn btn-danger mt-2">RU LANDLORD</button>
+        </Link>
+      </div>
+  </h2>
+  );
+}
+
+function Login() {
+  return (
+  <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
+    WELCOME!
+  </h2>
+  );
+}
+
+
+function Student() {
+  return (
+  <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
+    WELCOME, RU STUDENT!
+  </h2>
+  );
 }
 
 function Landlord() {
-  return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Welcome, Landlord!</h2>;
+  return (
+  <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
+    WELCOME, LANDLORD!
+  </h2>
+  );
 }
 
 function App() {
@@ -45,6 +79,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/new-user" element={<NewUser />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/" element={<NewUser/>} />
+        <Route path="/student" element={<Student />} />
         <Route path="/landlord" element={<Landlord />} />
       </Routes>
     </Router>
