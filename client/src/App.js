@@ -50,8 +50,11 @@ function NewUser() {
 
 function Login() {
   return (
-    <div 
+  <div 
     style={{ 
+      backgroundImage: `url(${background})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
@@ -59,8 +62,8 @@ function Login() {
       height: '100vh'
     }}
   >
-  <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
-    WELCOME!
+  <h2 style={{ textAlign: 'center', marginTop: '50px'}}>
+    <p class="text-white">WELCOME!</p>
     <form className="margin-top" style={{ width: '250px', height: '230px' }}> 
     <div class="col-auto">
     <label for="inputEmail" class="visually-hidden">Password</label>
@@ -73,7 +76,7 @@ function Login() {
       <div class="col-auto"  className="mt-2">
     <button type="submit" class="btn btn-primary mb-3">Submit</button>
     </div>
-  </form> 
+    </form> 
   </h2>
   </div>
   );
@@ -82,9 +85,43 @@ function Login() {
 
 function Student() {
   return (
+    <div 
+    style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100vh'
+    }}
+    >
   <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
     WELCOME, RU STUDENT!
+    <form className="margin-top" style={{ width: '350px', height: '230px' }}> 
+    <div class="col-auto">
+    <label for="inputEmail" class="visually-hidden">Password</label>
+      <input type="email" class="form-control" id="inputEmail" placeholder="Email"/>
+    </div>
+
+    <div class="col-auto" className="mt-2" >
+     <label for="inputRUID" class="visually-hidden">Password</label>
+      <input type="RUID" class="form-control" id="inputRUID" placeholder="RUID"/>
+    </div>
+
+    <div class="col-auto" className="mt-2" >
+     <label for="inputUsername" class="visually-hidden">Password</label>
+      <input type="Username" class="form-control" id="inputUsername" placeholder="Username"/>
+    </div>
+
+    <div class="col-auto" className="mt-2" >
+     <label for="inputPassword2" class="visually-hidden">Password</label>
+      <input type="password" class="form-control" id="inputPassword2" placeholder="Password"/>
+    </div>
+      <div class="col-auto"  className="mt-2">
+    <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </div>
+    </form> 
   </h2>
+  </div>
   );
 }
 
