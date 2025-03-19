@@ -38,13 +38,12 @@
   }
 }
 
-
-.button-primary {
+/*.button-primary {
   background-color: yellowgreen;
   width: 150px;
   padding: 10px;
   border-radius: 50%;
-}
+}*/
 
 .margin-top {
   margin-top: 100px;
@@ -52,5 +51,5 @@
 
 
 /*.btn-primary{
-  background-color: blue !important;
+  background-color: red !important;
 }*/
