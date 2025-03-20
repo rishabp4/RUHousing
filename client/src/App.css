@@ -33,9 +33,14 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.w-140 {
+  width: 140px;
 }
 
 /*.button-primary {
@@ -46,10 +51,9 @@
 }*/
 
 .margin-top {
-  margin-top: 100px;
+  margin-top: 70px;
 }
 
-
-/*.btn-primary{
-  background-color: red !important;
-}*/
+.btn-primary{
+  background-color: rgb(7, 120, 212) !important;
+}
