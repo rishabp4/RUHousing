@@ -16,7 +16,7 @@ function Student() {
         >
             <h2 style={{ textAlign: 'center'}}>
                 <p className="text-white">WELCOME, RU STUDENT!</p>
-                <form className="margin-top fs-6 d-flex flex-column gap-2">
+                <form className="margin-top fs-6 d-flex flex-column gap-2"p>
 
                     <div className="col-auto text-white d-flex justify-content-evenly align-items-center">
                         <label for="inputEmail" className='fs-6 w-140'>Email</label>
@@ -47,8 +47,8 @@ function Student() {
                         <label for="inputPassword2" className='fs-6 w-140'>Password</label>
                         <input type="password" class="form-control" id="inputPassword2" placeholder="Password" required />
                     </div>
-                    <div className="col-auto d-flex justify-content-evenly align-items-center">
-                        <button type="submit" class="btn btn-primary mb-3" >Create</button>
+                    <div className="col-auto d-flex justify-content-evenly align-items-center mt-4">
+                        <button type="submit" class="btn btn-primary mb-3" >CREATE ACCOUNT</button>
                     </div>
                 </form>
             </h2>
