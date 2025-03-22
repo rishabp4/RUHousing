@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from './images/RuLogo.png';
-import background from './images/background.png';
+import background from './images/BG.webp';
 
 function Home() {
   return (
@@ -9,14 +9,15 @@ function Home() {
       className="App"
       style={{
         backgroundImage: `url(${background})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
         height: '100vh'
       }}
     >
-      <div> 
-        <img className="mt-5" src={logo} alt="RUHousing Logo" style={{ width: '400px', height: '300px' }}/>
-      </div>
+      <div style={{ marginLeft: '50px',  marginBottom: '200px'}}> 
+        <img className= "mt-5" src={logo} alt="RUHousing Logo" style={{ width: '300px', height: '230px'}}/>
       <div className="margin-top"> 
         <Link to="/new-user">
         <button className="btn btn-primary">NEW USER</button>
@@ -26,6 +27,7 @@ function Home() {
         <button className="btn btn-primary mt-2">LOGIN</button>
         </Link>
       </div>
+    </div>
     </div>
   );
 }

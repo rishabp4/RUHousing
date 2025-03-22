@@ -51,9 +51,15 @@
 }*/
 
 .margin-top {
-  margin-top: 70px;
+  margin-top: 80px;
 }
 
-.btn-primary{
-  background-color: rgb(7, 120, 212) !important;
+.btn-secondary{
+  background-color: lightgray !important;
+  color: black !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: deepskyblue !important; 
 }
