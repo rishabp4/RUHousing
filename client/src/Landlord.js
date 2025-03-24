@@ -16,9 +16,9 @@ function Landlord() {
                 height: '100vh'
             }}
         >
-            <h2 style={{ textAlign: 'center', marginBottom: '80px', marginLeft: '50px'}}>
+            <h2 style={{ textAlign: 'center', marginBottom: '90px', marginLeft: '50px'}}>
                 <p className="text-black">WELCOME, LANDLORD!</p>
-                <form className="mt-5 fs-6 d-flex flex-column gap-1"p>
+                <form className="margin-top fs-6 d-flex flex-column gap-1"p>
 
                     <div className="col-auto text-black d-flex justify-content-evenly align-items-center">
                         <label for="inputEmail" className='fs-6 w-140'>Email</label>
