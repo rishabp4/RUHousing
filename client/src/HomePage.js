@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
 
 function HomePage() {
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   const styles = {
     header: {
       display: "flex",
@@ -101,7 +107,7 @@ function HomePage() {
             fontWeight: "bold",
           }}
         >
-          Welcome Student!
+
         </h1>
         <img src={avatar} alt="User Avatar" style={styles.avatar} />
       </div>
@@ -168,19 +174,82 @@ function HomePage() {
                 border: "1px solid #ccc",
               }}
             />
-            <button
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#3498db", // Brighter blue filter button
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              Filter
-            </button>
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={toggleDropdown}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#3498db",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Filter ⌄
+              </button>
+
+              {showDropdown && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "45px",
+                    right: "0",
+                    backgroundColor: "#fff",
+                    border: "1px solid #ccc",
+                    borderRadius: "6px",
+                    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                    padding: "12px",
+                    zIndex: 1000,
+                    width: "200px",
+                  }}
+                >
+                  <label style={{ display: "block", marginBottom: "10px" }}>
+                    <strong>Price Range:</strong>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1000-1500"
+                      style={{
+                        width: "100%",
+                        padding: "6px",
+                        marginTop: "5px",
+                      }}
+                    />
+                  </label>
+                  <label style={{ display: "block", marginBottom: "10px" }}>
+                    <strong>Bedrooms:</strong>
+                    <select
+                      style={{
+                        width: "100%",
+                        padding: "6px",
+                        marginTop: "5px",
+                      }}
+                    >
+                      <option>Any</option>
+                      <option>1+</option>
+                      <option>2+</option>
+                      <option>3+</option>
+                    </select>
+                  </label>
+                  <button
+                    style={{
+                      width: "100%",
+                      marginTop: "8px",
+                      padding: "8px",
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => alert("Filters applied!")}
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Grid of house cards */}
