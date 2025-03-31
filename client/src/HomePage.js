@@ -110,8 +110,10 @@ function HomePage() {
         >
 
         </h1>
-        <img src={avatar} alt="User Avatar" style={styles.avatar} />
-      </div>
+        <Link to="/profile">
+    <img src={avatar} alt="User Avatar" style={styles.avatar} />
+  </Link>
+</div>
 
       {/* Green Navigation Bar */}
       <div style={styles.navbar}>

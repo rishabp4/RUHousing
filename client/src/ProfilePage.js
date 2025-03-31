@@ -120,7 +120,7 @@ function ProfilePage() {
       </div>
 
       <div style={profileStyles.section}>
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/home" style={{ textDecoration: "none" }}>
           <button style={profileStyles.button}>Back to Home</button>
         </Link>
       </div>
