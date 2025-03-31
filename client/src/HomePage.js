@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
@@ -120,7 +121,9 @@ function HomePage() {
           <button style={styles.tabButton}>Messages</button>
           <button style={styles.tabButton}>Settings</button>
           <button style={styles.tabButton}>Global Chat</button>
+          <Link to="/profile" style={{ textDecoration: 'none' }}>
           <button style={styles.tabButton}>Profile</button>
+          </Link>
         </div>
 
         <div style={styles.searchSection}>
