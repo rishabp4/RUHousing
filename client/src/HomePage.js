@@ -120,9 +120,7 @@ function HomePage() {
         <div style={styles.tabsLeft}>
           <button style={styles.tabButton}>Home</button>
           <button style={styles.tabButton}>Saved Houses</button>
-          <button style={styles.tabButton}>Messages</button>
-          <button style={styles.tabButton}>Settings</button>
-          <button style={styles.tabButton}>Global Chat</button>
+          <button style={styles.tabButton}>Find My Roommates</button>
           <Link to="/profile" style={{ textDecoration: 'none' }}>
           <button style={styles.tabButton}>Profile</button>
           </Link>
