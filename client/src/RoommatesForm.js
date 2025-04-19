@@ -67,20 +67,24 @@ const submitButtonHoverStyle = {
 };
 
 function RoommatesForm({ onSubmit }) {
+  const [graduationYear, setGraduationYear] = useState('');
   const [major, setMajor] = useState('');
+  const [durationOfStay, setDurationOfStay] = useState('');
+  const [allergies, setAllergies] = useState('');
   const [sleepSchedule, setSleepSchedule] = useState('');
   const [studyHabits, setStudyHabits] = useState('');
   const [cleanliness, setCleanliness] = useState('');
-  const [hobbies, setHobbies] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit({
+      graduation_year: graduationYear,
       major,
+      duration_of_stay: durationOfStay,
+      allergies,
       sleep_schedule: sleepSchedule,
       study_habits: studyHabits,
       cleanliness,
-      hobbies,
     });
   };
 
@@ -88,6 +92,20 @@ function RoommatesForm({ onSubmit }) {
     <div style={formContainerStyle}>
       <h1 style={headingStyle}>Find Your Roommates</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
+        <div style={formGroupStyle}>
+          <label htmlFor="graduationYear" style={labelStyle}>
+            Graduation Year
+          </label>
+          <input
+            type="text"
+            id="graduationYear"
+            placeholder="Enter your graduation year"
+            value={graduationYear}
+            onChange={(e) => setGraduationYear(e.target.value)}
+            required
+            style={inputStyle}
+          />
+        </div>
         <div style={formGroupStyle}>
           <label htmlFor="major" style={labelStyle}>
             Major
@@ -99,6 +117,35 @@ function RoommatesForm({ onSubmit }) {
             value={major}
             onChange={(e) => setMajor(e.target.value)}
             required
+            style={inputStyle}
+          />
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="durationOfStay" style={labelStyle}>
+            Duration of Stay
+          </label>
+          <select
+            id="durationOfStay"
+            value={durationOfStay}
+            onChange={(e) => setDurationOfStay(e.target.value)}
+            required
+            style={selectStyle}
+          >
+            <option value="">Select duration</option>
+            <option value="One Semester">One Semester</option>
+            <option value="Two Semesters">Two Semesters</option>
+          </select>
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="allergies" style={labelStyle}>
+            Allergies
+          </label>
+          <input
+            type="text"
+            id="allergies"
+            placeholder="List any allergies (if none, enter 'None')"
+            value={allergies}
+            onChange={(e) => setAllergies(e.target.value)}
             style={inputStyle}
           />
         </div>
@@ -154,19 +201,6 @@ function RoommatesForm({ onSubmit }) {
             <option value="Moderately Clean">Moderately Clean</option>
             <option value="Tolerant">Tolerant</option>
           </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="hobbies" style={labelStyle}>
-            Hobbies (separate with commas)
-          </label>
-          <input
-            type="text"
-            id="hobbies"
-            placeholder="e.g., Reading, Sports, Gaming"
-            value={hobbies}
-            onChange={(e) => setHobbies(e.target.value)}
-            style={inputStyle}
-          />
         </div>
         <button
           type="submit"

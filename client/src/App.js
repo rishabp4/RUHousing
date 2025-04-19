@@ -8,9 +8,14 @@ import Student from "./Student";
 import Landlord from "./Landlord";
 import HomePage from "./HomePage";
 import ProfilePage from "./ProfilePage";
-import RoommatesForm from "./RoommatesForm";
+import RoommatesForm from './RoommatesForm'; 
 
 function App() {
+  const handleFormSubmit = (formData) => {
+    console.log('Form Data Submitted:', formData);
+    alert('Preferences submitted!');
+  };
+
   return (
     <Router>
       <Routes>
@@ -21,7 +26,7 @@ function App() {
         <Route path="/landlord" element={<Landlord />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/RoommatesForm" element={<RoommatesForm />} />
+        <Route path="/find-roommates" element={<RoommatesForm />} />
       </Routes>
     </Router>
   );
