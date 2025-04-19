@@ -8,6 +8,7 @@ import Student from "./Student";
 import Landlord from "./Landlord";
 import HomePage from "./HomePage";
 import ProfilePage from "./ProfilePage";
+import RoommatesForm from "./RoommatesForm";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/landlord" element={<Landlord />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/RoommatesForm" element={<RoommatesForm />} />
       </Routes>
     </Router>
   );

@@ -120,7 +120,9 @@ function HomePage() {
         <div style={styles.tabsLeft}>
           <button style={styles.tabButton}>Home</button>
           <button style={styles.tabButton}>Saved Houses</button>
+          <Link to="/find-roommates" style={{ textDecoration: 'none' }}>
           <button style={styles.tabButton}>Find My Roommates</button>
+          </Link>
           <Link to="/profile" style={{ textDecoration: 'none' }}>
           <button style={styles.tabButton}>Profile</button>
           </Link>
@@ -308,5 +310,7 @@ function HomePage() {
     </>
   );
 }
+
+
 
 export default HomePage;
