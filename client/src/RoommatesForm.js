@@ -66,7 +66,7 @@ const submitButtonHoverStyle = {
   backgroundColor: '#0056b3',
 };
 
-function RoommatesForm({ onSubmit }) {
+function RoommatesForm() {
   const [graduationYear, setGraduationYear] = useState('');
   const [major, setMajor] = useState('');
   const [durationOfStay, setDurationOfStay] = useState('');
@@ -74,18 +74,49 @@ function RoommatesForm({ onSubmit }) {
   const [sleepSchedule, setSleepSchedule] = useState('');
   const [studyHabits, setStudyHabits] = useState('');
   const [cleanliness, setCleanliness] = useState('');
+  const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [userId, setUserId] = useState('USER_IDENTIFIER');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onSubmit({
+
+    const preferencesData = {
       graduation_year: graduationYear,
-      major,
-      duration_of_stay: durationOfStay,
-      allergies,
-      sleep_schedule: sleepSchedule,
-      study_habits: studyHabits,
-      cleanliness,
-    });
+      major: major, // Corrected key
+      duration_of_stay: durationOfStay, // Corrected key
+      allergies: allergies, // Corrected key
+      sleep_schedule: sleepSchedule, // Corrected key
+      study_habits: studyHabits, // Corrected key
+      cleanliness: cleanliness, // Corrected key
+      userId: userId, // Corrected key
+    };
+
+    try {
+      const response = await fetch('http://localhost:5002/api/submit-preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferencesData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSubmissionStatus(data.message);
+        setGraduationYear('');
+        setMajor('');
+        setDurationOfStay('');
+        setAllergies('');
+        setSleepSchedule('');
+        setStudyHabits('');
+        setCleanliness('');
+      } else {
+        const errorData = await response.json();
+        setSubmissionStatus(`Submission failed: ${errorData.error || response.statusText}`);
+      }
+    } catch (error) {
+      setSubmissionStatus(`Submission failed: ${error.message}`);
+    }
   };
 
   return (
@@ -106,6 +137,7 @@ function RoommatesForm({ onSubmit }) {
             style={inputStyle}
           />
         </div>
+        {/* ... (rest of your input fields - major, durationOfStay, allergies, sleepSchedule, studyHabits, cleanliness) ... */}
         <div style={formGroupStyle}>
           <label htmlFor="major" style={labelStyle}>
             Major
@@ -208,6 +240,10 @@ function RoommatesForm({ onSubmit }) {
         >
           Submit Preferences
         </button>
+
+        {submissionStatus && (
+          <p>{submissionStatus}</p>
+        )}
       </form>
     </div>
   );
