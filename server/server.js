@@ -51,8 +51,9 @@ app.post('/api/submit-preferences', async (req, res) => {
   }
 });
 
-app.get('/api/matches/:userId', async (req, res) => {
-  const userId = req.params.userId;
+app.post('/api/matched-profiles', async (req, res) => {
+  const userPreferences = req.body;
+  const userId = userPreferences.userId;
 
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -60,25 +61,42 @@ app.get('/api/matches/:userId', async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
-    const currentUserPreferences = await roommatePreferencesCollection.findOne({ userId });
+    const allOtherProfiles = await roommatePreferencesCollection.find({ userId: { $ne: userId } }).toArray();
+    const matchedProfilesWithScore = [];
 
-    if (!currentUserPreferences) {
-      return res.status(404).json({ message: 'User preferences not found.' });
+    for (const profile of allOtherProfiles) {
+      let matchCount = 0;
+      if (profile.graduation_year === userPreferences.graduation_year) matchCount++;
+      if (profile.major === userPreferences.major) matchCount++;
+      if (profile.duration_of_stay === userPreferences.duration_of_stay) matchCount++;
+      if (profile.allergies === userPreferences.allergies) matchCount++;
+      if (profile.sleep_schedule === userPreferences.sleep_schedule) matchCount++;
+      if (profile.study_habits === userPreferences.study_habits) matchCount++;
+      if (profile.cleanliness === userPreferences.cleanliness) matchCount++;
+
+      let matchLevel = '';
+      if (matchCount >= 5) {
+        matchLevel = 'Best Match';
+      } else if (matchCount === 4) {
+        matchLevel = 'Okay Match';
+      } else if (matchCount === 3) {
+        matchLevel = 'Good Match';
+      } else if (matchCount > 0) {
+        matchLevel = 'Potential Match';
+      } else {
+        matchLevel = 'No Significant Match';
+      }
+
+      matchedProfilesWithScore.push({ ...profile, matchCount, matchLevel });
     }
 
-    const allOtherPreferences = await roommatePreferencesCollection.find({ userId: { $ne: userId } }).toArray();
+    // Sort by match count in descending order
+    matchedProfilesWithScore.sort((a, b) => b.matchCount - a.matchCount);
 
-    const matches = allOtherPreferences.filter(other => (
-      other.duration_of_stay === currentUserPreferences.duration_of_stay &&
-      other.sleep_schedule === currentUserPreferences.sleep_schedule &&
-      other.study_habits === currentUserPreferences.study_habits &&
-      other.cleanliness === currentUserPreferences.cleanliness
-    ));
-
-    res.status(200).json(matches.map(match => match.userId));
+    res.status(200).json(matchedProfilesWithScore);
   } catch (error) {
-    console.error('Error fetching matches:', error);
-    res.status(500).json({ error: 'Failed to fetch matches.' });
+    console.error('Error fetching and matching profiles:', error);
+    res.status(500).json({ error: 'Failed to fetch and match profiles.' });
   }
 });
 

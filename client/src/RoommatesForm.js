@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const formContainerStyle = {
   display: 'flex',
@@ -76,6 +77,7 @@ function RoommatesForm() {
   const [cleanliness, setCleanliness] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [userId, setUserId] = useState('USER_IDENTIFIER');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -103,6 +105,9 @@ function RoommatesForm() {
       if (response.ok) {
         const data = await response.json();
         setSubmissionStatus(data.message);
+        localStorage.setItem('userPreferences', JSON.stringify(preferencesData)); // Store preferences
+        navigate('/matched-profiles'); // Navigate to the matched profiles page
+        // Reset form fields (optional)
         setGraduationYear('');
         setMajor('');
         setDurationOfStay('');
