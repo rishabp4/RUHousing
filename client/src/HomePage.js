@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
@@ -7,9 +7,30 @@ import collegeAveBg from "./images/college_ave_background.png";
 
 function HomePage() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [savedHouses, setSavedHouses] = useState([]);
+  const navigate = useNavigate(); 
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
+  };
+  const handleHouseClick = (id) => {
+    navigate(`/house/${id}`); 
+  };
+
+  const handleSaveHouse = (houseId) => {
+    const storedSavedHouses = localStorage.getItem("savedHouses");
+    const currentSavedHouses = storedSavedHouses ? JSON.parse(storedSavedHouses) : [];
+
+    if (!currentSavedHouses.includes(houseId)) {
+      localStorage.setItem("savedHouses", JSON.stringify([...currentSavedHouses, houseId]));
+      setSavedHouses([...currentSavedHouses, houseId]); // Update local state for immediate UI feedback
+      alert(`House #${houseId} saved!`);
+    } else {
+      const updatedSavedHouses = currentSavedHouses.filter(id => id !== houseId);
+      localStorage.setItem("savedHouses", JSON.stringify(updatedSavedHouses));
+      setSavedHouses(updatedSavedHouses); // Update local state
+      alert(`House #${houseId} unsaved!`);
+    }
   };
 
   const styles = {
@@ -119,7 +140,9 @@ function HomePage() {
       <div style={styles.navbar}>
         <div style={styles.tabsLeft}>
           <button style={styles.tabButton}>Home</button>
+          <Link to="/saved-houses" style={{ textDecoration: 'none' }}> {/* Link to Saved Houses */}
           <button style={styles.tabButton}>Saved Houses</button>
+          </Link>
           <Link to="/find-roommates" style={styles.tabButton}>
             Find My Roommates
           </Link>
@@ -277,7 +300,10 @@ function HomePage() {
                   cursor: "pointer",
                   transition: "transform 0.2s ease",
                 }}
-                onClick={() => alert(`Clicked house ${i + 1}`)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card click when saving
+                  handleSaveHouse(i + 1);
+                }}
               >
                 <img
                   src={require("./images/house.jpg")}
@@ -299,7 +325,7 @@ function HomePage() {
                       fontWeight: "bold",
                     }}
                   >
-                    ♥ Save
+                     ♥ {localStorage.getItem("savedHouses") && JSON.parse(localStorage.getItem("savedHouses")).includes(i + 1) ? "Unsave" : "Save"}
                   </button>
                 </div>
               </div>
