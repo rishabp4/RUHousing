@@ -61,20 +61,26 @@ app.post('/api/matched-profiles', async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
-    const allOtherProfiles = await roommatePreferencesCollection.find({ userId: { $ne: userId } }).toArray();
+    // TEMPORARILY REMOVE THE userId EXCLUSION FOR TESTING WITH IDENTICAL ENTRIES
+    const allProfiles = await roommatePreferencesCollection.find().toArray();
     const matchedProfilesWithLevel = [];
 
-    const trimmedUserPreferences = {
-      graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
-      major: userPreferences.major ? userPreferences.major.trim() : '',
-      duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
-      allergies: userPreferences.allergies ? userPreferences.allergies.trim() : '',
-      sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : '',
-      study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : '',
-      cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : '',
-    };
+    for (const profile of allProfiles) {
+      // TEMPORARILY COMMENT OUT THE userId CHECK FOR TESTING
+      // if (profile.userId === userId) {
+      //   continue;
+      // }
 
-    for (const profile of allOtherProfiles) {
+      const trimmedUserPreferences = {
+        graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
+        major: userPreferences.major ? userPreferences.major.trim() : '',
+        duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
+        allergies: userPreferences.allergies ? userPreferences.allergies.trim() : '',
+        sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : '',
+        study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : '',
+        cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : '',
+      };
+
       const trimmedProfile = {
         ...profile,
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
