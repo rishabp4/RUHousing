@@ -320,7 +320,7 @@ function HomePage() {
               gap: "20px",
             }}
           >
-            {[...Array(6)].map((_, i) => (
+            {[...Array(10)].map((_, i) => (
               <div
                 key={i}
                 style={{
