@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
@@ -260,6 +261,37 @@ function HomePage() {
                       <option>3+</option>
                     </select>
                   </label>
+                 {/* Add Amenities Filter */}
+          <label style={{ display: "block", marginBottom: "10px" }}>
+            <strong>Amenities:</strong>
+            <div>
+              {/* Dynamically generate checkboxes based on available amenities */}
+              {[...new Set(Object.values(houseData).flatMap(house => house.amenities))].map(amenity => (
+                <label key={amenity} style={{ display: "block", marginLeft: "10px" }}>
+                  <input type="checkbox" name="amenities" value={amenity} style={{ marginRight: "5px" }} />
+                  {amenity}
+                </label>
+              ))}
+            </div>
+          </label>
+
+          {/* Add Location Filter */}
+          <label style={{ display: "block", marginBottom: "10px" }}>
+            <strong>Location:</strong>
+            <select
+              style={{
+                width: "100%",
+                padding: "6px",
+                marginTop: "5px",
+              }}
+            >
+              <option>Any</option>
+              {/* Dynamically generate options based on available locations */}
+              {[...new Set(Object.values(houseData).map(house => house.location.split(', ')[1]))].map(location => (
+                <option key={location}>{location}</option>
+              ))}
+            </select>
+          </label>
                   <button
                     style={{
                       width: "100%",
