@@ -34,13 +34,13 @@ app.post('/api/submit-preferences', async (req, res) => {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
     const result = await roommatePreferencesCollection.insertOne({
       userId,
-      graduation_year,
-      major,
-      duration_of_stay,
-      allergies,
-      sleep_schedule,
-      study_habits,
-      cleanliness,
+      graduation_year: graduation_year ? graduation_year.trim() : '',
+      major: major ? major.trim() : '',
+      duration_of_stay: duration_of_stay ? duration_of_stay.trim() : '',
+      allergies: allergies ? allergies.trim() : '',
+      sleep_schedule: sleep_schedule ? sleep_schedule.trim() : '',
+      study_habits: study_habits ? study_habits.trim() : '',
+      cleanliness: cleanliness ? cleanliness.trim() : '',
     });
 
     console.log('Preferences stored successfully. Inserted ID:', result.insertedId);
@@ -62,38 +62,67 @@ app.post('/api/matched-profiles', async (req, res) => {
   try {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
     const allOtherProfiles = await roommatePreferencesCollection.find({ userId: { $ne: userId } }).toArray();
-    const matchedProfilesWithScore = [];
+    const matchedProfilesWithLevel = [];
+
+    const trimmedUserPreferences = {
+      graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
+      major: userPreferences.major ? userPreferences.major.trim() : '',
+      duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
+      allergies: userPreferences.allergies ? userPreferences.allergies.trim() : '',
+      sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : '',
+      study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : '',
+      cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : '',
+    };
 
     for (const profile of allOtherProfiles) {
-      let matchCount = 0;
-      if (profile.graduation_year === userPreferences.graduation_year) matchCount++;
-      if (profile.major === userPreferences.major) matchCount++;
-      if (profile.duration_of_stay === userPreferences.duration_of_stay) matchCount++;
-      if (profile.allergies === userPreferences.allergies) matchCount++;
-      if (profile.sleep_schedule === userPreferences.sleep_schedule) matchCount++;
-      if (profile.study_habits === userPreferences.study_habits) matchCount++;
-      if (profile.cleanliness === userPreferences.cleanliness) matchCount++;
+      const trimmedProfile = {
+        ...profile,
+        graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
+        major: profile.major ? profile.major.trim() : '',
+        duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim() : '',
+        allergies: profile.allergies ? profile.allergies.trim() : '',
+        sleep_schedule: profile.sleep_schedule ? profile.sleep_schedule.trim() : '',
+        study_habits: profile.study_habits ? profile.study_habits.trim() : '',
+        cleanliness: profile.cleanliness ? profile.cleanliness.trim() : '',
+      };
 
       let matchLevel = '';
-      if (matchCount >= 5) {
-        matchLevel = 'Best Match';
-      } else if (matchCount === 4) {
-        matchLevel = 'Okay Match';
-      } else if (matchCount === 3) {
-        matchLevel = 'Good Match';
-      } else if (matchCount > 0) {
-        matchLevel = 'Potential Match';
-      } else {
-        matchLevel = 'No Significant Match';
+      let allMatch = true;
+
+      // Check if all attributes match
+      if (
+        trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
+        trimmedProfile.major !== trimmedUserPreferences.major ||
+        trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||
+        trimmedProfile.allergies !== trimmedUserPreferences.allergies ||
+        trimmedProfile.sleep_schedule !== trimmedUserPreferences.sleep_schedule ||
+        trimmedProfile.study_habits !== trimmedUserPreferences.study_habits ||
+        trimmedProfile.cleanliness !== trimmedUserPreferences.cleanliness
+      ) {
+        allMatch = false;
       }
 
-      matchedProfilesWithScore.push({ ...profile, matchCount, matchLevel });
+      if (allMatch) {
+        matchLevel = 'Best Match';
+      } else if (
+        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay &&
+        trimmedProfile.allergies === trimmedUserPreferences.allergies &&
+        trimmedProfile.study_habits === trimmedUserPreferences.study_habits
+      ) {
+        matchLevel = 'Avg Match';
+      } else if (
+        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay &&
+        trimmedProfile.allergies === trimmedUserPreferences.allergies
+      ) {
+        matchLevel = 'Ok Match';
+      }
+
+      if (matchLevel) {
+        matchedProfilesWithLevel.push({ ...profile, matchLevel });
+      }
     }
 
-    // Sort by match count in descending order
-    matchedProfilesWithScore.sort((a, b) => b.matchCount - a.matchCount);
-
-    res.status(200).json(matchedProfilesWithScore);
+    res.status(200).json(matchedProfilesWithLevel);
   } catch (error) {
     console.error('Error fetching and matching profiles:', error);
     res.status(500).json({ error: 'Failed to fetch and match profiles.' });
