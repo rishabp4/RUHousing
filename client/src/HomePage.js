@@ -141,7 +141,7 @@ function HomePage() {
         <div style={styles.tabsLeft}>
           <button style={styles.tabButton}>Home</button>
           <Link to="/saved-houses" style={{ textDecoration: 'none' }}> {/* Link to Saved Houses */}
-          <button style={styles.tabButton}>Saved Houses</button>
+          <button style={styles.tabButton}>Saved Houses and Details</button>
           </Link>
           <Link to="/find-roommates" style={styles.tabButton}>
             Find My Roommates
