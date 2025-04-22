@@ -45,7 +45,6 @@ function MatchedProfiles() {
   useEffect(() => {
     const fetchMatchedProfiles = async () => {
       try {
-        // Assuming you store the user's preferences in local storage after submission
         const storedPreferences = localStorage.getItem('userPreferences');
         if (!storedPreferences) {
           setError('No preferences found to find matches.');

@@ -10,6 +10,8 @@ import HomePage from "./HomePage";
 import ProfilePage from "./ProfilePage";
 import RoommatesForm from './RoommatesForm'; 
 import MatchedProfiles from './MatchedProfiles';
+import SavedHousesPage from "./SavedHousesPage";
+import HouseDetail from "./HouseDetail";
 
 function App() {
   const handleFormSubmit = (formData) => {
@@ -29,6 +31,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/find-roommates" element={<RoommatesForm />} />
         <Route path="/matched-profiles" element={<MatchedProfiles />} /> 
+        <Route path="/saved-houses" element={<SavedHousesPage />} />
+        <Route path="/house/:id" element={<HouseDetail />} />
       </Routes>
     </Router>
   );

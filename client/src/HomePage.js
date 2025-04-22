@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
@@ -10,22 +13,50 @@ import HouseDetailModal from "./HouseDetailModal"; //////
 function HomePage() {
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [savedHouses, setSavedHouses] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const openModal = (house) => {
     setSelectedHouse(house);
     setModalOpen(true);
+  };
+  const handleHouseClick = (id) => {
+    navigate(`/house/${id}`);
+  };
+
+  const handleSaveHouse = (houseId) => {
+    const storedSavedHouses = localStorage.getItem("savedHouses");
+    const currentSavedHouses = storedSavedHouses
+      ? JSON.parse(storedSavedHouses)
+      : [];
+
+    if (!currentSavedHouses.includes(houseId)) {
+      localStorage.setItem(
+        "savedHouses",
+        JSON.stringify([...currentSavedHouses, houseId])
+      );
+      setSavedHouses([...currentSavedHouses, houseId]); // Update local state for immediate UI feedback
+      alert(`House #${houseId} saved!`);
+    } else {
+      const updatedSavedHouses = currentSavedHouses.filter(
+        (id) => id !== houseId
+      );
+      localStorage.setItem("savedHouses", JSON.stringify(updatedSavedHouses));
+      setSavedHouses(updatedSavedHouses); // Update local state
+      alert(`House #${houseId} unsaved!`);
+    }
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setSelectedHouse(null);
   };
-
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false); // <-- ADD THIS CLEARLY
-
+  // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
   useEffect(() => {
+    // code that call sthe zilow API
     const fetchProperties = async () => {
       try {
         const res = await throttledAxios({
@@ -310,7 +341,13 @@ function HomePage() {
                       fontWeight: "bold",
                     }}
                   >
-                    ♥ Save
+                    ♥{" "}
+                    {localStorage.getItem("savedHouses") &&
+                    JSON.parse(localStorage.getItem("savedHouses")).includes(
+                      i + 1
+                    )
+                      ? "Unsave"
+                      : "Save"}
                   </button>
                 </div>
               </div>
