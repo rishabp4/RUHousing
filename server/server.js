@@ -23,6 +23,61 @@ async function connectToMongo() {
 
 connectToMongo();
 
+//! post save or update profile
+app.post('/api/profile', async (req, res) => {
+  const { uid, email, firstName, lastName } = req.body;
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: 'Missing required fields: uid or email' });
+  }
+
+  try {
+    const db = client.db('RUHousing');
+    const usersCollection = db.collection('users');
+
+    const existingUser = await usersCollection.findOne({ uid });
+
+    if (existingUser) {
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { firstName, lastName, email } }
+      );
+      return res.json({ message: '✅ Profile updated' });
+    }
+
+    await usersCollection.insertOne({ uid, email, firstName, lastName });
+    res.json({ message: '✅ Profile created' });
+  } catch (error) {
+    console.error('❌ Error saving profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+//! GET, retrieve profile by UID
+app.get('/api/profile', async (req, res) => {
+  const { uid } = req.query;
+
+  if (!uid) {
+    return res.status(400).json({ error: 'UID is required' });
+  }
+
+  try {
+    const db = client.db('RUHousing');
+    const usersCollection = db.collection('users');
+
+    const user = await usersCollection.findOne({ uid });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('❌ Error fetching profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+//!ends here
+
 app.post('/api/submit-preferences', async (req, res) => {
   const { graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
 
