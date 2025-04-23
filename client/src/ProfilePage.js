@@ -1,68 +1,87 @@
 import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase"; // adjust path if needed
+import { auth } from "./firebase"; // adjust path
 import avatar from "./images/default_avatar.png";
-import { Link } from "react-router-dom";
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
-    savedHouses: [],
   });
 
+  // 🔄 Detect logged-in user from Firebase
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFirebaseUser(user);
-        // Later: Fetch profileData from MongoDB here using user.uid
-      } else {
-        setFirebaseUser(null);
+        // ✅ Fetch profile data from your backend
+        const res = await fetch(`http://localhost:5002/api/profile?uid=${user.uid}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProfileData({ firstName: data.firstName || "", lastName: data.lastName || "" });
+        }
       }
     });
 
-    return () => unsubscribe(); // cleanup on unmount
+    return () => unsubscribe();
   }, []);
 
-  const handleEdit = () => {
-    // Later: Show a form or navigate to an EditProfilePage
-    alert("Edit profile clicked! (Hook this up later)");
+  const handleChange = (e) => {
+    setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
 
-  if (!firebaseUser) return <p>Please log in to view your profile.</p>;
+  const handleSave = async () => {
+    if (!firebaseUser) return;
+
+    const res = await fetch("http://localhost:5002/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+      }),
+    });
+
+    const result = await res.json();
+    alert(result.message || "Saved!");
+  };
+
+  if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", backgroundColor: "#f5f5f5", borderRadius: "10px" }}>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
-        <img src={avatar} alt="Profile" style={{ width: "120px", height: "120px", borderRadius: "50%", marginRight: "30px" }} />
-        <div>
-          <h1>{profileData.firstName || firebaseUser.displayName || "User"} {profileData.lastName}</h1>
-          <p>{firebaseUser.email}</p>
-          <p>UID: {firebaseUser.uid}</p>
-        </div>
+    <div style={{ padding: "2rem" }}>
+      <h2>Welcome, {firebaseUser.email}</h2>
+
+      <img src={avatar} alt="avatar" width={100} style={{ borderRadius: "50%" }} />
+
+      <div>
+        <input
+          type="text"
+          name="firstName"
+          value={profileData.firstName}
+          onChange={handleChange}
+          placeholder="First Name"
+          style={{ margin: "10px", padding: "5px" }}
+        />
+        <input
+          type="text"
+          name="lastName"
+          value={profileData.lastName}
+          onChange={handleChange}
+          placeholder="Last Name"
+          style={{ margin: "10px", padding: "5px" }}
+        />
       </div>
 
-      <div style={{ marginBottom: "30px" }}>
-        <h2>Account Settings</h2>
-        <button onClick={handleEdit}>Edit Profile</button>
-      </div>
-
-      <div style={{ marginBottom: "30px" }}>
-        <h2>Saved Houses ({profileData.savedHouses.length})</h2>
-        {profileData.savedHouses.map((house, index) => (
-          <div key={index} style={{ padding: "10px", border: "1px solid #ccc", marginBottom: "10px" }}>
-            <h4>{house.address}</h4>
-            <p>{house.price}</p>
-          </div>
-        ))}
-      </div>
-
-      <Link to="/home">
-        <button>Back to Home</button>
-      </Link>
+      <button onClick={handleSave}>Save Profile</button>
     </div>
   );
+  console.log("User UID:", firebaseUser?.uid);
+console.log("Profile Data:", profileData);
+
 }
 
 export default ProfilePage;

@@ -25,6 +25,8 @@ connectToMongo();
 
 //! post save or update profile
 app.post('/api/profile', async (req, res) => {
+  console.log("🔥 POST /api/profile hit:", req.body);
+
   const { uid, email, firstName, lastName } = req.body;
 
   if (!uid || !email) {
