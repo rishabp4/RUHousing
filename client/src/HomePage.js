@@ -167,7 +167,7 @@ function HomePage() {
           >
             Saved Houses
           </button>
-          <Link to="/find-roommates">
+          <Link to="/matched-profiles"> {/* Updated Link here */}
             <button
               style={{
                 backgroundColor: "#66BB6A",
@@ -179,7 +179,7 @@ function HomePage() {
                 fontWeight: "bold",
               }}
             >
-              Find My Roommates
+            My Roommates
             </button>
           </Link>
           <Link to="/profile">
