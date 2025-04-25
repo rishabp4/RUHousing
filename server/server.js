@@ -144,8 +144,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        firstName: profile.firstName ? profile.firstName.trim() : '', // Added firstName
-        lastName: profile.lastName ? profile.lastName.trim() : '',   // Added lastName
+        first_name: profile.firstName ? profile.first_name.trim() : '', // Added firstName
+        last_name: profile.lastName ? profile.last_name.trim() : '',   // Added lastName
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
         major: profile.major ? profile.major.trim() : '',
         duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim() : '',
@@ -160,8 +160,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       // Check if all attributes match
       if (
-        trimmedProfile.firstName !== trimmedUserPreferences.first_name ||
-        trimmedProfile.lastName !== trimmedUserPreferences.last_name ||
+        trimmedProfile.first_name !== trimmedUserPreferences.first_name ||
+        trimmedProfile.last_name !== trimmedUserPreferences.last_name ||
         trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
         trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||

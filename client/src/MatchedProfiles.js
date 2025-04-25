@@ -92,6 +92,8 @@ function MatchedProfiles() {
       {matchedProfiles.length > 0 ? (
         matchedProfiles.map((profile) => (
           <div key={profile._id} style={profileCardStyle}>
+            <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
+            <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
             <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
             <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
             <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
