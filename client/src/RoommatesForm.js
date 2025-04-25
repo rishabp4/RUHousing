@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 const formContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
@@ -68,6 +69,8 @@ const submitButtonHoverStyle = {
 };
 
 function RoommatesForm() {
+  const [firstName, setFirstName] = useState(''); // Add this
+  const [lastName, setLastName] = useState('');   // Add this
   const [graduationYear, setGraduationYear] = useState('');
   const [major, setMajor] = useState('');
   const [durationOfStay, setDurationOfStay] = useState('');
@@ -83,6 +86,8 @@ function RoommatesForm() {
     event.preventDefault();
 
     const preferencesData = {
+      first_name: firstName, // Add this
+      last_name: lastName,   // Add this
       graduation_year: graduationYear,
       major: major, // Corrected key
       duration_of_stay: durationOfStay, // Corrected key
@@ -106,8 +111,11 @@ function RoommatesForm() {
         const data = await response.json();
         setSubmissionStatus(data.message);
         localStorage.setItem('userPreferences', JSON.stringify(preferencesData)); // Store preferences
+
         navigate('/matched-profiles'); // Navigate to the matched profiles page
         // Reset form fields (optional)
+        setFirstName('');     // Add this line to reset firstName
+        setLastName(''); 
         setGraduationYear('');
         setMajor('');
         setDurationOfStay('');
@@ -128,6 +136,34 @@ function RoommatesForm() {
     <div style={formContainerStyle}>
       <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
+        <div style={formGroupStyle}>
+          <label htmlFor="firstName" style={labelStyle}>
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            placeholder="Enter your first name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+            style={inputStyle}
+          />
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="lastName" style={labelStyle}>
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            placeholder="Enter your last name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+            style={inputStyle}
+          />
+        </div>
         <div style={formGroupStyle}>
           <label htmlFor="graduationYear" style={labelStyle}>
             Graduation Year
@@ -245,7 +281,7 @@ function RoommatesForm() {
         >
           Submit Preferences
         </button>
-
+  
         {submissionStatus && (
           <p>{submissionStatus}</p>
         )}

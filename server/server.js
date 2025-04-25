@@ -81,7 +81,7 @@ app.get('/api/profile', async (req, res) => {
 //!ends here
 
 app.post('/api/submit-preferences', async (req, res) => {
-  const { graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
+  const { first_name, last_name, graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
 
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -91,6 +91,8 @@ app.post('/api/submit-preferences', async (req, res) => {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
     const result = await roommatePreferencesCollection.insertOne({
       userId,
+      first_name: first_name ? first_name.trim() : '',
+      last_name: last_name ? last_name.trim() : '',
       graduation_year: graduation_year ? graduation_year.trim() : '',
       major: major ? major.trim() : '',
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : '',
@@ -129,6 +131,8 @@ app.post('/api/matched-profiles', async (req, res) => {
       // }
 
       const trimmedUserPreferences = {
+        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : '', // Added first name
+        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : '',   // Added last name
         graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
         major: userPreferences.major ? userPreferences.major.trim() : '',
         duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
@@ -140,6 +144,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
+        firstName: profile.firstName ? profile.firstName.trim() : '', // Added firstName
+        lastName: profile.lastName ? profile.lastName.trim() : '',   // Added lastName
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
         major: profile.major ? profile.major.trim() : '',
         duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim() : '',
@@ -154,6 +160,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       // Check if all attributes match
       if (
+        trimmedProfile.firstName !== trimmedUserPreferences.first_name ||
+        trimmedProfile.lastName !== trimmedUserPreferences.last_name ||
         trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
         trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||
