@@ -126,7 +126,7 @@ function RoommatesForm() {
 
   return (
     <div style={formContainerStyle}>
-      <h1 style={headingStyle}>Find Your Roommates</h1>
+      <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
         <div style={formGroupStyle}>
           <label htmlFor="graduationYear" style={labelStyle}>

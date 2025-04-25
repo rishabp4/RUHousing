@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase"; // adjust path
 import avatar from "./images/default_avatar.png";
+import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -77,7 +78,9 @@ function ProfilePage() {
       </div>
 
       <button onClick={handleSave}>Save Profile</button>
-    </div>
+      {/* Render the RoommatesForm component here */}
+    <RoommatesForm />
+  </div>
   );
   console.log("User UID:", firebaseUser?.uid);
 console.log("Profile Data:", profileData);
