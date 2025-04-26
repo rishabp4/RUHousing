@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 
 const formContainerStyle = {
   display: 'flex',
@@ -68,9 +67,9 @@ const submitButtonHoverStyle = {
   backgroundColor: '#0056b3',
 };
 
-function RoommatesForm() {
-  const [firstName, setFirstName] = useState(''); // Add this
-  const [lastName, setLastName] = useState('');   // Add this
+function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName }) {
+  const [firstName, setFirstName] = useState(initialFirstName || '');
+  const [lastName, setLastName] = useState(initialLastName || '');
   const [graduationYear, setGraduationYear] = useState('');
   const [major, setMajor] = useState('');
   const [durationOfStay, setDurationOfStay] = useState('');
@@ -82,20 +81,29 @@ function RoommatesForm() {
   const [userId, setUserId] = useState('USER_IDENTIFIER');
   const navigate = useNavigate();
 
+  // Update local state when props change
+  useEffect(() => {
+    setFirstName(initialFirstName || '');
+  }, [initialFirstName]);
+
+  useEffect(() => {
+    setLastName(initialLastName || '');
+  }, [initialLastName]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const preferencesData = {
-      first_name: firstName, // Add this
-      last_name: lastName,   // Add this
+      first_name: firstName,
+      last_name: lastName,
       graduation_year: graduationYear,
-      major: major, // Corrected key
-      duration_of_stay: durationOfStay, // Corrected key
-      allergies: allergies, // Corrected key
-      sleep_schedule: sleepSchedule, // Corrected key
-      study_habits: studyHabits, // Corrected key
-      cleanliness: cleanliness, // Corrected key
-      userId: userId, // Corrected key
+      major: major,
+      duration_of_stay: durationOfStay,
+      allergies: allergies,
+      sleep_schedule: sleepSchedule,
+      study_habits: studyHabits,
+      cleanliness: cleanliness,
+      userId: userId,
     };
 
     try {
@@ -110,12 +118,8 @@ function RoommatesForm() {
       if (response.ok) {
         const data = await response.json();
         setSubmissionStatus(data.message);
-        localStorage.setItem('userPreferences', JSON.stringify(preferencesData)); // Store preferences
-
-        navigate('/matched-profiles'); // Navigate to the matched profiles page
-        // Reset form fields (optional)
-        setFirstName('');     // Add this line to reset firstName
-        setLastName(''); 
+        localStorage.setItem('userPreferences', JSON.stringify(preferencesData));
+        navigate('/matched-profiles');
         setGraduationYear('');
         setMajor('');
         setDurationOfStay('');
@@ -178,7 +182,6 @@ function RoommatesForm() {
             style={inputStyle}
           />
         </div>
-        {/* ... (rest of your input fields - major, durationOfStay, allergies, sleepSchedule, studyHabits, cleanliness) ... */}
         <div style={formGroupStyle}>
           <label htmlFor="major" style={labelStyle}>
             Major
@@ -281,7 +284,7 @@ function RoommatesForm() {
         >
           Submit Preferences
         </button>
-  
+
         {submissionStatus && (
           <p>{submissionStatus}</p>
         )}

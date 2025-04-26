@@ -6,30 +6,37 @@ import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-  });
+  const [firstName, setFirstName] = useState(""); // Lifted state
+  const [lastName, setLastName] = useState("");   // Lifted state
 
-  // 🔄 Detect logged-in user from Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFirebaseUser(user);
-        // ✅ Fetch profile data from your backend
         const res = await fetch(`http://localhost:5002/api/profile?uid=${user.uid}`);
         if (res.ok) {
           const data = await res.json();
-          setProfileData({ firstName: data.firstName || "", lastName: data.lastName || "" });
+          console.log("Fetched Profile Data:", data); // Debugging
+          setFirstName(data.firstName || "");
+          setLastName(data.lastName || "");
+        } else {
+          console.error("Failed to fetch profile data");
         }
+      } else {
+        setFirebaseUser(null);
+        setFirstName("");
+        setLastName("");
       }
     });
-
     return () => unsubscribe();
   }, []);
 
-  const handleChange = (e) => {
-    setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  const handleFirstNameChange = (e) => {
+    setFirstName(e.target.value);
+  };
+
+  const handleLastNameChange = (e) => {
+    setLastName(e.target.value);
   };
 
   const handleSave = async () => {
@@ -41,13 +48,18 @@ function ProfilePage() {
       body: JSON.stringify({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        firstName: profileData.firstName,
-        lastName: profileData.lastName,
+        firstName: firstName, // Use lifted state
+        lastName: lastName,   // Use lifted state
       }),
     });
 
-    const result = await res.json();
-    alert(result.message || "Saved!");
+    if (res.ok) {
+      const result = await res.json();
+      alert(result.message || "Profile Saved!");
+    } else {
+      const errorResult = await res.json();
+      alert(errorResult.error || "Failed to save profile.");
+    }
   };
 
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
@@ -62,29 +74,27 @@ function ProfilePage() {
         <input
           type="text"
           name="firstName"
-          value={profileData.firstName}
-          onChange={handleChange}
+          value={firstName}
+          onChange={handleFirstNameChange}
           placeholder="First Name"
           style={{ margin: "10px", padding: "5px" }}
         />
         <input
           type="text"
           name="lastName"
-          value={profileData.lastName}
-          onChange={handleChange}
+          value={lastName}
+          onChange={handleLastNameChange}
           placeholder="Last Name"
           style={{ margin: "10px", padding: "5px" }}
         />
       </div>
 
       <button onClick={handleSave}>Save Profile</button>
-      {/* Render the RoommatesForm component here */}
-    <RoommatesForm />
-  </div>
-  );
-  console.log("User UID:", firebaseUser?.uid);
-console.log("Profile Data:", profileData);
 
+      {/* Pass the lifted state as props to RoommatesForm */}
+      <RoommatesForm firstName={firstName} lastName={lastName} />
+    </div>
+  );
 }
 
 export default ProfilePage;
