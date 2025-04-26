@@ -22,8 +22,6 @@ async function connectToMongo() {
 }
 
 connectToMongo();
-
-//! post save or update profile
 app.post('/api/profile', async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
 
@@ -54,7 +52,7 @@ app.post('/api/profile', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-//! GET, retrieve profile by UID
+
 app.get('/api/profile', async (req, res) => {
   const { uid } = req.query;
 
@@ -78,7 +76,7 @@ app.get('/api/profile', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-//!ends here
+
 
 app.post('/api/submit-preferences', async (req, res) => {
   const { first_name, last_name, graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
@@ -125,10 +123,6 @@ app.post('/api/matched-profiles', async (req, res) => {
     const matchedProfilesWithLevel = [];
 
     for (const profile of allProfiles) {
-      // TEMPORARILY COMMENT OUT THE userId CHECK FOR TESTING
-      // if (profile.userId === userId) {
-      //   continue;
-      // }
 
       const trimmedUserPreferences = {
         first_name: userPreferences.first_name ? userPreferences.first_name.trim() : '', // Added first name
@@ -197,6 +191,30 @@ app.post('/api/matched-profiles', async (req, res) => {
   } catch (error) {
     console.error('Error fetching and matching profiles:', error);
     res.status(500).json({ error: 'Failed to fetch and match profiles.' });
+  }
+});
+
+app.post('/api/report-issue', async (req, res) => {
+  const { name, ruid, issue } = req.body;
+
+  if (!name || !ruid || !issue) {
+    return res.status(400).json({ error: 'Please provide your name, RUID, and the issue.' });
+  }
+
+  try {
+    const complaintsCollection = db.collection('complaints'); // Changed to 'complaints'
+    const result = await complaintsCollection.insertOne({
+      name: name.trim(),
+      ruid: ruid.trim(),
+      issue: issue.trim(),
+      timestamp: new Date(),
+    });
+
+    console.log('Issue reported successfully. Inserted ID:', result.insertedId, 'saved to "complaints"');
+    res.status(200).json({ message: 'Issue reported successfully!' });
+  } catch (error) {
+    console.error('Error reporting issue:', error);
+    res.status(500).json({ error: 'Failed to report issue.' });
   }
 });
 
