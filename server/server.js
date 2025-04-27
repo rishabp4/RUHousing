@@ -118,15 +118,17 @@ app.post('/api/matched-profiles', async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
-    // TEMPORARILY REMOVE THE userId EXCLUSION FOR TESTING WITH IDENTICAL ENTRIES
-    const allProfiles = await roommatePreferencesCollection.find().toArray();
+    // Find all profiles that are NOT the current user's profile
+    const potentialMatches = await roommatePreferencesCollection.find({
+      userId: { $ne: userId } // Exclude profiles with the current user's ID
+    }).toArray();
+
     const matchedProfilesWithLevel = [];
 
-    for (const profile of allProfiles) {
-
+    for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
-        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : '', // Added first name
-        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : '',   // Added last name
+        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : '',
+        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : '',
         graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
         major: userPreferences.major ? userPreferences.major.trim() : '',
         duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
@@ -138,8 +140,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        first_name: profile.firstName ? profile.first_name.trim() : '', // Added firstName
-        last_name: profile.lastName ? profile.last_name.trim() : '',   // Added lastName
+        first_name: profile.first_name ? profile.first_name.trim() : '',
+        last_name: profile.last_name ? profile.last_name.trim() : '',
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
         major: profile.major ? profile.major.trim() : '',
         duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim() : '',

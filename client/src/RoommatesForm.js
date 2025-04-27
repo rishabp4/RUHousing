@@ -67,7 +67,7 @@ const submitButtonHoverStyle = {
   backgroundColor: '#0056b3',
 };
 
-function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName }) {
+function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName, userId }) {
   const [firstName, setFirstName] = useState(initialFirstName || '');
   const [lastName, setLastName] = useState(initialLastName || '');
   const [graduationYear, setGraduationYear] = useState('');
@@ -78,7 +78,6 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName 
   const [studyHabits, setStudyHabits] = useState('');
   const [cleanliness, setCleanliness] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [userId, setUserId] = useState('USER_IDENTIFIER');
   const navigate = useNavigate();
 
   // Update local state when props change
@@ -94,6 +93,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName 
     event.preventDefault();
 
     const preferencesData = {
+      userId: userId, // Using the userId prop passed from ProfilePage
       first_name: firstName,
       last_name: lastName,
       graduation_year: graduationYear,
@@ -103,7 +103,6 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName 
       sleep_schedule: sleepSchedule,
       study_habits: studyHabits,
       cleanliness: cleanliness,
-      userId: userId,
     };
 
     try {

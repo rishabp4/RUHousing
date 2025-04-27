@@ -6,13 +6,19 @@ import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
-  const [firstName, setFirstName] = useState(""); // Lifted state
-  const [lastName, setLastName] = useState("");   // Lifted state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userId, setUserId] = useState(null); // State to hold the Firebase UID
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFirebaseUser(user);
+        setUserId(user.uid); // Set the userId state
+
+        // Save the userId to localStorage upon login/auth state change
+        localStorage.setItem('userId', user.uid);
+
         const res = await fetch(`http://localhost:5002/api/profile?uid=${user.uid}`);
         if (res.ok) {
           const data = await res.json();
@@ -24,8 +30,10 @@ function ProfilePage() {
         }
       } else {
         setFirebaseUser(null);
+        setUserId(null);
         setFirstName("");
         setLastName("");
+        localStorage.removeItem('userId'); // Optionally remove userId from localStorage on logout
       }
     });
     return () => unsubscribe();
@@ -48,8 +56,8 @@ function ProfilePage() {
       body: JSON.stringify({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        firstName: firstName, // Use lifted state
-        lastName: lastName,   // Use lifted state
+        firstName: firstName,
+        lastName: lastName,
       }),
     });
 
@@ -91,10 +99,11 @@ function ProfilePage() {
 
       <button onClick={handleSave}>Save Profile</button>
 
-      {/* Pass the lifted state as props to RoommatesForm */}
-      <RoommatesForm firstName={firstName} lastName={lastName} />
+      {/* Pass the lifted state and userId as props to RoommatesForm */}
+      <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
     </div>
   );
 }
 
 export default ProfilePage;
+
