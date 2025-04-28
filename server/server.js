@@ -183,6 +183,7 @@ app.get("/api/profile", async (req, res) => {
   }
 });
 
+// ------------ Submit user preferences form ----------- //
 app.post("/api/submit-preferences", async (req, res) => {
   const {
     first_name,
@@ -229,6 +230,7 @@ app.post("/api/submit-preferences", async (req, res) => {
   }
 });
 
+// ------------ Matching Profiles ----------- //
 app.post("/api/matched-profiles", async (req, res) => {
   const userPreferences = req.body;
   const userId = userPreferences.userId;
@@ -303,8 +305,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       // Check if all attributes match
       if (
-        trimmedProfile.first_name !== trimmedUserPreferences.first_name ||
-        trimmedProfile.last_name !== trimmedUserPreferences.last_name ||
         trimmedProfile.graduation_year !==
           trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
