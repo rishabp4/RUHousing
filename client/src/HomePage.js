@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
+import "./HomePage.css";
+import FilterDropdown from "./FilterDropdown";
 
 function HomePage() {
-  const [selectedHouse, setSelectedHouse] = useState(null); //
-  const [modalOpen, setModalOpen] = useState(false); //
-  const [showDropdown, setShowDropdown] = useState(false); //
-  const [savedHouses, setSavedHouses] = useState([]); //
-  const [properties, setProperties] = useState([]); //
-  const [loading, setLoading] = useState(true); //
+  const [selectedHouse, setSelectedHouse] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [savedHouses, setSavedHouses] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [homeTypeFilter, setHomeTypeFilter] = useState("");
   const [statusTypeFilter, setStatusTypeFilter] = useState("ForRent");
@@ -43,6 +43,26 @@ function HomePage() {
   //// user filtering HERE ------ ////
 
   const navigate = useNavigate();
+  const location = useLocation(); // ← NEW
+
+  // “Home” navbar button behaviour
+  const handleHomeClick = () => {
+    if (location.pathname === "/home") {
+      // already on /home  → force a refresh
+      navigate(0); // react-router-dom v6 helper
+    } else {
+      navigate("/home"); // go to homepage from elsewhere
+    }
+  };
+
+  // Saved-Houses button behaviour
+  const handleSavedClick = () => {
+    if (location.pathname === "/saved-houses") {
+      navigate(0); // refresh page
+    } else {
+      navigate("/saved-houses");
+    }
+  };
 
   const openModal = (house) => {
     setSelectedHouse(house);
@@ -137,6 +157,20 @@ function HomePage() {
     Number(String(price).replace(/[^0-9.-]+/g, ""));
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
+  const displayedProperties = useMemo(() => {
+    // No sort? show raw API list
+    if (!sortOrder) return properties;
+
+    // Keep only homes with a price
+    const pricedHomes = properties.filter((h) => h.price);
+
+    // Sort by numeric price
+    return pricedHomes.sort((a, b) => {
+      const aVal = extractPriceValue(a.price);
+      const bVal = extractPriceValue(b.price);
+      return sortOrder === "Price_Low_High" ? aVal - bVal : bVal - aVal;
+    });
+  }, [properties, sortOrder]);
 
   return (
     <>
@@ -193,6 +227,7 @@ function HomePage() {
       >
         <div style={{ display: "flex", gap: "25px" }}>
           <button
+            className="home-button"
             style={{
               backgroundColor: "#66BB6A",
               color: "white",
@@ -202,10 +237,12 @@ function HomePage() {
               border: "none",
               fontWeight: "bold",
             }}
+            onClick={handleHomeClick}
           >
             Home
           </button>
           <button
+            className="saved-houses-button"
             style={{
               backgroundColor: "#66BB6A",
               color: "white",
@@ -215,6 +252,7 @@ function HomePage() {
               border: "none",
               fontWeight: "bold",
             }}
+            onClick={handleSavedClick}
           >
             Saved Houses
           </button>
@@ -222,6 +260,7 @@ function HomePage() {
             {" "}
             {/* Updated Link here */}
             <button
+              className="roommates-button"
               style={{
                 backgroundColor: "#66BB6A",
                 color: "white",
@@ -237,6 +276,7 @@ function HomePage() {
           </Link>
           <Link to="/profile">
             <button
+              className="profile-button"
               style={{
                 backgroundColor: "#66BB6A",
                 color: "white",
@@ -266,6 +306,7 @@ function HomePage() {
             }}
           />
           <button
+            className="top-search-button"
             style={{
               padding: "6px 14px",
               backgroundColor: "#388E3C",
@@ -320,7 +361,7 @@ function HomePage() {
               marginBottom: "20px",
             }}
           >
-            <input
+            {/* <input
               type="text"
               placeholder="Search for houses..."
               style={{
@@ -329,20 +370,50 @@ function HomePage() {
                 borderRadius: "6px",
                 border: "1px solid #ccc",
               }}
-            />
-            <button
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#3498db",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              Filter ⌄
-            </button>
+            /> */}
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                value={searchProperties}
+                onChange={(e) => setSearchProperties(e.target.value)}
+                placeholder="Enter City or Area"
+              />
+              <button type="submit">Search</button>
+            </form>
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setShowFilterDropdown((prev) => !prev)}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#3498db",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Filter ⌄
+              </button>
+
+              <FilterDropdown
+                show={showFilterDropdown}
+                onClose={() => setShowFilterDropdown(false)}
+                onFilterChange={(filterUpdate) => {
+                  if (filterUpdate.homeType !== undefined)
+                    setHomeTypeFilter(filterUpdate.homeType);
+                  if (filterUpdate.statusType !== undefined)
+                    setStatusTypeFilter(filterUpdate.statusType);
+                  if (filterUpdate.sortOrder !== undefined)
+                    console.log(
+                      "the sortOrder in Homepage.js ----------------: ",
+                      filterUpdate.sortOrder
+                    );
+                  setSortOrder(filterUpdate.sortOrder);
+                  setPage(1);
+                }}
+              />
+            </div>
           </div>
 
           {/* House Cards Grid (Restored EXACTLY with Save button) */}
@@ -353,56 +424,130 @@ function HomePage() {
               gap: "20px",
             }}
           >
-            {properties.map((home, i) => (
-              <div
-                key={i}
-                onClick={() => openModal(home)} // <-- Add this line exactly here
-                style={{
-                  backgroundColor: "#f9f9f9",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                  overflow: "hidden",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  transition: "transform 0.2s ease",
-                }}
-              >
-                <img
-                  src={home.imgSrc}
-                  alt={`House ${i + 1}`}
-                  style={{ width: "100%", height: "160px", objectFit: "cover" }}
-                />
-                <div style={{ padding: "10px" }}>
-                  <p style={{ margin: "8px 0", fontWeight: "bold" }}>
-                    {home.price
-                      ? String(home.price).startsWith("$")
-                        ? home.price
-                        : `$${home.price}`
-                      : "Price Not Listed"}
-                  </p>
+            {displayedProperties.map((home, i) => {
+              const available = isHouseAvailable(home);
+              const rating = getHouseRating(home);
 
-                  <button
+              return (
+                <div
+                  key={home.zpid}
+                  onClick={() => openModal(home)}
+                  style={{
+                    backgroundColor: "#f9f9f9",
+                    borderRadius: "10px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                    overflow: "hidden",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "transform 0.2s ease",
+                  }}
+                >
+                  <img
+                    src={home.imgSrc}
+                    alt={`House ${i + 1}`}
                     style={{
-                      padding: "5px 12px",
-                      backgroundColor: "white",
-                      border: "1px solid #ccc",
-                      borderRadius: "20px",
-                      cursor: "pointer",
-                      color: "#e91e63",
-                      fontWeight: "bold",
+                      width: "100%",
+                      height: "160px",
+                      objectFit: "cover",
                     }}
-                  >
-                    ♥{" "}
-                    {localStorage.getItem("savedHouses") &&
-                    JSON.parse(localStorage.getItem("savedHouses")).includes(
-                      i + 1
-                    )
-                      ? "Unsave"
-                      : "Save"}
-                  </button>
+                  />
+                  <div style={{ padding: "10px" }}>
+                    {/* Clearly improved price styling */}
+                    <p
+                      style={{
+                        margin: "8px 0",
+                        fontWeight: "700",
+                        fontSize: "18px",
+                        color: "#2c3e50",
+                      }}
+                    >
+                      {home.price
+                        ? String(home.price).startsWith("$")
+                          ? home.price
+                          : `$${home.price}`
+                        : "Price Not Listed"}
+                    </p>
+
+                    {/* Availability Status */}
+                    <p
+                      style={{
+                        color: available ? "green" : "red",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {available
+                        ? "Currently Available"
+                        : "No Longer Available"}
+                    </p>
+
+                    {/* Star Rating clearly ABOVE Save button */}
+                    <div
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        color: "#ffffff", // White text
+                        backgroundColor: "#909090", // Light grayish background
+                        borderRadius: "4px",
+                        padding: "3px 8px",
+                        display: "inline-block",
+                      }}
+                    >
+                      ⭐ {getHouseRating(home).toFixed(1)} / 5
+                    </div>
+
+                    {/* Save button clearly BELOW Rating */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveHouse(home.zpid);
+                      }}
+                      style={{
+                        padding: "5px 12px",
+                        backgroundColor: "white",
+                        border: "1px solid #ccc",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        color: "#e91e63",
+                        fontWeight: "bold",
+                        display: "block", // clearly forces button below rating, not inline
+                        margin: "0 auto",
+                      }}
+                    >
+                      ♥{" "}
+                      {localStorage.getItem("savedHouses") &&
+                      JSON.parse(localStorage.getItem("savedHouses")).includes(
+                        home.zpid
+                      )
+                        ? "Unsave"
+                        : "Save"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
+            {/* Number of pages for filter HERE */}
+            <div style={{ marginTop: "20px" }}>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
+                <button
+                  key={pg}
+                  onClick={() => setPage(pg)}
+                  style={{
+                    margin: "4px",
+                    padding: "6px 12px",
+                    backgroundColor: pg === page ? "#333" : "#eee",
+                    color: pg === page ? "#fff" : "#000",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {pg}
+                </button>
+              ))}
+            </div>
+            {/* Number of pages for filter HERE */}
           </div>
         </div>
       </div>
@@ -410,6 +555,8 @@ function HomePage() {
         isOpen={modalOpen}
         onRequestClose={closeModal}
         house={selectedHouse}
+        available={selectedHouse ? isHouseAvailable(selectedHouse) : false}
+        rating={selectedHouse ? getHouseRating(selectedHouse) : 0}
       />
     </>
   );
