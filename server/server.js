@@ -252,12 +252,11 @@ app.get("/api/profile", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//!ends here
 
 // ------------ Submit user preferences form ----------- //
 app.post("/api/submit-preferences", async (req, res) => {
   const {
-    first_name,
-    last_name,
     graduation_year,
     major,
     duration_of_stay,
@@ -278,8 +277,6 @@ app.post("/api/submit-preferences", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const result = await roommatePreferencesCollection.insertOne({
       userId,
-      first_name: first_name ? first_name.trim() : "",
-      last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
       major: major ? major.trim() : "",
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
@@ -323,12 +320,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
-        first_name: userPreferences.first_name
-          ? userPreferences.first_name.trim()
-          : "",
-        last_name: userPreferences.last_name
-          ? userPreferences.last_name.trim()
-          : "",
         graduation_year: userPreferences.graduation_year
           ? userPreferences.graduation_year.trim()
           : "",
@@ -352,8 +343,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        first_name: profile.first_name ? profile.first_name.trim() : "",
-        last_name: profile.last_name ? profile.last_name.trim() : "",
         graduation_year: profile.graduation_year
           ? profile.graduation_year.trim()
           : "",
@@ -533,6 +522,62 @@ app.get("/api/all-users", async (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello from the RUHousing Express server!');
 
+});
+
+// ---------- Login Routes ----------- //
+app.post("/user", async (req, res) => {
+  const { uid, email, firstName, lastName, netID, photoURL } = req.body;
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: "Missing UID or email" });
+  }
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const existingUser = await usersCollection.findOne({ uid });
+
+    if (existingUser) {
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { firstName, lastName, netID, photoURL, email } }
+      );
+      return res.json({ message: "✅ Profile updated" });
+    }
+
+    await usersCollection.insertOne({
+      uid,
+      email,
+      firstName,
+      lastName,
+      netID,
+      photoURL,
+    });
+    res.json({ message: "✅ Profile created" });
+  } catch (err) {
+    console.error("❌ Error saving profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/user/:userId", async (req, res) => {
+  const { uid } = req.query;
+
+  if (!uid) return res.status(400).json({ error: "UID is required" });
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ uid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 const PORT = process.env.PORT || 5002;

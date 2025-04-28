@@ -4,7 +4,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Throttle queue
 let lastRequestTime = 0;
-const THROTTLE_DELAY = 1500; // 1.5 seconds between requests (adjust as needed)
+const THROTTLE_DELAY = 0; // 1.5 seconds between requests (adjust as needed)
 
 export const throttledAxios = async (config) => {
   const now = Date.now();

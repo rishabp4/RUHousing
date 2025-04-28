@@ -11,14 +11,36 @@ import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 
 function HomePage() {
-  const [selectedHouse, setSelectedHouse] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [savedHouses, setSavedHouses] = useState([]);
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState(avatar);
+  const [selectedHouse, setSelectedHouse] = useState(null); //
+  const [modalOpen, setModalOpen] = useState(false); //
+  const [showDropdown, setShowDropdown] = useState(false); //
+  const [savedHouses, setSavedHouses] = useState([]); //
+  const [properties, setProperties] = useState([]); //
+  const [loading, setLoading] = useState(true); //
+
+  const [homeTypeFilter, setHomeTypeFilter] = useState("");
+  const [statusTypeFilter, setStatusTypeFilter] = useState("ForRent");
+  const [sortOrder, setSortOrder] = useState("");
+
+  const [totalPages, setTotalPages] = useState(1);
+  const [query, setQuery] = useState(
+    "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ"
+  );
+
+  const [page, setPage] = useState(1);
+
+  //// user filtering HERE ------ ////
+  // step1: add a useState variabel exactly like the one bellow BUT with a different name
+  const [searchProperties, setSearchProperties] = useState("");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // this is only if you are using a button like a submit button
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setQuery(searchProperties);
+    setPage(1);
+  };
+  //// user filtering HERE ------ ////
 
   const navigate = useNavigate();
 
@@ -57,51 +79,62 @@ function HomePage() {
     setModalOpen(false);
     setSelectedHouse(null);
   };
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.uid) {
-        setUserId(user.uid);
-        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`);
-      } else {
-        setUserId(null);
-        setPhotoUrl(avatar);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-  
   // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
-  //   useEffect(() => {
-  //     // code that call sthe zilow API
-  //     const fetchProperties = async () => {
-  //       try {
-  //         const res = await throttledAxios({
-  //           method: "GET",
-  //           url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
-  //           params: {
-  //             location:
-  //               "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ",
-  //             home_type:
-  //               "Houses, Townhomes, Apartments, Apartments_Condos_Co-ops, Condos",
-  //             status_type: "ForRent",
-  //           },
-  //           headers: {
-  //             "X-RapidAPI-Key":
-  //               "XXXXX PUT THE REAL API KEY FROM RAPIDAPI HERE XXXXXXX", // Replace with your actual API key in the qoutes on this line
-  //             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
-  //           },
-  //         });
+  // code that call sthe zilow API
+  const fetchProperties = async () => {
+    console.log("The sort Order is ============== ");
+    try {
+      const res = await throttledAxios({
+        method: "GET",
+        url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
+        params: {
+          location: query,
+          home_type: homeTypeFilter || undefined,
+          status_type: statusTypeFilter || undefined,
+          page: page,
+          sort: sortOrder,
+        },
+        headers: {
+          "X-RapidAPI-Key":
+            "fef89518b2mshe2d6472c04120f1p1a5a35jsn02515fa84898", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
+        },
+      });
+      setProperties(res.data.props || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProperties();
+  }, [page, query, homeTypeFilter, statusTypeFilter, sortOrder]);
 
-  //         setProperties(res.data.props || []);
-  //       } catch (err) {
-  //         console.error(err);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
+  console.log("the houses are ==== ", properties);
 
-  //     fetchProperties();
-  //   }, []);
+  // Function to determine if a house is available or not
+  const isHouseAvailable = (house) => {
+    if (!house.price) {
+      return false; // Automatically unavailable if no price listed
+    }
+    // Consistent random assignment using Zillow's unique ID (zpid)
+    const randomSeed = parseInt(house.zpid.slice(-3), 10);
+    return randomSeed % 10 !== 0; // 90% available, 10% unavailable
+  };
+
+  // Helper function to generate consistent star ratings
+  const getHouseRating = (house) => {
+    const randomSeed = parseInt(house.zpid.slice(-4), 10);
+    const ratingsArray = [3.5, 4.0, 4.5, 5.0, 3.0, 2.5]; // most ratings 3.5+
+    return ratingsArray[randomSeed % ratingsArray.length];
+  };
+
+  // (after getHouseRating)
+  // Turn "$1,200+" or 1200 into a plain Number
+  const extractPriceValue = (price) =>
+    Number(String(price).replace(/[^0-9.-]+/g, ""));
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
@@ -140,19 +173,11 @@ function HomePage() {
           </h1>
         </div>
         <Link to="/profile">
-        <img
-            src={photoUrl /* or avatar */}
+          <img
+            src={avatar}
             alt="User Avatar"
-            style={{
-            height: "60px",
-            width: "60px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            background: "#fafafa"
-  }}
-  onError={e => { e.target.onerror = null; e.target.src = avatar; }}
-/>
-
+            style={{ height: "60px", width: "60px", borderRadius: "50%" }}
+          />
         </Link>
       </div>
 
@@ -193,7 +218,9 @@ function HomePage() {
           >
             Saved Houses
           </button>
-          <Link to="/matched-profiles"> {/* Updated Link here */}
+          <Link to="/matched-profiles">
+            {" "}
+            {/* Updated Link here */}
             <button
               style={{
                 backgroundColor: "#66BB6A",
@@ -205,7 +232,7 @@ function HomePage() {
                 fontWeight: "bold",
               }}
             >
-            My Roommates
+              My Roommates
             </button>
           </Link>
           <Link to="/profile">
