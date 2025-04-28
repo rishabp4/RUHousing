@@ -256,7 +256,9 @@ function HomePage() {
           >
             Saved Houses
           </button>
-          <Link to="/find-roommates">
+          <Link to="/matched-profiles">
+            {" "}
+            {/* Updated Link here */}
             <button
               className="roommates-button"
               style={{
@@ -269,7 +271,7 @@ function HomePage() {
                 fontWeight: "bold",
               }}
             >
-              Find My Roommates
+              My Roommates
             </button>
           </Link>
           <Link to="/profile">
