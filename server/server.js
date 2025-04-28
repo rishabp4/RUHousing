@@ -269,6 +269,19 @@ app.get('/api/chat', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch chat history.' });
   }
 });
+//!get all users
+// Get all users (for Find Users page)
+app.get('/api/all-users', async (req, res) => {
+  try {
+    const usersCollection = db.collection('users');
+    const users = await usersCollection.find().toArray();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users.' });
+  }
+});
+
 
 //!chat ends
 
