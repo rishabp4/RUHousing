@@ -140,13 +140,19 @@ function HomePage() {
           </h1>
         </div>
         <Link to="/profile">
-          <img
-            src={photoUrl}
+        <img
+            src={photoUrl /* or avatar */}
             alt="User Avatar"
-            style={{ height: "60px", width: "60px", borderRadius: "50%" }}
-            onError={e => { e.target.onerror = null; e.target.src = avatar; }}
+            style={{
+            height: "60px",
+            width: "60px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            background: "#fafafa"
+  }}
+  onError={e => { e.target.onerror = null; e.target.src = avatar; }}
+/>
 
-          />
         </Link>
       </div>
 
