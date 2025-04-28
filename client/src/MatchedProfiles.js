@@ -46,8 +46,10 @@ function MatchedProfiles() {
     const fetchMatchedProfiles = async () => {
       try {
         const storedPreferences = localStorage.getItem('userPreferences');
-        if (!storedPreferences) {
-          setError('No preferences found to find matches.');
+        const userId = localStorage.getItem('userId'); // Ensure userId is being saved to localStorage on login/signup
+
+        if (!storedPreferences || !userId) {
+          setError('No preferences or user ID found.');
           setLoading(false);
           return;
         }
@@ -58,7 +60,7 @@ function MatchedProfiles() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(userPreferences),
+          body: JSON.stringify({ ...userPreferences, userId }), // Include userId in the request body
         });
 
         if (!response.ok) {
@@ -92,6 +94,8 @@ function MatchedProfiles() {
       {matchedProfiles.length > 0 ? (
         matchedProfiles.map((profile) => (
           <div key={profile._id} style={profileCardStyle}>
+            <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
+            <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
             <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
             <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
             <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>

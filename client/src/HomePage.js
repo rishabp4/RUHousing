@@ -53,37 +53,37 @@ function HomePage() {
     setSelectedHouse(null);
   };
   // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
-  useEffect(() => {
-    // code that call sthe zilow API
-    const fetchProperties = async () => {
-      try {
-        const res = await throttledAxios({
-          method: "GET",
-          url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
-          params: {
-            location:
-              "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ",
-            home_type:
-              "Houses, Townhomes, Apartments, Apartments_Condos_Co-ops, Condos",
-            status_type: "ForRent",
-          },
-          headers: {
-            "X-RapidAPI-Key":
-              "fef89518b2mshe2d6472c04120f1p1a5a35jsn02515fa84898", // Replace with your actual API key
-            "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
-          },
-        });
+  //   useEffect(() => {
+  //     // code that call sthe zilow API
+  //     const fetchProperties = async () => {
+  //       try {
+  //         const res = await throttledAxios({
+  //           method: "GET",
+  //           url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
+  //           params: {
+  //             location:
+  //               "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ",
+  //             home_type:
+  //               "Houses, Townhomes, Apartments, Apartments_Condos_Co-ops, Condos",
+  //             status_type: "ForRent",
+  //           },
+  //           headers: {
+  //             "X-RapidAPI-Key":
+  //               "XXXXX PUT THE REAL API KEY FROM RAPIDAPI HERE XXXXXXX", // Replace with your actual API key in the qoutes on this line
+  //             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
+  //           },
+  //         });
 
-        setProperties(res.data.props || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //         setProperties(res.data.props || []);
+  //       } catch (err) {
+  //         console.error(err);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     };
 
-    fetchProperties();
-  }, []);
+  //     fetchProperties();
+  //   }, []);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
@@ -167,7 +167,7 @@ function HomePage() {
           >
             Saved Houses
           </button>
-          <Link to="/find-roommates">
+          <Link to="/matched-profiles"> {/* Updated Link here */}
             <button
               style={{
                 backgroundColor: "#66BB6A",
@@ -179,7 +179,7 @@ function HomePage() {
                 fontWeight: "bold",
               }}
             >
-              Find My Roommates
+            My Roommates
             </button>
           </Link>
           <Link to="/profile">

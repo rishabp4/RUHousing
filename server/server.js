@@ -22,8 +22,6 @@ async function connectToMongo() {
 }
 
 connectToMongo();
-
-//! post save or update profile
 app.post('/api/profile', async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
 
@@ -54,7 +52,7 @@ app.post('/api/profile', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-//! GET, retrieve profile by UID
+
 app.get('/api/profile', async (req, res) => {
   const { uid } = req.query;
 
@@ -78,10 +76,10 @@ app.get('/api/profile', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-//!ends here
+
 
 app.post('/api/submit-preferences', async (req, res) => {
-  const { graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
+  const { first_name, last_name, graduation_year, major, duration_of_stay, allergies, sleep_schedule, study_habits, cleanliness, userId } = req.body;
 
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -91,6 +89,8 @@ app.post('/api/submit-preferences', async (req, res) => {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
     const result = await roommatePreferencesCollection.insertOne({
       userId,
+      first_name: first_name ? first_name.trim() : '',
+      last_name: last_name ? last_name.trim() : '',
       graduation_year: graduation_year ? graduation_year.trim() : '',
       major: major ? major.trim() : '',
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : '',
@@ -118,17 +118,17 @@ app.post('/api/matched-profiles', async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection('roommate_preferences');
-    // TEMPORARILY REMOVE THE userId EXCLUSION FOR TESTING WITH IDENTICAL ENTRIES
-    const allProfiles = await roommatePreferencesCollection.find().toArray();
+    // Find all profiles that are NOT the current user's profile
+    const potentialMatches = await roommatePreferencesCollection.find({
+      userId: { $ne: userId } // Exclude profiles with the current user's ID
+    }).toArray();
+
     const matchedProfilesWithLevel = [];
 
-    for (const profile of allProfiles) {
-      // TEMPORARILY COMMENT OUT THE userId CHECK FOR TESTING
-      // if (profile.userId === userId) {
-      //   continue;
-      // }
-
+    for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
+        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : '',
+        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : '',
         graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim() : '',
         major: userPreferences.major ? userPreferences.major.trim() : '',
         duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : '',
@@ -140,6 +140,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
+        first_name: profile.first_name ? profile.first_name.trim() : '',
+        last_name: profile.last_name ? profile.last_name.trim() : '',
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : '',
         major: profile.major ? profile.major.trim() : '',
         duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim() : '',
@@ -154,6 +156,8 @@ app.post('/api/matched-profiles', async (req, res) => {
 
       // Check if all attributes match
       if (
+        trimmedProfile.first_name !== trimmedUserPreferences.first_name ||
+        trimmedProfile.last_name !== trimmedUserPreferences.last_name ||
         trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
         trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||
@@ -189,6 +193,30 @@ app.post('/api/matched-profiles', async (req, res) => {
   } catch (error) {
     console.error('Error fetching and matching profiles:', error);
     res.status(500).json({ error: 'Failed to fetch and match profiles.' });
+  }
+});
+
+app.post('/api/report-issue', async (req, res) => {
+  const { name, ruid, issue } = req.body;
+
+  if (!name || !ruid || !issue) {
+    return res.status(400).json({ error: 'Please provide your name, RUID, and the issue.' });
+  }
+
+  try {
+    const complaintsCollection = db.collection('complaints'); // Changed to 'complaints'
+    const result = await complaintsCollection.insertOne({
+      name: name.trim(),
+      ruid: ruid.trim(),
+      issue: issue.trim(),
+      timestamp: new Date(),
+    });
+
+    console.log('Issue reported successfully. Inserted ID:', result.insertedId, 'saved to "complaints"');
+    res.status(200).json({ message: 'Issue reported successfully!' });
+  } catch (error) {
+    console.error('Error reporting issue:', error);
+    res.status(500).json({ error: 'Failed to report issue.' });
   }
 });
 
