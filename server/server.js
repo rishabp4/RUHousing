@@ -22,6 +22,8 @@ async function connectToMongo() {
 }
 
 connectToMongo();
+
+
 app.post('/api/profile', async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
 
@@ -218,6 +220,57 @@ app.post('/api/report-issue', async (req, res) => {
     res.status(500).json({ error: 'Failed to report issue.' });
   }
 });
+//!chat here
+//  Save a chat message
+app.post('/api/chat', async (req, res) => {
+  const { senderId, receiverId, message } = req.body;
+
+  if (!senderId || !receiverId || !message) {
+    return res.status(400).json({ error: 'Missing sender, receiver, or message' });
+  }
+
+  try {
+    const chatsCollection = db.collection('chats');
+    const newMessage = {
+      senderId,
+      receiverId,
+      message,
+      timestamp: new Date()
+    };
+
+    const result = await chatsCollection.insertOne(newMessage);
+    res.status(200).json({ message: 'Chat saved successfully!', chatId: result.insertedId });
+  } catch (error) {
+    console.error('Error saving chat:', error);
+    res.status(500).json({ error: 'Failed to save chat.' });
+  }
+});
+
+// 🔥 Get chat history between two users
+app.get('/api/chat', async (req, res) => {
+  const { user1, user2 } = req.query;
+
+  if (!user1 || !user2) {
+    return res.status(400).json({ error: 'Both user IDs are required' });
+  }
+
+  try {
+    const chatsCollection = db.collection('chats');
+    const chatHistory = await chatsCollection.find({
+      $or: [
+        { senderId: user1, receiverId: user2 },
+        { senderId: user2, receiverId: user1 }
+      ]
+    }).sort({ timestamp: 1 }).toArray();
+
+    res.status(200).json(chatHistory);
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    res.status(500).json({ error: 'Failed to fetch chat history.' });
+  }
+});
+
+//!chat ends
 
 app.get('/', (req, res) => {
   res.send('Hello from the RUHousing Express server!');
