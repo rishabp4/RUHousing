@@ -379,7 +379,13 @@ app.post("/api/report-issue", async (req, res) => {
 });
 //!chat here
 //  Save a chat message
-app.post("/api/chat", async (req, res) => {
+<
+app.post('/api/chat', async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Database connection not established.' });
+  }
+
+
   const { senderId, receiverId, message } = req.body;
 
   if (!senderId || !receiverId || !message) {
@@ -407,8 +413,16 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+
 // 🔥 Get chat history between two users
-app.get("/api/chat", async (req, res) => {
+
+
+app.get('/api/chat', async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Database connection not established.' });
+  }
+
+
   const { user1, user2 } = req.query;
 
   if (!user1 || !user2) {
@@ -433,6 +447,10 @@ app.get("/api/chat", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch chat history." });
   }
 });
+
+
+
+//!chat ends
 //!get all users
 // Get all users (for Find Users page)
 app.get("/api/all-users", async (req, res) => {
@@ -446,10 +464,10 @@ app.get("/api/all-users", async (req, res) => {
   }
 });
 
-//!chat ends
 
-app.get("/", (req, res) => {
-  res.send("Hello from the RUHousing Express server!");
+app.get('/', (req, res) => {
+  res.send('Hello from the RUHousing Express server!');
+
 });
 
 const PORT = process.env.PORT || 5002;
