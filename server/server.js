@@ -379,7 +379,7 @@ app.post("/api/report-issue", async (req, res) => {
 });
 //!chat here
 //  Save a chat message
-<
+
 app.post('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -414,7 +414,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-// 🔥 Get chat history between two users
+// Get chat history between two users
 
 
 app.get('/api/chat', async (req, res) => {
