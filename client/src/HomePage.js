@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
 import { throttledAxios } from "./utils/throttleAxios";
@@ -15,6 +17,9 @@ function HomePage() {
   const [savedHouses, setSavedHouses] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(avatar);
+
   const navigate = useNavigate();
 
   const openModal = (house) => {
@@ -52,6 +57,19 @@ function HomePage() {
     setModalOpen(false);
     setSelectedHouse(null);
   };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`);
+      } else {
+        setUserId(null);
+        setPhotoUrl(avatar);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  
   // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
   //   useEffect(() => {
   //     // code that call sthe zilow API
@@ -123,9 +141,11 @@ function HomePage() {
         </div>
         <Link to="/profile">
           <img
-            src={avatar}
+            src={photoUrl}
             alt="User Avatar"
             style={{ height: "60px", width: "60px", borderRadius: "50%" }}
+            onError={e => { e.target.onerror = null; e.target.src = avatar; }}
+
           />
         </Link>
       </div>

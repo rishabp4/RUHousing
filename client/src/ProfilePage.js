@@ -1,35 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";// julio? what are you doing here?
-import { auth } from "./firebase"; // adjust path, omg julio was here one more time
+import { auth } from "./firebase";// adjust path, omg julio was here one more time
 import avatar from "./images/default_avatar.png";
-import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
-import FindUsers from "./FindUsers"; // julio was here again!
-import ChatWindow from "./ChatWindow"; //FOR THE Chat duh, julio here!
-
+import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
+import FindUsers from "./FindUsers";// julio was here again!
+import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [userId, setUserId] = useState(null); // State to hold the Firebase UID
+  const [userId, setUserId] = useState(null);
   const [netID, setNetID] = useState("");
-  //!finduser and chat
   const [showFindUsers, setShowFindUsers] = useState(false);
-  const [chattingWith, setChattingWith] = useState(null); // for chatting later
+  const [chattingWith, setChattingWith] = useState(null);
+  // -- photo upload states --
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(avatar);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFirebaseUser(user);
-        setUserId(user.uid); // Set the userId state
-
-        // Save the userId to localStorage upon login/auth state change
+        setUserId(user.uid);
         localStorage.setItem('userId', user.uid);
 
+        // fetch profile info
         const res = await fetch(`http://localhost:5002/api/profile?uid=${user.uid}`);
         if (res.ok) {
           const data = await res.json();
-          console.log("Fetched Profile Data:", data); // Debugging
           setFirstName(data.firstName || "");
           setLastName(data.lastName || "");
           setUserId(data.uid);
@@ -37,46 +36,70 @@ function ProfilePage() {
         } else {
           console.error("Failed to fetch profile data");
         }
+
+        // fetch photo (AFTER user ID is known, so the photo API works)
+        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?${Date.now()}`);
       } else {
         setFirebaseUser(null);
         setUserId(null);
         setFirstName("");
         setLastName("");
         setNetID("");
-        localStorage.removeItem('userId'); // Optionally remove userId from localStorage on logout
+        setPhotoUrl(avatar);
+        localStorage.removeItem('userId');
       }
     });
     return () => unsubscribe();
   }, []);
 
-  const handleFirstNameChange = (e) => {
-    setFirstName(e.target.value);
+  // --- Handlers ---
+  const handleFirstNameChange = (e) => setFirstName(e.target.value);
+  const handleLastNameChange = (e) => setLastName(e.target.value);
+
+  // 🟡 UPLOAD PROFILE PHOTO (this was missing OUTSIDE handleSave!)
+  const handlePhotoUpload = async () => {
+    if (!photoFile || !userId) {
+      alert("Please select a photo first!");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("photo", photoFile);
+    formData.append("uid", userId);
+
+    const res = await fetch("http://localhost:5002/api/profile-photo", {
+      method: "POST",
+      body: formData,
+    });
+    if (res.ok) {
+      setPhotoUrl(`http://localhost:5002/api/profile-photo/${userId}?${Date.now()}`); // update and bust cache
+      setPhotoFile(null);
+      alert("Photo uploaded!");
+    } else {
+      alert("Error uploading photo");
+    }
   };
 
-  const handleLastNameChange = (e) => {
-    setLastName(e.target.value);
-  };
-
+  // Profile save handler
   const handleSave = async () => {
     if (!firebaseUser) return;
-  
+
     const res = await fetch("http://localhost:5002/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        firstName: firstName,
-        lastName: lastName,
-        netID: netID,
+        firstName,
+        lastName,
+        netID,
       }),
     });
-  
+
     if (res.ok) {
       const result = await res.json();
       alert(result.message || "Profile Saved!");
-  
-      // ✅ After saving, fetch the latest profile data
+
+      // Fetch latest profile data after save
       const updatedProfile = await fetch(`http://localhost:5002/api/profile?uid=${firebaseUser.uid}`);
       if (updatedProfile.ok) {
         const updatedData = await updatedProfile.json();
@@ -90,20 +113,20 @@ function ProfilePage() {
     }
   };
 
-  //  These two conditions first:
+  // --- RETURN ---
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
-//! CHATTTING WITH JULIO
-if (chattingWith) {
-  return (
-    <ChatWindow
-      currentUserId={userId}
-      chattingWith={chattingWith}
-      goBack={() => setChattingWith(null)}
-    />
-  );
-}
 
+//! CHATTTING WITH JULIO
+  if (chattingWith) {
+    return (
+      <ChatWindow
+        currentUserId={userId}
+        chattingWith={chattingWith}
+        goBack={() => setChattingWith(null)}
+      />
+    );
+  }
 // FPR THE USERS, JULIO BACK HERE
   if (showFindUsers) {
     return (
@@ -111,19 +134,48 @@ if (chattingWith) {
         <button onClick={() => setShowFindUsers(false)} style={{ marginBottom: "1rem", padding: "8px" }}>
           Back to Profile
         </button>
-
-        {/* 👇 Show FindUsers component */}
-        <FindUsers currentUserId={userId} startChat={(user) => setChattingWith(user)} />
+        <FindUsers currentUserId={userId} startChat={setChattingWith} />
       </div>
     );
   }
-
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
+  // main profile page user interface
   return (
     <div style={{ padding: "2rem" }}>
       <h2>Welcome, {firebaseUser.email}</h2>
-      
-      <img src={avatar} alt="avatar" width={100} style={{ borderRadius: "50%" }} />
+      <div style={{ margin: "22px 0", textAlign: "center" }}>
+        {/* Profile Photo */}
+        <img
+          src={photoUrl}
+          alt="Profile"
+          width={120}
+          height={120}
+          style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc", background: "#fafafa" }}
+          onError={e => (e.target.src = avatar)}
+        />
+        <br />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={e => setPhotoFile(e.target.files[0])}
+          style={{ marginTop: 8 }}
+        />
+        <button
+          onClick={handlePhotoUpload}
+          disabled={!photoFile}
+          style={{
+            marginLeft: 8,
+            padding: "6px 16px",
+            borderRadius: 4,
+            background: "#ffffe0",
+            color: "black",
+            border: "1px solid #ccc",
+            cursor: photoFile ? "pointer" : "not-allowed"
+          }}
+        >
+          Upload
+        </button>
+      </div>
 
       <br /><br />
 
@@ -159,7 +211,6 @@ if (chattingWith) {
       </div>
 
       <button onClick={handleSave}>Save Profile</button>
-
       {/* Pass the lifted state and userId as props to RoommatesForm */}
       <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
     </div>
