@@ -116,7 +116,8 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key":
+            "fef89518b2mshe2d6472c04120f1p1a5a35jsn02515fa84898", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -256,9 +257,7 @@ function HomePage() {
           >
             Saved Houses
           </button>
-          <Link to="/matched-profiles">
-            {" "}
-            {/* Updated Link here */}
+          <Link to="/find-roommates">
             <button
               className="roommates-button"
               style={{
