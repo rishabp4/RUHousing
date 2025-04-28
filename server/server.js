@@ -25,27 +25,27 @@ connectToMongo();
 app.post('/api/profile', async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
 
-  const { uid, email, firstName, lastName } = req.body;
+  const { uid, email, firstName, lastName, netID } = req.body;
 
   if (!uid || !email) {
     return res.status(400).json({ error: 'Missing required fields: uid or email' });
   }
 
   try {
-    const db = client.db('RUHousing');
     const usersCollection = db.collection('users');
+
 
     const existingUser = await usersCollection.findOne({ uid });
 
     if (existingUser) {
       await usersCollection.updateOne(
         { uid },
-        { $set: { firstName, lastName, email } }
+        { $set: { firstName, lastName, email, netID } }
       );
       return res.json({ message: '✅ Profile updated' });
     }
 
-    await usersCollection.insertOne({ uid, email, firstName, lastName });
+    await usersCollection.insertOne({ uid, email, firstName, lastName, netID });
     res.json({ message: '✅ Profile created' });
   } catch (error) {
     console.error('❌ Error saving profile:', error);
@@ -61,9 +61,7 @@ app.get('/api/profile', async (req, res) => {
   }
 
   try {
-    const db = client.db('RUHousing');
-    const usersCollection = db.collection('users');
-
+    const usersCollection = db.collection('users');  // ✅ fixed
     const user = await usersCollection.findOne({ uid });
 
     if (!user) {
@@ -76,6 +74,7 @@ app.get('/api/profile', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 
 app.post('/api/submit-preferences', async (req, res) => {

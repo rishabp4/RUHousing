@@ -3,12 +3,14 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase"; // adjust path
 import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
+import { set } from "mongoose";
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userId, setUserId] = useState(null); // State to hold the Firebase UID
+  const [netID, setNetID] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -25,6 +27,8 @@ function ProfilePage() {
           console.log("Fetched Profile Data:", data); // Debugging
           setFirstName(data.firstName || "");
           setLastName(data.lastName || "");
+          setUserId(data.uid);
+          setNetID(data.netID || "");
         } else {
           console.error("Failed to fetch profile data");
         }
@@ -33,6 +37,7 @@ function ProfilePage() {
         setUserId(null);
         setFirstName("");
         setLastName("");
+        setNetID("");
         localStorage.removeItem('userId'); // Optionally remove userId from localStorage on logout
       }
     });
@@ -49,7 +54,7 @@ function ProfilePage() {
 
   const handleSave = async () => {
     if (!firebaseUser) return;
-
+  
     const res = await fetch("http://localhost:5002/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -58,17 +63,28 @@ function ProfilePage() {
         email: firebaseUser.email,
         firstName: firstName,
         lastName: lastName,
+        netID: netID,
       }),
     });
-
+  
     if (res.ok) {
       const result = await res.json();
       alert(result.message || "Profile Saved!");
+  
+      // ✅ After saving, fetch the latest profile data
+      const updatedProfile = await fetch(`http://localhost:5002/api/profile?uid=${firebaseUser.uid}`);
+      if (updatedProfile.ok) {
+        const updatedData = await updatedProfile.json();
+        setFirstName(updatedData.firstName || "");
+        setLastName(updatedData.lastName || "");
+        setNetID(updatedData.netID || "");
+      }
     } else {
       const errorResult = await res.json();
       alert(errorResult.error || "Failed to save profile.");
     }
   };
+  
 
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
@@ -95,6 +111,15 @@ function ProfilePage() {
           placeholder="Last Name"
           style={{ margin: "10px", padding: "5px" }}
         />
+        <input
+  type="text"
+  name="netID"
+  value={netID}
+  onChange={(e) => setNetID(e.target.value)}
+  placeholder="NetID"
+  style={{ margin: "10px", padding: "5px" }}
+/>
+
       </div>
 
       <button onClick={handleSave}>Save Profile</button>
