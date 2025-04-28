@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase"; // adjust path
+import { onAuthStateChanged } from "firebase/auth";// julio? what are you doing here?
+import { auth } from "./firebase"; // adjust path, omg julio was here one more time
 import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm'; // Adjust the path if necessary
-import FindUsers from "./FindUsers";
+import FindUsers from "./FindUsers"; // julio was here again!
+import ChatWindow from "./ChatWindow"; //FOR THE Chat duh, julio here!
 
 
 function ProfilePage() {
@@ -92,6 +93,18 @@ function ProfilePage() {
   //  These two conditions first:
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
+//! CHATTTING WITH JULIO
+if (chattingWith) {
+  return (
+    <ChatWindow
+      currentUserId={userId}
+      chattingWith={chattingWith}
+      goBack={() => setChattingWith(null)}
+    />
+  );
+}
+
+// FPR THE USERS, JULIO BACK HERE
   if (showFindUsers) {
     return (
       <div style={{ padding: "2rem" }}>
@@ -105,7 +118,7 @@ function ProfilePage() {
     );
   }
 
-  // 🔥 If not showing FindUsers, show normal profile
+  //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   return (
     <div style={{ padding: "2rem" }}>
       <h2>Welcome, {firebaseUser.email}</h2>
