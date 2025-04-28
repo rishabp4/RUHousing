@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const app = express();
 app.use(cors());
@@ -23,6 +23,109 @@ async function connectToMongo() {
 }
 
 connectToMongo();
+
+// ------------ Routes for saving house ----------- //
+app.post("/api/house", async (req, res) => {
+  console.log("Post House route called!!");
+  const {
+    userId,
+    address,
+    bathrooms,
+    bedrooms,
+    livingArea,
+    propertyType,
+    lotAreaValue,
+    listingStatus,
+    price,
+    imgSrc,
+    preferences,
+    owner,
+    carouselPhotos,
+  } = req.body;
+
+  try {
+    const db = client.db("RUHousing");
+    const savedHousesDb = db.collection("SavedHouses");
+    // step1.) check if  userId and address are not empty
+    if (!userId) return res.status(400).json({ error: "Missing userId" });
+    if (!address)
+      return res.status(400).json({ error: "Missing house address" });
+
+    // step2.) check if that house is already saved by the user
+    const chechIfHouseIsSaved = await savedHousesDb.findOne({
+      address: address,
+      userId: userId,
+    });
+    if (chechIfHouseIsSaved) {
+      console.log("The house is already saved");
+      return res.status(400).json({ error: "This house is already saved" });
+    }
+    //step 3) save the house
+    const saveHouse = await savedHousesDb.insertOne(req.body);
+    if (saveHouse) return res.status(200).json({ message: "House is saved" });
+  } catch (error) {
+    console.error("❌ Error saving house:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+// ------------ Routes for saving house ----------- //
+
+// --------- Route to get saved houses ----------- //
+app.get("/api/house/:userId", async (req, res) => {
+  try {
+    const db = client.db("RUHousing");
+    const savedHousesDb = db.collection("SavedHouses");
+    // step1) check if the userId is being sent
+    const { userId } = req.params;
+    console.log(userId);
+    if (!userId) return res.status(400).json({ error: "UserId is missing" });
+
+    //step 2) get the house
+    const savedHouses = await savedHousesDb
+      .find({ userId: userId.toString() })
+      .toArray();
+    if (savedHouses.length > 0) {
+      console.log("Saved Houses found!!");
+      return res.status(200).json({ props: savedHouses });
+    } else {
+      return res.status(404).json({ message: "No houses found for this user" });
+    }
+  } catch (error) {
+    console.error("❌ Error Getting saved houses:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+// --------- Route to get saved houses ----------- //
+
+// ---------- Route to delete saved house -------- //
+app.delete("/api/house/:id", async (req, res) => {
+  try {
+    console.log("Delete route CALLED !!!!");
+    const db = client.db("RUHousing");
+    const savedHousesDb = db.collection("SavedHouses");
+    // step 1.) check if house id is being sent
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: "missing house id" });
+
+    // step2.) delete the house from saved houses
+    const deleteHouse = await savedHousesDb.deleteOne({
+      _id: new ObjectId(id),
+    });
+    if (deleteHouse.deletedCount === 1) {
+      return res
+        .status(200)
+        .json({ message: "Successfully deleted the saved house" });
+    } else {
+      return res.status(404).json({ message: "Saved house not found" });
+    }
+  } catch (error) {
+    console.error("❌ Error Deleting saved house:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+// ---------- Route to delete saved house -------- //
+
+//! post save or update profile
 app.post("/api/profile", async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
 
@@ -55,7 +158,7 @@ app.post("/api/profile", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
+//! GET, retrieve profile by UID
 app.get("/api/profile", async (req, res) => {
   const { uid } = req.query;
 
@@ -79,11 +182,10 @@ app.get("/api/profile", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//!ends here
 
 app.post("/api/submit-preferences", async (req, res) => {
   const {
-    first_name,
-    last_name,
     graduation_year,
     major,
     duration_of_stay,
@@ -104,8 +206,6 @@ app.post("/api/submit-preferences", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const result = await roommatePreferencesCollection.insertOne({
       userId,
-      first_name: first_name ? first_name.trim() : "",
-      last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
       major: major ? major.trim() : "",
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
@@ -138,23 +238,12 @@ app.post("/api/matched-profiles", async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
-    // Find all profiles that are NOT the current user's profile
-    const potentialMatches = await roommatePreferencesCollection
-      .find({
-        userId: { $ne: userId }, // Exclude profiles with the current user's ID
-      })
-      .toArray();
-
+    // TEMPORARILY REMOVE THE userId EXCLUSION FOR TESTING WITH IDENTICAL ENTRIES
+    const allProfiles = await roommatePreferencesCollection.find().toArray();
     const matchedProfilesWithLevel = [];
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
-        first_name: userPreferences.first_name
-          ? userPreferences.first_name.trim()
-          : "",
-        last_name: userPreferences.last_name
-          ? userPreferences.last_name.trim()
-          : "",
         graduation_year: userPreferences.graduation_year
           ? userPreferences.graduation_year.trim()
           : "",
@@ -178,8 +267,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        first_name: profile.first_name ? profile.first_name.trim() : "",
-        last_name: profile.last_name ? profile.last_name.trim() : "",
         graduation_year: profile.graduation_year
           ? profile.graduation_year.trim()
           : "",
@@ -200,8 +287,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       // Check if all attributes match
       if (
-        trimmedProfile.first_name !== trimmedUserPreferences.first_name ||
-        trimmedProfile.last_name !== trimmedUserPreferences.last_name ||
         trimmedProfile.graduation_year !==
           trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
@@ -277,6 +362,62 @@ app.post("/api/report-issue", async (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Hello from the RUHousing Express server!");
+});
+
+// ---------- Login Routes ----------- //
+app.post("/user", async (req, res) => {
+  const { uid, email, firstName, lastName, netID, photoURL } = req.body;
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: "Missing UID or email" });
+  }
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const existingUser = await usersCollection.findOne({ uid });
+
+    if (existingUser) {
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { firstName, lastName, netID, photoURL, email } }
+      );
+      return res.json({ message: "✅ Profile updated" });
+    }
+
+    await usersCollection.insertOne({
+      uid,
+      email,
+      firstName,
+      lastName,
+      netID,
+      photoURL,
+    });
+    res.json({ message: "✅ Profile created" });
+  } catch (err) {
+    console.error("❌ Error saving profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/user/:userId", async (req, res) => {
+  const { uid } = req.query;
+
+  if (!uid) return res.status(400).json({ error: "UID is required" });
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ uid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 const PORT = process.env.PORT || 5002;
