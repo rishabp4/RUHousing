@@ -12,12 +12,12 @@ import owners from "./ownerData";
 import FilterDropdown from "./FilterDropdown";
 
 function HomePage() {
-  const [selectedHouse, setSelectedHouse] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [savedHouses, setSavedHouses] = useState([]);
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedHouse, setSelectedHouse] = useState(null); //
+  const [modalOpen, setModalOpen] = useState(false); //
+  const [showDropdown, setShowDropdown] = useState(false); //
+  const [savedHouses, setSavedHouses] = useState([]); //
+  const [properties, setProperties] = useState([]); //
+  const [loading, setLoading] = useState(true); //
 
   const [homeTypeFilter, setHomeTypeFilter] = useState("");
   const [statusTypeFilter, setStatusTypeFilter] = useState("ForRent");
