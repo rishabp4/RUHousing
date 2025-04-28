@@ -1,144 +1,242 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
+import { throttledAxios } from "./utils/throttleAxios";
+import HouseDetailModal from "./HouseDetailModal"; //////
 
 function HomePage() {
+  const [selectedHouse, setSelectedHouse] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [savedHouses, setSavedHouses] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
+  const openModal = (house) => {
+    setSelectedHouse(house);
+    setModalOpen(true);
+  };
+  const handleHouseClick = (id) => {
+    navigate(`/house/${id}`);
   };
 
-  const styles = {
-    header: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      backgroundColor: "#585757",
-      padding: "15px 20px",
-      color: "white",
-    },
-    leftSection: {
-      display: "flex",
-      alignItems: "center",
-    },
-    rutgersR: {
-      height: "60px",
-      width: "auto",
-      marginRight: "15px",
-    },
-    logo: {
-      height: "80px",
-      width: "auto",
-      marginRight: "20px",
-    },
-    first: {
-      fontSize: "27px",
-      fontFamily: "Myriad Pro, Arial, sans-serif",
-      color: "rgb(204, 146, 60)",
-      fontWeight: "bold",
-    },
-    avatar: {
-      height: "60px",
-      width: "60px",
-      borderRadius: "50%",
-      cursor: "pointer",
-    },
-    navbar: {
-      display: "flex",
-      backgroundColor: "#4CAF50",
-      padding: "10px 30px",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    tabsLeft: {
-      display: "flex",
-      gap: "25px", // Increased gap for better spacing
-    },
-    tabButton: {
-      backgroundColor: "#66BB6A",
-      color: "white",
-      padding: "8px 16px",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-      fontWeight: "bold",
-    },
-    searchSection: {
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      marginRight: "10px", // slight shift to the right
-    },
-    searchInput: {
-      padding: "6px 12px",
-      borderRadius: "4px",
-      border: "1px solid #ccc",
-      fontSize: "14px",
-      width: "180px",
-    },
-    searchButton: {
-      padding: "6px 14px",
-      backgroundColor: "#388E3C",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontWeight: "bold",
-    },
+  const handleSaveHouse = (houseId) => {
+    const storedSavedHouses = localStorage.getItem("savedHouses");
+    const currentSavedHouses = storedSavedHouses
+      ? JSON.parse(storedSavedHouses)
+      : [];
+
+    if (!currentSavedHouses.includes(houseId)) {
+      localStorage.setItem(
+        "savedHouses",
+        JSON.stringify([...currentSavedHouses, houseId])
+      );
+      setSavedHouses([...currentSavedHouses, houseId]); // Update local state for immediate UI feedback
+      alert(`House #${houseId} saved!`);
+    } else {
+      const updatedSavedHouses = currentSavedHouses.filter(
+        (id) => id !== houseId
+      );
+      localStorage.setItem("savedHouses", JSON.stringify(updatedSavedHouses));
+      setSavedHouses(updatedSavedHouses); // Update local state
+      alert(`House #${houseId} unsaved!`);
+    }
   };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedHouse(null);
+  };
+  // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
+  //   useEffect(() => {
+  //     // code that call sthe zilow API
+  //     const fetchProperties = async () => {
+  //       try {
+  //         const res = await throttledAxios({
+  //           method: "GET",
+  //           url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
+  //           params: {
+  //             location:
+  //               "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ",
+  //             home_type:
+  //               "Houses, Townhomes, Apartments, Apartments_Condos_Co-ops, Condos",
+  //             status_type: "ForRent",
+  //           },
+  //           headers: {
+  //             "X-RapidAPI-Key":
+  //               "XXXXX PUT THE REAL API KEY FROM RAPIDAPI HERE XXXXXXX", // Replace with your actual API key in the qoutes on this line
+  //             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
+  //           },
+  //         });
+
+  //         setProperties(res.data.props || []);
+  //       } catch (err) {
+  //         console.error(err);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     };
+
+  //     fetchProperties();
+  //   }, []);
+
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
 
   return (
     <>
-      <div style={styles.header}>
-        <div style={styles.leftSection}>
-          <img src={rutgersR} alt="Rutgers R" style={styles.rutgersR} />
-          <img src={logo} alt="RU Housing Logo" style={styles.logo} />
-          <h1 style={styles.first}>RU Housing</h1>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: "#585757",
+          padding: "15px 20px",
+          color: "white",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src={rutgersR}
+            alt="Rutgers R"
+            style={{ height: "60px", marginRight: "15px" }}
+          />
+          <img
+            src={logo}
+            alt="RU Housing Logo"
+            style={{ height: "80px", marginRight: "20px" }}
+          />
+          <h1
+            style={{
+              fontSize: "27px",
+              color: "rgb(204, 146, 60)",
+              fontWeight: "bold",
+            }}
+          >
+            RU Housing
+          </h1>
         </div>
-        <h1
-          style={{
-            textAlign: "center",
-            flex: 1,
-            color: "#ADD8E6",
-            marginLeft: "-300px",
-            fontWeight: "bold",
-          }}
-        >
-
-        </h1>
         <Link to="/profile">
-    <img src={avatar} alt="User Avatar" style={styles.avatar} />
-  </Link>
-</div>
+          <img
+            src={avatar}
+            alt="User Avatar"
+            style={{ height: "60px", width: "60px", borderRadius: "50%" }}
+          />
+        </Link>
+      </div>
 
-      {/* Green Navigation Bar */}
-      <div style={styles.navbar}>
-        <div style={styles.tabsLeft}>
-          <button style={styles.tabButton}>Home</button>
-          <button style={styles.tabButton}>Saved Houses</button>
-          <button style={styles.tabButton}>Messages</button>
-          <button style={styles.tabButton}>Settings</button>
-          <button style={styles.tabButton}>Global Chat</button>
-          <Link to="/profile" style={{ textDecoration: 'none' }}>
-          <button style={styles.tabButton}>Profile</button>
+      {/* Navbar */}
+      <div
+        style={{
+          display: "flex",
+          backgroundColor: "#4CAF50",
+          padding: "10px 30px",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", gap: "25px" }}>
+          <button
+            style={{
+              backgroundColor: "#66BB6A",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              border: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Home
+          </button>
+          <button
+            style={{
+              backgroundColor: "#66BB6A",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              border: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Saved Houses
+          </button>
+          <Link to="/matched-profiles"> {/* Updated Link here */}
+            <button
+              style={{
+                backgroundColor: "#66BB6A",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+                fontWeight: "bold",
+              }}
+            >
+            My Roommates
+            </button>
+          </Link>
+          <Link to="/profile">
+            <button
+              style={{
+                backgroundColor: "#66BB6A",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+                fontWeight: "bold",
+              }}
+            >
+              Profile
+            </button>
           </Link>
         </div>
 
-        <div style={styles.searchSection}>
-          <input type="text" placeholder="Search" style={styles.searchInput} />
-          <button style={styles.searchButton}>Search</button>
+        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <input
+            type="text"
+            placeholder="Search"
+            style={{
+              padding: "6px 12px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              fontSize: "14px",
+              width: "180px",
+            }}
+          />
+          <button
+            style={{
+              padding: "6px 14px",
+              backgroundColor: "#388E3C",
+              color: "white",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              border: "none",
+            }}
+          >
+            Search
+          </button>
         </div>
       </div>
-      {/* Background Area with Houses (future section) */}
+
+      {/* Background and Grid */}
+      {/* Background and Grid */}
       <div
         style={{
           backgroundImage: `url(${collegeAveBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundSize: "100% auto",
+          backgroundPosition: "top center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
           minHeight: "calc(100vh - 130px)",
           padding: "40px",
           display: "flex",
@@ -149,7 +247,7 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: "#d3d3d3", // Changed background color to light gray
+            backgroundColor: "#d3d3d3",
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
@@ -157,13 +255,13 @@ function HomePage() {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
-          {/* Top of the housing window: search/filter */}
+          {/* Search bar and Filter Button (Restored EXACTLY) */}
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#2c3e50", // Dark blue-ish background
+              backgroundColor: "#2c3e50",
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
@@ -179,85 +277,22 @@ function HomePage() {
                 border: "1px solid #ccc",
               }}
             />
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={toggleDropdown}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#3498db",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                }}
-              >
-                Filter ⌄
-              </button>
-
-              {showDropdown && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "45px",
-                    right: "0",
-                    backgroundColor: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: "6px",
-                    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                    padding: "12px",
-                    zIndex: 1000,
-                    width: "200px",
-                  }}
-                >
-                  <label style={{ display: "block", marginBottom: "10px" }}>
-                    <strong>Price Range:</strong>
-                    <input
-                      type="text"
-                      placeholder="e.g. 1000-1500"
-                      style={{
-                        width: "100%",
-                        padding: "6px",
-                        marginTop: "5px",
-                      }}
-                    />
-                  </label>
-                  <label style={{ display: "block", marginBottom: "10px" }}>
-                    <strong>Bedrooms:</strong>
-                    <select
-                      style={{
-                        width: "100%",
-                        padding: "6px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      <option>Any</option>
-                      <option>1+</option>
-                      <option>2+</option>
-                      <option>3+</option>
-                    </select>
-                  </label>
-                  <button
-                    style={{
-                      width: "100%",
-                      marginTop: "8px",
-                      padding: "8px",
-                      backgroundColor: "#4CAF50",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => alert("Filters applied!")}
-                  >
-                    Apply Filters
-                  </button>
-                </div>
-              )}
-            </div>
+            <button
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#3498db",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Filter ⌄
+            </button>
           </div>
 
-          {/* Grid of house cards */}
+          {/* House Cards Grid (Restored EXACTLY with Save button) */}
           <div
             style={{
               display: "grid",
@@ -265,9 +300,10 @@ function HomePage() {
               gap: "20px",
             }}
           >
-            {[...Array(6)].map((_, i) => (
+            {properties.map((home, i) => (
               <div
                 key={i}
+                onClick={() => openModal(home)} // <-- Add this line exactly here
                 style={{
                   backgroundColor: "#f9f9f9",
                   borderRadius: "10px",
@@ -277,17 +313,21 @@ function HomePage() {
                   cursor: "pointer",
                   transition: "transform 0.2s ease",
                 }}
-                onClick={() => alert(`Clicked house ${i + 1}`)}
               >
                 <img
-                  src={require("./images/house.jpg")}
+                  src={home.imgSrc}
                   alt={`House ${i + 1}`}
                   style={{ width: "100%", height: "160px", objectFit: "cover" }}
                 />
                 <div style={{ padding: "10px" }}>
                   <p style={{ margin: "8px 0", fontWeight: "bold" }}>
-                    House #{i + 1}
+                    {home.price
+                      ? String(home.price).startsWith("$")
+                        ? home.price
+                        : `$${home.price}`
+                      : "Price Not Listed"}
                   </p>
+
                   <button
                     style={{
                       padding: "5px 12px",
@@ -299,7 +339,13 @@ function HomePage() {
                       fontWeight: "bold",
                     }}
                   >
-                    ♥ Save
+                    ♥{" "}
+                    {localStorage.getItem("savedHouses") &&
+                    JSON.parse(localStorage.getItem("savedHouses")).includes(
+                      i + 1
+                    )
+                      ? "Unsave"
+                      : "Save"}
                   </button>
                 </div>
               </div>
@@ -307,8 +353,12 @@ function HomePage() {
           </div>
         </div>
       </div>
+      <HouseDetailModal
+        isOpen={modalOpen}
+        onRequestClose={closeModal}
+        house={selectedHouse}
+      />
     </>
   );
 }
-
 export default HomePage;
