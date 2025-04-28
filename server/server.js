@@ -243,10 +243,9 @@ app.post("/api/matched-profiles", async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
-    // Find all profiles that are NOT the current user's profile
     const potentialMatches = await roommatePreferencesCollection
       .find({
-        userId: { $ne: userId }, // Exclude profiles with the current user's ID
+        userId: { $ne: userId }, 
       })
       .toArray();
 
@@ -303,18 +302,14 @@ app.post("/api/matched-profiles", async (req, res) => {
       let matchLevel = "";
       let allMatch = true;
 
-      // Check if all attributes match
+     
       if (
         trimmedProfile.graduation_year !==
-          trimmedUserPreferences.graduation_year ||
-        trimmedProfile.major !== trimmedUserPreferences.major ||
+          trimmedUserPreferences.graduation_year  ||
         trimmedProfile.duration_of_stay !==
           trimmedUserPreferences.duration_of_stay ||
-        trimmedProfile.allergies !== trimmedUserPreferences.allergies ||
-        trimmedProfile.sleep_schedule !==
-          trimmedUserPreferences.sleep_schedule ||
-        trimmedProfile.study_habits !== trimmedUserPreferences.study_habits ||
-        trimmedProfile.cleanliness !== trimmedUserPreferences.cleanliness
+        trimmedProfile.allergies !== trimmedUserPreferences.allergies
+        
       ) {
         allMatch = false;
       }

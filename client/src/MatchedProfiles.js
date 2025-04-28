@@ -7,7 +7,7 @@ const reportButtonStyle = { // Renamed from reportIconStyle
   right: '20px',
   backgroundColor: '#f44336', // Example red color
   color: 'white',
-  borderRadius: '4px', // Changed from 50% for a box
+  borderRadius: '4px', 
   padding: '12px 20px', // Added padding
   display: 'flex',
   justifyContent: 'center',
