@@ -21,9 +21,9 @@ function Home() {
           className="mt-5"
           src={logo}
           alt="RUHousing Logo"
-          style={{ width: "300px", height: "230px" }}
+          style={{ width: "300px", height: "260px", opacity: 0.95}}
         />
-        <div className="margin-top">
+        <div className="mt-5">
           <Link to="/new-user">
             <button className="btn btn-primary">NEW USER</button>
           </Link>
