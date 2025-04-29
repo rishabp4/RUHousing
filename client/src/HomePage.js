@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
 import { throttledAxios } from "./utils/throttleAxios";
@@ -26,6 +28,9 @@ function HomePage() {
   const [query, setQuery] = useState(
     "New Brunswick NJ; Somerset, NJ; Edison, NJ; East Brunswick, NJ; Piscataway, NJ"
   );
+  const [userId, setUserId] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(avatar);
+
 
   const [page, setPage] = useState(1);
 
@@ -115,7 +120,7 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key": "paste api key here", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -133,6 +138,19 @@ function HomePage() {
 
   console.log("the houses are ==== ", properties);
 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`);
+      } else {
+        setUserId(null);
+        setPhotoUrl(avatar);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
   // Function to determine if a house is available or not
   const isHouseAvailable = (house) => {
     if (!house.price) {
@@ -206,11 +224,18 @@ function HomePage() {
           </h1>
         </div>
         <Link to="/profile">
-          <img
-            src={avatar}
+        <img
+            src={photoUrl /* or avatar */}
             alt="User Avatar"
-            style={{ height: "60px", width: "60px", borderRadius: "50%" }}
-          />
+            style={{
+            height: "60px",
+            width: "60px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            background: "#fafafa"
+  }}
+  onError={e => { e.target.onerror = null; e.target.src = avatar; }}
+/>
         </Link>
       </div>
 
