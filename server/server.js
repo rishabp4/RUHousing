@@ -2,6 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
 
+const multer = require("multer");
+const { GridFSBucket } = require("mongodb");
+const path = require("path");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -23,6 +30,13 @@ async function connectToMongo() {
 }
 
 connectToMongo();
+
+let gfs;
+
+function getGridFSBucket() {
+  if (!db) throw new Error("No DB connection");
+  return new GridFSBucket(db, { bucketName: "profilePictures" });
+}
 
 // ------------ Routes for saving house ----------- //
 app.post("/api/house", async (req, res) => {
@@ -125,6 +139,62 @@ app.delete("/api/house/:id", async (req, res) => {
 });
 // ---------- Route to delete saved house -------- //
 
+// Upload profile picture (expects field name 'photo')
+app.post("/api/profile-photo", upload.single("photo"), async (req, res) => {
+  try {
+    const { uid } = req.body;
+    if (!uid) return res.status(400).json({ error: "Missing uid" });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const usersCollection = db.collection("users");
+
+    // Remove any existing image for this user (optional)
+    const oldUser = await usersCollection.findOne({ uid });
+    if (oldUser && oldUser.photoId) {
+      const bucket = getGridFSBucket();
+      try { 
+        await bucket.delete(new ObjectId(oldUser.photoId));
+      } catch { /* Ignore if not found */ }
+    }
+
+    // Store new image in GridFS
+    const bucket = getGridFSBucket();
+    const uploadStream = bucket.openUploadStream(uid + path.extname(req.file.originalname));
+    uploadStream.end(req.file.buffer, async (err) => {
+      if (err) return res.status(500).json({ error: "Upload error" });
+      // Save the file id reference in user profile
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { photoId: uploadStream.id } }
+      );
+      res.json({ message: "Profile photo uploaded" });
+    });
+  } catch (err) {
+    console.error("Profile photo upload error:", err);
+    res.status(500).json({ error: "Server error uploading photo" });
+  }
+});
+// Get profile photo by UID
+app.get("/api/profile-photo/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const usersCollection = db.collection("users");
+    const user = await usersCollection.findOne({ uid });
+    if (!user || !user.photoId) {
+      // No picture? Return a default placeholder image instead.
+      // You can also just send 404 or a redirect to a static resource.
+      return res.status(404).send("No photo");
+    }
+    const bucket = getGridFSBucket();
+    const downloadStream = bucket.openDownloadStream(new ObjectId(user.photoId));
+    res.set("Content-Type", "image/jpeg"); // Set content-type or detect from DB
+    downloadStream.pipe(res);
+  } catch (err) {
+    console.error("Profile photo get error:", err);
+    res.status(500).send("Failed to fetch photo");
+  }
+});
+
 //! post save or update profile
 app.post("/api/profile", async (req, res) => {
   console.log("🔥 POST /api/profile hit:", req.body);
@@ -182,12 +252,11 @@ app.get("/api/profile", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//!ends here
 
 // ------------ Submit user preferences form ----------- //
 app.post("/api/submit-preferences", async (req, res) => {
   const {
-    first_name,
-    last_name,
     graduation_year,
     major,
     duration_of_stay,
@@ -208,8 +277,6 @@ app.post("/api/submit-preferences", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const result = await roommatePreferencesCollection.insertOne({
       userId,
-      first_name: first_name ? first_name.trim() : "",
-      last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
       major: major ? major.trim() : "",
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
@@ -253,12 +320,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
-        first_name: userPreferences.first_name
-          ? userPreferences.first_name.trim()
-          : "",
-        last_name: userPreferences.last_name
-          ? userPreferences.last_name.trim()
-          : "",
         graduation_year: userPreferences.graduation_year
           ? userPreferences.graduation_year.trim()
           : "",
@@ -282,8 +343,6 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        first_name: profile.first_name ? profile.first_name.trim() : "",
-        last_name: profile.last_name ? profile.last_name.trim() : "",
         graduation_year: profile.graduation_year
           ? profile.graduation_year.trim()
           : "",
@@ -463,6 +522,62 @@ app.get("/api/all-users", async (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello from the RUHousing Express server!');
 
+});
+
+// ---------- Login Routes ----------- //
+app.post("/user", async (req, res) => {
+  const { uid, email, firstName, lastName, netID, photoURL } = req.body;
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: "Missing UID or email" });
+  }
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const existingUser = await usersCollection.findOne({ uid });
+
+    if (existingUser) {
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { firstName, lastName, netID, photoURL, email } }
+      );
+      return res.json({ message: "✅ Profile updated" });
+    }
+
+    await usersCollection.insertOne({
+      uid,
+      email,
+      firstName,
+      lastName,
+      netID,
+      photoURL,
+    });
+    res.json({ message: "✅ Profile created" });
+  } catch (err) {
+    console.error("❌ Error saving profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/user/:userId", async (req, res) => {
+  const { uid } = req.query;
+
+  if (!uid) return res.status(400).json({ error: "UID is required" });
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ uid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 const PORT = process.env.PORT || 5002;

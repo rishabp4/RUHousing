@@ -1,0 +1,41 @@
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  z-index: 100;
+  color: #333;
+  font-size: 14px;
+}
+
+.filter-section {
+  margin-bottom: 15px;
+}
+
+.filter-title {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.filter-section input[type="number"] {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.filter-section input[type="checkbox"],
+.filter-section input[type="radio"] {
+  margin-right: 8px;
+}
+
+.filter-section label {
+  margin-bottom: 8px;
+  display: inline-block;
+}
