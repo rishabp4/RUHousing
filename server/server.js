@@ -257,14 +257,20 @@ app.get("/api/profile", async (req, res) => {
 // ------------ Submit user preferences form ----------- //
 app.post("/api/submit-preferences", async (req, res) => {
   const {
+    firstName,
+    lastName,
     graduation_year,
     major,
+    preferred_location,
     duration_of_stay,
     allergies,
+    has_pets,
+    cooking_frequency,
     sleep_schedule,
     study_habits,
     cleanliness,
     userId,
+    gender,
   } = req.body;
 
   if (!db) {
@@ -277,13 +283,19 @@ app.post("/api/submit-preferences", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const result = await roommatePreferencesCollection.insertOne({
       userId,
+      firstName: firstName ? firstName.trim() : "",
+      lastName: lastName ? lastName.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
       major: major ? major.trim() : "",
+      preferred_location: preferred_location ? preferred_location.trim() : "",
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
       allergies: allergies ? allergies.trim() : "",
+      has_pets: has_pets ? has_pets.trim() : "",
+      cooking_frequency: cooking_frequency ? cooking_frequency.trim() : "",
       sleep_schedule: sleep_schedule ? sleep_schedule.trim() : "",
       study_habits: study_habits ? study_habits.trim() : "",
       cleanliness: cleanliness ? cleanliness.trim() : "",
+      gender: gender ? gender.trim() : "",
     });
 
     console.log(
@@ -320,15 +332,24 @@ app.post("/api/matched-profiles", async (req, res) => {
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = {
+        firstName: userPreferences.firstName ? userPreferences.firstName.trim() : "",
+        lastName: userPreferences.lastName ? userPreferences.lastName.trim() : "",
         graduation_year: userPreferences.graduation_year
           ? userPreferences.graduation_year.trim()
           : "",
         major: userPreferences.major ? userPreferences.major.trim() : "",
+        preferred_location: userPreferences.preferred_location
+          ? userPreferences.preferred_location.trim()
+          : "",
         duration_of_stay: userPreferences.duration_of_stay
           ? userPreferences.duration_of_stay.trim()
           : "",
         allergies: userPreferences.allergies
           ? userPreferences.allergies.trim()
+          : "",
+        has_pets: userPreferences.has_pets ? userPreferences.has_pets.trim() : "",
+        cooking_frequency: userPreferences.cooking_frequency
+          ? userPreferences.cooking_frequency.trim()
           : "",
         sleep_schedule: userPreferences.sleep_schedule
           ? userPreferences.sleep_schedule.trim()
@@ -339,23 +360,34 @@ app.post("/api/matched-profiles", async (req, res) => {
         cleanliness: userPreferences.cleanliness
           ? userPreferences.cleanliness.trim()
           : "",
+        gender: userPreferences.gender ? userPreferences.gender.trim() : "",
       };
 
       const trimmedProfile = {
         ...profile,
+        firstName: profile.firstName ? profile.firstName.trim() : "",
+        lastName: profile.lastName ? profile.lastName.trim() : "",
         graduation_year: profile.graduation_year
           ? profile.graduation_year.trim()
           : "",
         major: profile.major ? profile.major.trim() : "",
+        preferred_location: profile.preferred_location
+          ? profile.preferred_location.trim()
+          : "",
         duration_of_stay: profile.duration_of_stay
           ? profile.duration_of_stay.trim()
           : "",
         allergies: profile.allergies ? profile.allergies.trim() : "",
+        has_pets: profile.has_pets ? profile.has_pets.trim() : "",
+        cooking_frequency: profile.cooking_frequency
+          ? profile.cooking_frequency.trim()
+          : "",
         sleep_schedule: profile.sleep_schedule
           ? profile.sleep_schedule.trim()
           : "",
         study_habits: profile.study_habits ? profile.study_habits.trim() : "",
         cleanliness: profile.cleanliness ? profile.cleanliness.trim() : "",
+        gender: profile.gender ? profile.gender.trim() : "",
       };
 
       let matchLevel = "";
@@ -363,12 +395,17 @@ app.post("/api/matched-profiles", async (req, res) => {
 
      
       if (
-        trimmedProfile.graduation_year !==
-          trimmedUserPreferences.graduation_year  ||
-        trimmedProfile.duration_of_stay !==
-          trimmedUserPreferences.duration_of_stay ||
-        trimmedProfile.allergies !== trimmedUserPreferences.allergies
-        
+        trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
+        trimmedProfile.major !== trimmedUserPreferences.major ||
+        trimmedProfile.preferred_location !== trimmedUserPreferences.preferred_location ||
+        trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||
+        trimmedProfile.allergies !== trimmedUserPreferences.allergies ||
+        trimmedProfile.has_pets !== trimmedUserPreferences.has_pets ||
+        trimmedProfile.cooking_frequency !== trimmedUserPreferences.cooking_frequency ||
+        trimmedProfile.sleep_schedule !== trimmedUserPreferences.sleep_schedule ||
+        trimmedProfile.study_habits !== trimmedUserPreferences.study_habits ||
+        trimmedProfile.cleanliness !== trimmedUserPreferences.cleanliness ||
+        trimmedProfile.gender !== trimmedUserPreferences.gender
       ) {
         allMatch = false;
       }

@@ -70,10 +70,14 @@ const submitButtonHoverStyle = {
 function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName, userId }) {
   const [firstName, setFirstName] = useState(initialFirstName || '');
   const [lastName, setLastName] = useState(initialLastName || '');
+  const [gender, setGender] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
   const [major, setMajor] = useState('');
+  const [preferredLocation, setPreferredLocation] = useState('');
   const [durationOfStay, setDurationOfStay] = useState('');
   const [allergies, setAllergies] = useState('');
+  const [hasPets, setHasPets] = useState('');
+  const [cookingFrequency, setCookingFrequency] = useState('');
   const [sleepSchedule, setSleepSchedule] = useState('');
   const [studyHabits, setStudyHabits] = useState('');
   const [cleanliness, setCleanliness] = useState('');
@@ -96,10 +100,14 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
       userId: userId, // Using the userId prop passed from ProfilePage
       first_name: firstName,
       last_name: lastName,
+      gender: gender,
       graduation_year: graduationYear,
       major: major,
+      preferred_location: preferredLocation,
       duration_of_stay: durationOfStay,
       allergies: allergies,
+      has_pets: hasPets,
+      cooking_frequency: cookingFrequency,
       sleep_schedule: sleepSchedule,
       study_habits: studyHabits,
       cleanliness: cleanliness,
@@ -119,10 +127,14 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
         setSubmissionStatus(data.message);
         localStorage.setItem('userPreferences', JSON.stringify(preferencesData));
         navigate('/matched-profiles');
+        setGender('');
         setGraduationYear('');
         setMajor('');
+        setPreferredLocation('');
         setDurationOfStay('');
         setAllergies('');
+        setHasPets('');
+        setCookingFrequency('');
         setSleepSchedule('');
         setStudyHabits('');
         setCleanliness('');
@@ -168,32 +180,84 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
           />
         </div>
         <div style={formGroupStyle}>
+          <label htmlFor="gender" style={labelStyle}>
+            Gender
+          </label>
+          <select
+            id="gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            required
+            style={selectStyle}
+          >
+            <option value="">Select your gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </div>
+        <div style={formGroupStyle}>
           <label htmlFor="graduationYear" style={labelStyle}>
             Graduation Year
           </label>
-          <input
-            type="text"
+          <select
             id="graduationYear"
-            placeholder="Enter your graduation year"
             value={graduationYear}
             onChange={(e) => setGraduationYear(e.target.value)}
             required
-            style={inputStyle}
-          />
+            style={selectStyle}
+          >
+            <option value="">Select graduation year</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+          </select>
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="major" style={labelStyle}>
             Major
           </label>
-          <input
-            type="text"
+          <select
             id="major"
-            placeholder="Enter your major"
             value={major}
             onChange={(e) => setMajor(e.target.value)}
             required
-            style={inputStyle}
-          />
+            style={selectStyle}
+          >
+            <option value="">Select your major</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Business Administration">Business Administration</option>
+            <option value="Biology">Biology</option>
+            <option value="Communications">Communications</option>
+            <option value="Economics">Economics</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Finance">Finance</option>
+            <option value="English Literature">English Literature</option>
+          </select>
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="preferredLocation" style={labelStyle}>
+            Preferred Place to Stay
+          </label>
+          <select
+            id="preferredLocation"
+            value={preferredLocation}
+            onChange={(e) => setPreferredLocation(e.target.value)}
+            style={selectStyle}
+          >
+            <option value="">No preference</option>
+            <option value="Piscataway">Piscataway</option>
+            <option value="New Brunswick">New Brunswick</option>
+            <option value="Somerset">Somerset</option>
+            <option value="South Plainfield">South Plainfield</option>
+            <option value="Bridgewater">Bridgewater</option>
+            <option value="Edison">Edison</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="durationOfStay" style={labelStyle}>
@@ -215,14 +279,50 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
           <label htmlFor="allergies" style={labelStyle}>
             Allergies
           </label>
-          <input
-            type="text"
+          <select
             id="allergies"
-            placeholder="List any allergies (if none, enter 'None')"
             value={allergies}
             onChange={(e) => setAllergies(e.target.value)}
-            style={inputStyle}
-          />
+            style={selectStyle}
+          >
+            <option value="">None</option>
+            <option value="Seasonal Allergies">Seasonal Allergies</option>
+            <option value="Food Allergies">Food Allergies</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="hasPets" style={labelStyle}>
+            Do you have any pets?
+          </label>
+          <select
+            id="hasPets"
+            value={hasPets}
+            onChange={(e) => setHasPets(e.target.value)}
+            required
+            style={selectStyle}
+          >
+            <option value="">Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="cookingFrequency" style={labelStyle}>
+            How often do you cook?
+          </label>
+          <select
+            id="cookingFrequency"
+            value={cookingFrequency}
+            onChange={(e) => setCookingFrequency(e.target.value)}
+            required
+            style={selectStyle}
+          >
+            <option value="">Select frequency</option>
+            <option value="I cook all the time">I cook all the time</option>
+            <option value="I cook a few times a week">I cook a few times a week</option>
+            <option value="I don't cook">I don't cook</option>
+          </select>
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="sleepSchedule" style={labelStyle}>
