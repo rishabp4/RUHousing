@@ -82,7 +82,7 @@ app.post("/api/house", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// ------------ Routes for saving house ----------- //
+
 
 // --------- Route to get saved houses ----------- //
 app.get("/api/house/:userId", async (req, res) => {
@@ -109,7 +109,7 @@ app.get("/api/house/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// --------- Route to get saved houses ----------- //
+
 
 // ---------- Route to delete saved house -------- //
 app.delete("/api/house/:id", async (req, res) => {
@@ -137,9 +137,9 @@ app.delete("/api/house/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// ---------- Route to delete saved house -------- //
 
-// Upload profile picture (expects field name 'photo')
+
+// ---------- Upload profile picture (expects field name 'photo') -------- //
 app.post("/api/profile-photo", upload.single("photo"), async (req, res) => {
   try {
     const { uid } = req.body;
@@ -439,6 +439,7 @@ app.post("/api/matched-profiles", async (req, res) => {
   }
 });
 
+// ------------ Reporting Issue Form ----------- //
 app.post("/api/report-issue", async (req, res) => {
   const { name, ruid, issue } = req.body;
 
@@ -468,9 +469,9 @@ app.post("/api/report-issue", async (req, res) => {
     res.status(500).json({ error: "Failed to report issue." });
   }
 });
-//!chat here
-//  Save a chat message
 
+//!chat here
+ // ------------ Save a chat message ----------- //
 app.post('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -505,9 +506,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-// Get chat history between two users
-
-
+// ------------ Get chat history between two users ----------- //
 app.get('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
