@@ -331,7 +331,7 @@ app.post("/api/matched-profiles", async (req, res) => {
     const matchedProfilesWithLevel = [];
 
     for (const profile of potentialMatches) {
-      const trimmedUserPreferences = {
+      const trimmedUserPreferences = { // using trims to remove extra white spaces 
         firstName: userPreferences.firstName ? userPreferences.firstName.trim() : "",
         lastName: userPreferences.lastName ? userPreferences.lastName.trim() : "",
         graduation_year: userPreferences.graduation_year
