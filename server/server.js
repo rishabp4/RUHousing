@@ -425,7 +425,7 @@ app.post("/api/matched-profiles", async (req, res) => {
       ) {
         matchLevel = "Avg Match";
       } 
-      else if ( // if 4 ou of 11 preferences match 
+      else if ( // if 4 out of 11 preferences match 
         trimmedProfile.gender === trimmedUserPreferences.gender &&
         trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay && 
         trimmedProfile.has_pets === trimmedUserPreferences.has_pets &&
@@ -433,7 +433,7 @@ app.post("/api/matched-profiles", async (req, res) => {
       ) {
         matchLevel = "Ok Match";
       }
-      if (matchLevel) {
+      if (matchLevel) { // if matchedProfile exsists 
         matchedProfilesWithLevel.push({ ...profile, matchLevel });
       }
     }
