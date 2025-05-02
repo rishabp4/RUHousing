@@ -206,6 +206,8 @@ function MatchedProfiles() {
       ) : (
         <p>No matching profiles found.</p>
       )}
+
+      
     {/* Report Issue Button */}
     <div style={reportButtonStyle} onClick={handleReportIconClick}>
          Report an Issue with a Roommate

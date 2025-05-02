@@ -334,32 +334,16 @@ app.post("/api/matched-profiles", async (req, res) => {
       const trimmedUserPreferences = { // using trims to remove extra white spaces 
         firstName: userPreferences.firstName ? userPreferences.firstName.trim() : "",
         lastName: userPreferences.lastName ? userPreferences.lastName.trim() : "",
-        graduation_year: userPreferences.graduation_year
-          ? userPreferences.graduation_year.trim()
-          : "",
+        graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim(): "",
         major: userPreferences.major ? userPreferences.major.trim() : "",
-        preferred_location: userPreferences.preferred_location
-          ? userPreferences.preferred_location.trim()
-          : "",
-        duration_of_stay: userPreferences.duration_of_stay
-          ? userPreferences.duration_of_stay.trim()
-          : "",
-        allergies: userPreferences.allergies
-          ? userPreferences.allergies.trim()
-          : "",
+        preferred_location: userPreferences.preferred_location ? userPreferences.preferred_location.trim() : "",
+        duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : "",
+        allergies: userPreferences.allergies ? userPreferences.allergies.trim() : "",
         has_pets: userPreferences.has_pets ? userPreferences.has_pets.trim() : "",
-        cooking_frequency: userPreferences.cooking_frequency
-          ? userPreferences.cooking_frequency.trim()
-          : "",
-        sleep_schedule: userPreferences.sleep_schedule
-          ? userPreferences.sleep_schedule.trim()
-          : "",
-        study_habits: userPreferences.study_habits
-          ? userPreferences.study_habits.trim()
-          : "",
-        cleanliness: userPreferences.cleanliness
-          ? userPreferences.cleanliness.trim()
-          : "",
+        cooking_frequency: userPreferences.cooking_frequency ? userPreferences.cooking_frequency.trim() : "",
+        sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : "",
+        study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : "",
+        cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : "",
         gender: userPreferences.gender ? userPreferences.gender.trim() : "",
       };
 
@@ -367,24 +351,14 @@ app.post("/api/matched-profiles", async (req, res) => {
         ...profile,
         firstName: profile.firstName ? profile.firstName.trim() : "",
         lastName: profile.lastName ? profile.lastName.trim() : "",
-        graduation_year: profile.graduation_year
-          ? profile.graduation_year.trim()
-          : "",
+        graduation_year: profile.graduation_year ? profile.graduation_year.trim() : "",
         major: profile.major ? profile.major.trim() : "",
-        preferred_location: profile.preferred_location
-          ? profile.preferred_location.trim()
-          : "",
-        duration_of_stay: profile.duration_of_stay
-          ? profile.duration_of_stay.trim()
-          : "",
+        preferred_location: profile.preferred_location ? profile.preferred_location.trim() : "",
+        duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim(): "",
         allergies: profile.allergies ? profile.allergies.trim() : "",
         has_pets: profile.has_pets ? profile.has_pets.trim() : "",
-        cooking_frequency: profile.cooking_frequency
-          ? profile.cooking_frequency.trim()
-          : "",
-        sleep_schedule: profile.sleep_schedule
-          ? profile.sleep_schedule.trim()
-          : "",
+        cooking_frequency: profile.cooking_frequency ? profile.cooking_frequency.trim() : "",
+        sleep_schedule: profile.sleep_schedule ? profile.sleep_schedule.trim() : "",
         study_habits: profile.study_habits ? profile.study_habits.trim() : "",
         cleanliness: profile.cleanliness ? profile.cleanliness.trim() : "",
         gender: profile.gender ? profile.gender.trim() : "",
