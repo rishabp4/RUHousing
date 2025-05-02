@@ -1,5 +1,5 @@
 import React from 'react';
-import background from './images/background.webp';
+import background from './images/background1.png';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from './firebase';
 import { useNavigate } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import React from 'react';
-import background1 from './images/background.webp';
+import background1 from './images/background1.png';
 
 function Landlord() {
   return (

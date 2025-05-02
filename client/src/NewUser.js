@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import background1 from './images/background.webp';
+import background1 from './images/background1.png';
 
 function NewUser() {
   return (
