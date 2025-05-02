@@ -405,6 +405,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
   return (
     <div style={formContainerStyle}>
       <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
+      <h2 style={headingStyle}>Rate your Preferences by choosing "Not Important", "Important", or "Very Important"</h2>
       <form onSubmit={handleSubmit} style={formStyle}>
         {renderTextRow('First Name', 'firstName', firstName, (e) => setFirstName(e.target.value))}
         {renderTextRow('Last Name', 'lastName', lastName, (e) => setLastName(e.target.value))}
