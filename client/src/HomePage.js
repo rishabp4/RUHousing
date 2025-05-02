@@ -316,8 +316,9 @@ function HomePage() {
           </Link>
         </div>
 
-        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL */}
+        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */} 
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Link to="/login">
           <button
             className="top-search-button"
             style={{
@@ -332,6 +333,7 @@ function HomePage() {
           >
             Logout
           </button>
+          </Link>
         </div>
       </div>
 
