@@ -412,21 +412,27 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       if (allMatch) { // all preferences match exactly 
         matchLevel = "Best Match";
-      } else if (
-        trimmedProfile.duration_of_stay ===
-          trimmedUserPreferences.duration_of_stay &&
-        trimmedProfile.allergies === trimmedUserPreferences.allergies &&
-        trimmedProfile.study_habits === trimmedUserPreferences.study_habits
+      } 
+      else if ( // if 7 out 11 match preferences match 
+        trimmedProfile.gender === trimmedUserPreferences.gender &&
+        trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year &&
+        trimmedProfile.major === trimmedUserPreferences.major &&
+        trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location &&
+        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay && 
+        trimmedProfile.has_pets === trimmedUserPreferences.has_pets &&
+        trimmedProfile.allergies == trimmedUserPreferences.allergies
+        
       ) {
         matchLevel = "Avg Match";
-      } else if (
-        trimmedProfile.duration_of_stay ===
-          trimmedUserPreferences.duration_of_stay &&
-        trimmedProfile.allergies === trimmedUserPreferences.allergies
+      } 
+      else if ( // if 4 ou of 11 preferences match 
+        trimmedProfile.gender === trimmedUserPreferences.gender &&
+        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay && 
+        trimmedProfile.has_pets === trimmedUserPreferences.has_pets &&
+        trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location
       ) {
         matchLevel = "Ok Match";
       }
-
       if (matchLevel) {
         matchedProfilesWithLevel.push({ ...profile, matchLevel });
       }
