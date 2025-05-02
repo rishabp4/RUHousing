@@ -260,17 +260,28 @@ app.post("/api/submit-preferences", async (req, res) => {
     firstName,
     lastName,
     graduation_year,
+    graduation_year_importance,
     major,
+    major_importance,
     preferred_location,
+    preferred_location_importance,
     duration_of_stay,
+    duration_of_stay_importance,
     allergies,
+    allergies_importance,
     has_pets,
+    has_pets_importance,
     cooking_frequency,
+    cooking_frequency_importance,
     sleep_schedule,
+    sleep_schedule_importance,
     study_habits,
+    study_habits_importance,
     cleanliness,
+    cleanliness_importance,
     userId,
     gender,
+    gender_importance,
   } = req.body;
 
   if (!db) {
@@ -286,16 +297,27 @@ app.post("/api/submit-preferences", async (req, res) => {
       firstName: firstName ? firstName.trim() : "",
       lastName: lastName ? lastName.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
+      graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", // Default if not provided
       major: major ? major.trim() : "",
+      major_importance: major_importance ? major_importance.trim() : "not important", // Default if not provided
       preferred_location: preferred_location ? preferred_location.trim() : "",
+      preferred_location_importance: preferred_location_importance ? preferred_location_importance.trim() : "not important", // Default if not provided
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
+      duration_of_stay_importance: duration_of_stay_importance ? duration_of_stay_importance.trim() : "not important", // Default if not provided
       allergies: allergies ? allergies.trim() : "",
+      allergies_importance: allergies_importance ? allergies_importance.trim() : "not important", // Default if not provided
       has_pets: has_pets ? has_pets.trim() : "",
+      has_pets_importance: has_pets_importance ? has_pets_importance.trim() : "not important", // Default if not provided
       cooking_frequency: cooking_frequency ? cooking_frequency.trim() : "",
+      cooking_frequency_importance: cooking_frequency_importance ? cooking_frequency_importance.trim() : "not important", // Default if not provided
       sleep_schedule: sleep_schedule ? sleep_schedule.trim() : "",
+      sleep_schedule_importance: sleep_schedule_importance ? sleep_schedule_importance.trim() : "not important", // Default if not provided
       study_habits: study_habits ? study_habits.trim() : "",
+      study_habits_importance: study_habits_importance ? study_habits_importance.trim() : "not important", // Default if not provided
       cleanliness: cleanliness ? cleanliness.trim() : "",
+      cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", // Default if not provided
       gender: gender ? gender.trim() : "",
+      gender_importance: gender_importance ? gender_importance.trim() : "not important", // Default if not provided
     });
 
     console.log(
@@ -329,6 +351,22 @@ app.post("/api/matched-profiles", async (req, res) => {
       .toArray();
 
     const matchedProfilesWithLevel = [];
+
+    // Function to get the weight based on importance level
+    const getWeight = (importance) => {
+      switch (importance) {
+        case "very important":
+          return 3;
+        case "important":
+          return 2;
+        case "not important":
+          return 1; 
+        default:
+          return 1; // Default weight
+      }
+    };
+    
+    let matchScore = 0;
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = { // using trims to remove extra white spaces 
@@ -364,53 +402,73 @@ app.post("/api/matched-profiles", async (req, res) => {
         gender: profile.gender ? profile.gender.trim() : "",
       };
 
-      let matchLevel = "";
-      let allMatch = true;
+      // Calculate the maximum possible score (all "very important" match)
+      const maxPossibleScore =
+        getWeight(userPreferences.graduation_year_importance) +
+        getWeight(userPreferences.major_importance) +
+        getWeight(userPreferences.preferred_location_importance) +
+        getWeight(userPreferences.duration_of_stay_importance) +
+        getWeight(userPreferences.allergies_importance) +
+        getWeight(userPreferences.has_pets_importance) +
+        getWeight(userPreferences.cooking_frequency_importance) +
+        getWeight(userPreferences.sleep_schedule_importance) +
+        getWeight(userPreferences.study_habits_importance) +
+        getWeight(userPreferences.cleanliness_importance) +
+        getWeight(userPreferences.gender_importance);
 
-     
-      if ( // checks if all entries match 
-        trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
-        trimmedProfile.major !== trimmedUserPreferences.major ||
-        trimmedProfile.preferred_location !== trimmedUserPreferences.preferred_location ||
-        trimmedProfile.duration_of_stay !== trimmedUserPreferences.duration_of_stay ||
-        trimmedProfile.allergies !== trimmedUserPreferences.allergies ||
-        trimmedProfile.has_pets !== trimmedUserPreferences.has_pets ||
-        trimmedProfile.cooking_frequency !== trimmedUserPreferences.cooking_frequency ||
-        trimmedProfile.sleep_schedule !== trimmedUserPreferences.sleep_schedule ||
-        trimmedProfile.study_habits !== trimmedUserPreferences.study_habits ||
-        trimmedProfile.cleanliness !== trimmedUserPreferences.cleanliness ||
-        trimmedProfile.gender !== trimmedUserPreferences.gender
-      ) {
-        allMatch = false;
+      // Compare each preference and add to the score based on importance
+      if (trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year) {
+        matchScore += getWeight(userPreferences.graduation_year_importance);
+      }
+      if (trimmedProfile.major === trimmedUserPreferences.major) {
+        matchScore += getWeight(userPreferences.major_importance);
+      }
+      if (trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location) {
+        matchScore += getWeight(userPreferences.preferred_location_importance);
+      }
+      if (trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay) {
+        matchScore += getWeight(userPreferences.duration_of_stay_importance);
+      }
+      if (trimmedProfile.allergies === trimmedUserPreferences.allergies) {
+        matchScore += getWeight(userPreferences.allergies_importance);
+      }
+      if (trimmedProfile.has_pets === trimmedUserPreferences.has_pets) {
+        matchScore += getWeight(userPreferences.has_pets_importance);
+      }
+      if (trimmedProfile.cooking_frequency === trimmedUserPreferences.cooking_frequency) {
+        matchScore += getWeight(userPreferences.cooking_frequency_importance);
+      }
+      if (trimmedProfile.sleep_schedule === trimmedUserPreferences.sleep_schedule) {
+        matchScore += getWeight(userPreferences.sleep_schedule_importance);
+      }
+      if (trimmedProfile.study_habits === trimmedUserPreferences.study_habits) {
+        matchScore += getWeight(userPreferences.study_habits_importance);
+      }
+      if (trimmedProfile.cleanliness === trimmedUserPreferences.cleanliness) {
+        matchScore += getWeight(userPreferences.cleanliness_importance);
+      }
+      if (trimmedProfile.gender === trimmedUserPreferences.gender || trimmedUserPreferences.gender === "Any") {
+        matchScore += getWeight(userPreferences.gender_importance);
       }
 
-      if (allMatch) { // all preferences match exactly 
+      let matchLevel = "Fair Match"; // Default 
+
+      //Score thresholds here (adjust as needed)
+      const bestMatchThreshold = maxPossibleScore * 0.8; // 80% or higher
+      const goodMatchThreshold = maxPossibleScore * 0.5; // 50% or higher
+
+      if (matchScore >= bestMatchThreshold) {
         matchLevel = "Best Match";
-      } 
-      else if ( // if 7 out 11 match preferences match 
-        trimmedProfile.gender === trimmedUserPreferences.gender &&
-        trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year &&
-        trimmedProfile.major === trimmedUserPreferences.major &&
-        trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location &&
-        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay && 
-        trimmedProfile.has_pets === trimmedUserPreferences.has_pets &&
-        trimmedProfile.allergies == trimmedUserPreferences.allergies
-        
-      ) {
-        matchLevel = "Avg Match";
-      } 
-      else if ( // if 4 out of 11 preferences match 
-        trimmedProfile.gender === trimmedUserPreferences.gender &&
-        trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay && 
-        trimmedProfile.has_pets === trimmedUserPreferences.has_pets &&
-        trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location
-      ) {
-        matchLevel = "Ok Match";
+
+      } else if (matchScore >= goodMatchThreshold) {
+        matchLevel = "Good Match";
       }
-      if (matchLevel) { // if matchedProfile exsists 
-        matchedProfilesWithLevel.push({ ...profile, matchLevel });
-      }
+
+      matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore }); // Include score for potential debugging or more info
     }
+
+    // Sort profiles by match score (descending from best to good percentages)
+    matchedProfilesWithLevel.sort((a, b) => b.matchScore - a.matchScore);
 
     res.status(200).json(matchedProfilesWithLevel);
   } catch (error) {
@@ -418,6 +476,7 @@ app.post("/api/matched-profiles", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch and match profiles." });
   }
 });
+
 
 // ------------ Reporting Issue Form ----------- //
 app.post("/api/report-issue", async (req, res) => {
@@ -450,7 +509,8 @@ app.post("/api/report-issue", async (req, res) => {
   }
 });
 
-//!chat here
+
+//!chat beings here
  // ------------ Save a chat message ----------- //
 app.post('/api/chat', async (req, res) => {
   if (!db) {

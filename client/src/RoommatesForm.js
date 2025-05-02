@@ -67,24 +67,46 @@ const submitButtonHoverStyle = {
   backgroundColor: '#0056b3',
 };
 
+const importanceSelectStyle = {
+  ...selectStyle,
+  width: 'auto',
+  marginLeft: '10px',
+};
+
+const preferenceRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+};
+
 function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName, userId }) {
   const [firstName, setFirstName] = useState(initialFirstName || '');
   const [lastName, setLastName] = useState(initialLastName || '');
   const [gender, setGender] = useState('');
+  const [genderImportance, setGenderImportance] = useState('not important');
   const [graduationYear, setGraduationYear] = useState('');
+  const [graduationYearImportance, setGraduationYearImportance] = useState('not important');
   const [major, setMajor] = useState('');
+  const [majorImportance, setMajorImportance] = useState('not important');
   const [preferredLocation, setPreferredLocation] = useState('');
+  const [preferredLocationImportance, setPreferredLocationImportance] = useState('not important');
   const [durationOfStay, setDurationOfStay] = useState('');
+  const [durationOfStayImportance, setDurationOfStayImportance] = useState('not important');
   const [allergies, setAllergies] = useState('');
+  const [allergiesImportance, setAllergiesImportance] = useState('not important');
   const [hasPets, setHasPets] = useState('');
+  const [hasPetsImportance, setHasPetsImportance] = useState('not important');
   const [cookingFrequency, setCookingFrequency] = useState('');
+  const [cookingFrequencyImportance, setCookingFrequencyImportance] = useState('not important');
   const [sleepSchedule, setSleepSchedule] = useState('');
+  const [sleepScheduleImportance, setSleepScheduleImportance] = useState('not important');
   const [studyHabits, setStudyHabits] = useState('');
+  const [studyHabitsImportance, setStudyHabitsImportance] = useState('not important');
   const [cleanliness, setCleanliness] = useState('');
+  const [cleanlinessImportance, setCleanlinessImportance] = useState('not important');
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const navigate = useNavigate();
 
-  // Update local state when props change
   useEffect(() => {
     setFirstName(initialFirstName || '');
   }, [initialFirstName]);
@@ -97,20 +119,31 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
     event.preventDefault();
 
     const preferencesData = {
-      userId: userId, // Using the userId prop passed from ProfilePage
+      userId: userId,
       first_name: firstName,
       last_name: lastName,
       gender: gender,
+      gender_importance: genderImportance,
       graduation_year: graduationYear,
+      graduation_year_importance: graduationYearImportance,
       major: major,
+      major_importance: majorImportance,
       preferred_location: preferredLocation,
+      preferred_location_importance: preferredLocationImportance,
       duration_of_stay: durationOfStay,
+      duration_of_stay_importance: durationOfStayImportance,
       allergies: allergies,
+      allergies_importance: allergiesImportance,
       has_pets: hasPets,
+      has_pets_importance: hasPetsImportance,
       cooking_frequency: cookingFrequency,
+      cooking_frequency_importance: cookingFrequencyImportance,
       sleep_schedule: sleepSchedule,
+      sleep_schedule_importance: sleepScheduleImportance,
       study_habits: studyHabits,
+      study_habits_importance: studyHabitsImportance,
       cleanliness: cleanliness,
+      cleanliness_importance: cleanlinessImportance,
     };
 
     try {
@@ -128,16 +161,27 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
         localStorage.setItem('userPreferences', JSON.stringify(preferencesData));
         navigate('/matched-profiles');
         setGender('');
+        setGenderImportance('not important');
         setGraduationYear('');
+        setGraduationYearImportance('not important');
         setMajor('');
+        setMajorImportance('not important');
         setPreferredLocation('');
+        setPreferredLocationImportance('not important');
         setDurationOfStay('');
+        setDurationOfStayImportance('not important');
         setAllergies('');
+        setAllergiesImportance('not important');
         setHasPets('');
+        setHasPetsImportance('not important');
         setCookingFrequency('');
+        setCookingFrequencyImportance('not important');
         setSleepSchedule('');
+        setSleepScheduleImportance('not important');
         setStudyHabits('');
+        setStudyHabitsImportance('not important');
         setCleanliness('');
+        setCleanlinessImportance('not important');
       } else {
         const errorData = await response.json();
         setSubmissionStatus(`Submission failed: ${errorData.error || response.statusText}`);
@@ -147,236 +191,235 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
     }
   };
 
+  const renderPreferenceRow = (label, id, value, onChange, options, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required={!['preferredLocation', 'allergies'].includes(id)}
+        style={selectStyle}
+      >
+        <option value="">Select {label.toLowerCase()}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+        {['preferredLocation', 'allergies'].includes(id) && <option value="Other">Other</option>}
+      </select>
+    </div>
+  );
+
+  const renderTextRow = (label, id, value, onChange) => (
+    <div style={formGroupStyle} key={id}>
+      <label htmlFor={id} style={labelStyle}>
+        {label}
+      </label>
+      <input
+        type="text"
+        id={id}
+        placeholder={`Enter your ${label.toLowerCase()}`}
+        value={value}
+        onChange={onChange}
+        required
+        style={inputStyle}
+      />
+    </div>
+  );
+
+  const renderYesNoRow = (label, id, value, onChange, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={selectStyle}
+      >
+        <option value="">Select</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+  );
+
+  const renderCookingFrequencyRow = (label, id, value, onChange, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={selectStyle}
+      >
+        <option value="">Select frequency</option>
+        <option value="I cook all the time">I cook all the time</option>
+        <option value="I cook a few times a week">I cook a few times a week</option>
+        <option value="I don't cook">I don't cook</option>
+      </select>
+    </div>
+  );
+
+  const renderSleepScheduleRow = (label, id, value, onChange, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={selectStyle}
+      >
+        <option value="">Select your sleep schedule</option>
+        <option value="Early Bird (Morning)">Early Bird (Morning)</option>
+        <option value="Night Owl (Evening)">Night Owl (Evening)</option>
+        <option value="Flexible">Flexible</option>
+      </select>
+    </div>
+  );
+
+  const renderStudyHabitsRow = (label, id, value, onChange, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={selectStyle}
+      >
+        <option value="">Select your study habits</option>
+        <option value="Quiet and Focused">Quiet and Focused</option>
+        <option value="Collaborative Study Groups">Collaborative Study Groups</option>
+        <option value="Mix of Both">Mix of Both</option>
+      </select>
+    </div>
+  );
+
+  const renderCleanlinessRow = (label, id, value, onChange, importanceValue, onImportanceChange) => (
+    <div style={formGroupStyle} key={id}>
+      <div style={preferenceRowStyle}>
+        <label htmlFor={id} style={labelStyle}>
+          {label}
+        </label>
+        <select
+          id={`${id}Importance`}
+          value={importanceValue}
+          onChange={onImportanceChange}
+          style={importanceSelectStyle}
+        >
+          <option value="not important">Not Important</option>
+          <option value="important">Important</option>
+          <option value="very important">Very Important</option>
+        </select>
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={selectStyle}
+      >
+        <option value="">Select your cleanliness preference</option>
+        <option value="Very Clean">Very Clean</option>
+        <option value="Moderately Clean">Moderately Clean</option>
+        <option value="Tolerant">Tolerant</option>
+      </select>
+    </div>
+  );
+
   return (
     <div style={formContainerStyle}>
       <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
-        <div style={formGroupStyle}>
-          <label htmlFor="firstName" style={labelStyle}>
-            First Name
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            placeholder="Enter your first name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            style={inputStyle}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="lastName" style={labelStyle}>
-            Last Name
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            placeholder="Enter your last name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-            style={inputStyle}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="gender" style={labelStyle}>
-            Gender
-          </label>
-          <select
-            id="gender"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select your gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-            <option value="Prefer not to say">Prefer not to say</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="graduationYear" style={labelStyle}>
-            Graduation Year
-          </label>
-          <select
-            id="graduationYear"
-            value={graduationYear}
-            onChange={(e) => setGraduationYear(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select graduation year</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-            <option value="2029">2029</option>
-            <option value="2030">2030</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="major" style={labelStyle}>
-            Major
-          </label>
-          <select
-            id="major"
-            value={major}
-            onChange={(e) => setMajor(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select your major</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Computer Science">Computer Science</option>
-            <option value="Business Administration">Business Administration</option>
-            <option value="Biology">Biology</option>
-            <option value="Communications">Communications</option>
-            <option value="Economics">Economics</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Finance">Finance</option>
-            <option value="English Literature">English Literature</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="preferredLocation" style={labelStyle}>
-            Preferred Place to Stay
-          </label>
-          <select
-            id="preferredLocation"
-            value={preferredLocation}
-            onChange={(e) => setPreferredLocation(e.target.value)}
-            style={selectStyle}
-          >
-            <option value="">No preference</option>
-            <option value="Piscataway">Piscataway</option>
-            <option value="New Brunswick">New Brunswick</option>
-            <option value="Somerset">Somerset</option>
-            <option value="South Plainfield">South Plainfield</option>
-            <option value="Bridgewater">Bridgewater</option>
-            <option value="Edison">Edison</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="durationOfStay" style={labelStyle}>
-            Duration of Stay
-          </label>
-          <select
-            id="durationOfStay"
-            value={durationOfStay}
-            onChange={(e) => setDurationOfStay(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select duration</option>
-            <option value="One Semester">One Semester</option>
-            <option value="Two Semesters">Two Semesters</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="allergies" style={labelStyle}>
-            Allergies
-          </label>
-          <select
-            id="allergies"
-            value={allergies}
-            onChange={(e) => setAllergies(e.target.value)}
-            style={selectStyle}
-          >
-            <option value="">None</option>
-            <option value="Seasonal Allergies">Seasonal Allergies</option>
-            <option value="Food Allergies">Food Allergies</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="hasPets" style={labelStyle}>
-            Do you have any pets?
-          </label>
-          <select
-            id="hasPets"
-            value={hasPets}
-            onChange={(e) => setHasPets(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="cookingFrequency" style={labelStyle}>
-            How often do you cook?
-          </label>
-          <select
-            id="cookingFrequency"
-            value={cookingFrequency}
-            onChange={(e) => setCookingFrequency(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select frequency</option>
-            <option value="I cook all the time">I cook all the time</option>
-            <option value="I cook a few times a week">I cook a few times a week</option>
-            <option value="I don't cook">I don't cook</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="sleepSchedule" style={labelStyle}>
-            Sleep Schedule
-          </label>
-          <select
-            id="sleepSchedule"
-            value={sleepSchedule}
-            onChange={(e) => setSleepSchedule(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select your sleep schedule</option>
-            <option value="Early Bird (Morning)">Early Bird (Morning)</option>
-            <option value="Night Owl (Evening)">Night Owl (Evening)</option>
-            <option value="Flexible">Flexible</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="studyHabits" style={labelStyle}>
-            Study Habits
-          </label>
-          <select
-            id="studyHabits"
-            value={studyHabits}
-            onChange={(e) => setStudyHabits(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select your study habits</option>
-            <option value="Quiet and Focused">Quiet and Focused</option>
-            <option value="Collaborative Study Groups">
-              Collaborative Study Groups
-            </option>
-            <option value="Mix of Both">Mix of Both</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="cleanliness" style={labelStyle}>
-            Cleanliness
-          </label>
-          <select
-            id="cleanliness"
-            value={cleanliness}
-            onChange={(e) => setCleanliness(e.target.value)}
-            required
-            style={selectStyle}
-          >
-            <option value="">Select your cleanliness preference</option>
-            <option value="Very Clean">Very Clean</option>
-            <option value="Moderately Clean">Moderately Clean</option>
-            <option value="Tolerant">Tolerant</option>
-          </select>
-        </div>
+        {renderTextRow('First Name', 'firstName', firstName, (e) => setFirstName(e.target.value))}
+        {renderTextRow('Last Name', 'lastName', lastName, (e) => setLastName(e.target.value))}
+        {renderPreferenceRow('Gender', 'gender', gender, (e) => setGender(e.target.value), ['Male', 'Female', 'Other', 'Prefer not to say'], genderImportance, (e) => setGenderImportance(e.target.value))}
+        {renderPreferenceRow('Graduation Year', 'graduationYear', graduationYear, (e) => setGraduationYear(e.target.value), ['2026', '2027', '2028', '2029', '2030'], graduationYearImportance, (e) => setGraduationYearImportance(e.target.value))}
+        {renderPreferenceRow('Major', 'major', major, (e) => setMajor(e.target.value), ['Engineering', 'Computer Science', 'Business', 'Biology', 'Communications', 'Pre-Med', 'Finance', 'English Literature'], majorImportance, (e) => setMajorImportance(e.target.value))}
+        {renderPreferenceRow('Preferred Place to Stay', 'preferredLocation', preferredLocation, (e) => setPreferredLocation(e.target.value), ['Piscataway', 'New Brunswick', 'Somerset', 'South Plainfield', 'Bridgewater', 'Edison'], preferredLocationImportance, (e) => setPreferredLocationImportance(e.target.value))}
+        {renderPreferenceRow('Duration of Stay', 'durationOfStay', durationOfStay, (e) => setDurationOfStay(e.target.value), ['One Semester', 'Two Semesters'], durationOfStayImportance, (e) => setDurationOfStayImportance(e.target.value))}
+        {renderPreferenceRow('Allergies', 'allergies', allergies, (e) => setAllergies(e.target.value), ['None', 'Seasonal Allergies', 'Food Allergies'], allergiesImportance, (e) => setAllergiesImportance(e.target.value))}
+        {renderYesNoRow('Do you have any pets?', 'hasPets', hasPets, (e) => setHasPets(e.target.value), hasPetsImportance, (e) => setHasPetsImportance(e.target.value))}
+        {renderCookingFrequencyRow('How often do you cook?', 'cookingFrequency', cookingFrequency, (e) => setCookingFrequency(e.target.value), cookingFrequencyImportance, (e) => setCookingFrequencyImportance(e.target.value))}
+        {renderSleepScheduleRow('Sleep Schedule', 'sleepSchedule', sleepSchedule, (e) => setSleepSchedule(e.target.value), sleepScheduleImportance, (e) => setSleepScheduleImportance(e.target.value))}
+        {renderStudyHabitsRow('Study Habits', 'studyHabits', studyHabits, (e) => setStudyHabits(e.target.value), studyHabitsImportance, (e) => setStudyHabitsImportance(e.target.value))}
+        {renderCleanlinessRow('Cleanliness', 'cleanliness', cleanliness, (e) => setCleanliness(e.target.value), cleanlinessImportance, (e) => setCleanlinessImportance(e.target.value))}
+
         <button
           type="submit"
           style={{ ...submitButtonStyle, ':hover': submitButtonHoverStyle }}
@@ -384,9 +427,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
           Submit Preferences
         </button>
 
-        {submissionStatus && (
-          <p>{submissionStatus}</p>
-        )}
+        {submissionStatus && <p>{submissionStatus}</p>}
       </form>
     </div>
   );

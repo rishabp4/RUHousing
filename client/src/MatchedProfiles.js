@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const reportButtonStyle = { // Renamed from reportIconStyle
+const reportButtonStyle = {
   position: 'fixed',
   bottom: '20px',
   right: '20px',
-  backgroundColor: '#f44336', // Example red color
+  backgroundColor: '#f44336',
   color: 'white',
-  borderRadius: '4px', 
-  padding: '12px 20px', // Added padding
+  borderRadius: '4px',
+  padding: '12px 20px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   cursor: 'pointer',
-  fontSize: '1em', // Adjusted font size
+  fontSize: '1em',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-  zIndex: 1000, // Ensure it's on top
+  zIndex: 1000,
 };
 
 const reportFormContainerStyle = {
@@ -42,7 +42,7 @@ const reportInputStyle = {
   border: '1px solid #ccc',
 };
 
-const reportSubmitButtonStyle = { // Renamed from reportButtonStyle
+const reportSubmitButtonStyle = {
   padding: '10px 15px',
   backgroundColor: '#007bff',
   color: 'white',
@@ -88,24 +88,30 @@ const matchLevelStyle = {
   marginTop: '10px',
 };
 
+const matchScoreStyle = {
+  fontSize: '0.9em',
+  color: '#777',
+  marginTop: '5px',
+};
+
 function MatchedProfiles() {
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-   const [showReportForm, setShowReportForm] = useState(false);
-   const [reportData, setReportData] = useState({
-     name: '',
-     ruid: '',
-     issue: '',
-   });
-   const [reportStatus, setReportStatus] = useState(null);
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportData, setReportData] = useState({
+    name: '',
+    ruid: '',
+    issue: '',
+  });
+  const [reportStatus, setReportStatus] = useState(null);
 
   useEffect(() => {
     const fetchMatchedProfiles = async () => {
       try {
         const storedPreferences = localStorage.getItem('userPreferences');
-        const userId = localStorage.getItem('userId'); // Ensure userId is being saved to localStorage on login/signup
+        const userId = localStorage.getItem('userId');
 
         if (!storedPreferences || !userId) {
           setError('No preferences or user ID found.');
@@ -119,7 +125,7 @@ function MatchedProfiles() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ ...userPreferences, userId }), // Include userId in the request body
+          body: JSON.stringify({ ...userPreferences, userId }),
         });
 
         if (!response.ok) {
@@ -175,7 +181,7 @@ function MatchedProfiles() {
 
       if (response.ok) {
         setReportStatus('Issue reported successfully!');
-        setTimeout(handleReportFormClose, 2000); // Close form after 2 seconds
+        setTimeout(handleReportFormClose, 2000);
       } else {
         const errorData = await response.json();
         setReportStatus(`Reporting failed: ${errorData.error || response.statusText}`);
@@ -191,77 +197,79 @@ function MatchedProfiles() {
       {matchedProfiles.length > 0 ? (
         matchedProfiles.map((profile) => (
           <div key={profile._id} style={profileCardStyle}>
-            <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
-            <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
+            <p style={attributeStyle}><strong>First Name:</strong> {profile.firstName}</p>
+            <p style={attributeStyle}><strong>Last Name:</strong> {profile.lastName}</p>
             <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
             <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
+            <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
             <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
             <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p>
+            <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p>
+            <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p>
             <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p>
             <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
             <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
+            <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
             <p style={matchLevelStyle}>{profile.matchLevel}</p>
+            {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
           </div>
         ))
       ) : (
         <p>No matching profiles found.</p>
       )}
 
-      
-    {/* Report Issue Button */}
-    <div style={reportButtonStyle} onClick={handleReportIconClick}>
-         Report an Issue with a Roommate
-       </div>
- 
-       {/* Report Issue Form */}
-       {showReportForm && (
-         <div style={reportFormContainerStyle}>
-           <h2>Report an Issue with a Roommate</h2>
-           <form style={reportFormStyle} onSubmit={handleReportSubmit}>
-             <label htmlFor="name">Name:</label>
-             <input
-               type="text"
-               id="name"
-               name="name"
-               value={reportData.name}
-               onChange={handleReportInputChange}
-               style={reportInputStyle}
-               required
-             />
- 
-             <label htmlFor="ruid">RUID:</label>
-             <input
-               type="text"
-               id="ruid"
-               name="ruid"
-               value={reportData.ruid}
-               onChange={handleReportInputChange}
-               style={reportInputStyle}
-               required
-             />
- 
-             <label htmlFor="issue">Issue:</label>
-             <textarea
-               id="issue"
-               name="issue"
-               value={reportData.issue}
-               onChange={handleReportInputChange}
-               style={{ ...reportInputStyle, height: '200px', width: '750px' }}
-               required
-             />
- 
-             <button type="submit" style={reportSubmitButtonStyle}>
-               Submit 
-             </button>
-             {reportStatus && <p>{reportStatus}</p>}
-             <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
-               Close
-             </button>
-           </form>
-         </div>
-       )}
-     </div>
-   );
- }
+      <div style={reportButtonStyle} onClick={handleReportIconClick}>
+        Report an Issue with a Roommate
+      </div>
+
+      {showReportForm && (
+        <div style={reportFormContainerStyle}>
+          <h2>Report an Issue with a Roommate</h2>
+          <form style={reportFormStyle} onSubmit={handleReportSubmit}>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={reportData.name}
+              onChange={handleReportInputChange}
+              style={reportInputStyle}
+              required
+            />
+
+            <label htmlFor="ruid">RUID:</label>
+            <input
+              type="text"
+              id="ruid"
+              name="ruid"
+              value={reportData.ruid}
+              onChange={handleReportInputChange}
+              style={reportInputStyle}
+              required
+            />
+
+            <label htmlFor="issue">Issue:</label>
+            <textarea
+              id="issue"
+              name="issue"
+              value={reportData.issue}
+              onChange={handleReportInputChange}
+              style={{ ...reportInputStyle, height: '200px', width: '750px' }}
+              required
+            />
+
+            <button type="submit" style={reportSubmitButtonStyle}>
+              Submit
+            </button>
+            {reportStatus && <p>{reportStatus}</p>}
+            <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
+              Close
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default MatchedProfiles;
