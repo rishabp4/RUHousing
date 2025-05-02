@@ -324,7 +324,7 @@ app.post("/api/matched-profiles", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const potentialMatches = await roommatePreferencesCollection
       .find({
-        userId: { $ne: userId }, 
+        userId: { $ne: userId }, // userID not equal itself - prevent from giving current user as a match itself
       })
       .toArray();
 
