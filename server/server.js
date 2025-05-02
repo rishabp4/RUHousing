@@ -394,7 +394,7 @@ app.post("/api/matched-profiles", async (req, res) => {
       let allMatch = true;
 
      
-      if (
+      if ( // checks if all entries match 
         trimmedProfile.graduation_year !== trimmedUserPreferences.graduation_year ||
         trimmedProfile.major !== trimmedUserPreferences.major ||
         trimmedProfile.preferred_location !== trimmedUserPreferences.preferred_location ||
@@ -410,7 +410,7 @@ app.post("/api/matched-profiles", async (req, res) => {
         allMatch = false;
       }
 
-      if (allMatch) {
+      if (allMatch) { // all preferences match exactly 
         matchLevel = "Best Match";
       } else if (
         trimmedProfile.duration_of_stay ===
