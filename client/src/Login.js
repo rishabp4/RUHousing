@@ -2,7 +2,6 @@ import React from 'react';
 import background from './images/background.webp';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from './firebase';
-
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -20,45 +19,68 @@ function Login() {
   };
 
   return (
-    <div 
-      style={{ 
+    <div
+      style={{
         backgroundImage: `url(${background})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        height: '100vh'
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'Arial, sans-serif'
       }}
     >
-      <h2 style={{ textAlign: 'center', marginTop: '50px', marginLeft: '50px'}}>
-        WELCOME!
-        <form className="mt-5" style={{ width: '250px', height: '230px' }}> 
-          <div className="col-auto d-flex justify-content-evenly align-items-center">
-            <label htmlFor="inputEmail" className="visually-hidden">Email</label>
-            <input type="text" className="form-control" id="inputEmail" placeholder="Email"/>
-          </div>
-          <div className="col-auto mt-2">
-            <label htmlFor="inputPassword2" className="visually-hidden">Password</label>
-            <input type="password" className="form-control" id="inputPassword2" placeholder="Password"/>
-          </div>
-          <div className="col-auto mt-2">
-            <button type="submit" className="btn btn-primary mb-3">Login</button>
-          </div>
-        </form>
-
-        <div className="col-auto mt-2">
+      <div style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: '40px',
+        borderRadius: '20px',
+        boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
+        width: '320px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <h2 style={{ marginBottom: '25px' }}>Welcome Back!</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            placeholder="Email"
+            className="form-control mb-3"
+            style={{
+              borderRadius: '10px',
+              border: 'none',
+              padding: '10px',
+              fontSize: '14px'
+            }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="form-control mb-3"
+            style={{
+              borderRadius: '10px',
+              border: 'none',
+              padding: '10px',
+              fontSize: '14px'
+            }}
+          />
           <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="btn btn-danger mb-3"
-            style={{ marginTop: '10px' }}
+            type="submit"
+            className="btn btn-danger w-100 mb-3"
+            style={{ borderRadius: '10px' }}
           >
-            Sign in with Google
+            Login
           </button>
-        </div>
-      </h2>
+        </form>
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="btn btn-light w-100"
+          style={{ borderRadius: '10px', color: '#000' }}
+        >
+          Sign in with Google
+        </button>
+      </div>
     </div>
   );
 }
