@@ -318,22 +318,11 @@ function HomePage() {
 
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input
-            type="text"
-            placeholder="Search"
-            style={{
-              padding: "6px 12px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              fontSize: "14px",
-              width: "180px",
-            }}
-          />
           <button
             className="top-search-button"
             style={{
               padding: "6px 14px",
-              backgroundColor: "#388E3C",
+              backgroundColor: "#66BB6A",
               color: "white",
               borderRadius: "4px",
               cursor: "pointer",
@@ -341,7 +330,7 @@ function HomePage() {
               border: "none",
             }}
           >
-            Search
+            Logout
           </button>
         </div>
       </div>
