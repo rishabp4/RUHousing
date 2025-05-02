@@ -79,6 +79,11 @@ const preferenceRowStyle = {
   justifyContent: 'space-between',
 };
 
+const textareaStyle = {
+  ...inputStyle,
+  minHeight: '300px',
+};
+
 function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName, userId }) {
   const [firstName, setFirstName] = useState(initialFirstName || '');
   const [lastName, setLastName] = useState(initialLastName || '');
@@ -104,6 +109,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
   const [studyHabitsImportance, setStudyHabitsImportance] = useState('not important');
   const [cleanliness, setCleanliness] = useState('');
   const [cleanlinessImportance, setCleanlinessImportance] = useState('not important');
+  const [selfDescription, setSelfDescription] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const navigate = useNavigate();
 
@@ -117,6 +123,11 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (selfDescription.length < 10) {
+      setSubmissionStatus('Please include a brief description of yourself with a minimum of 20 words.');
+      return;
+    }
 
     const preferencesData = {
       userId: userId,
@@ -144,6 +155,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
       study_habits_importance: studyHabitsImportance,
       cleanliness: cleanliness,
       cleanliness_importance: cleanlinessImportance,
+      self_description: selfDescription,
     };
 
     try {
@@ -182,6 +194,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
         setStudyHabitsImportance('not important');
         setCleanliness('');
         setCleanlinessImportance('not important');
+        setSelfDescription('');
       } else {
         const errorData = await response.json();
         setSubmissionStatus(`Submission failed: ${errorData.error || response.statusText}`);
@@ -402,6 +415,21 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
     </div>
   );
 
+  const renderSelfDescription = (label, id, value, onChange) => (
+    <div style={formGroupStyle} key={id}>
+      <label htmlFor={id} style={labelStyle}>
+        {label} (Minimum 200 characters)
+      </label>
+      <textarea
+        id={id}
+        value={value}
+        onChange={onChange}
+        required
+        style={textareaStyle}
+      />
+    </div>
+  );
+
   return (
     <div style={formContainerStyle}>
       <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
@@ -420,6 +448,7 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
         {renderSleepScheduleRow('Sleep Schedule', 'sleepSchedule', sleepSchedule, (e) => setSleepSchedule(e.target.value), sleepScheduleImportance, (e) => setSleepScheduleImportance(e.target.value))}
         {renderStudyHabitsRow('Study Habits', 'studyHabits', studyHabits, (e) => setStudyHabits(e.target.value), studyHabitsImportance, (e) => setStudyHabitsImportance(e.target.value))}
         {renderCleanlinessRow('Cleanliness', 'cleanliness', cleanliness, (e) => setCleanliness(e.target.value), cleanlinessImportance, (e) => setCleanlinessImportance(e.target.value))}
+        {renderSelfDescription('Include a brief description of yourself', 'selfDescription', selfDescription, (e) => setSelfDescription(e.target.value))}
 
         <button
           type="submit"

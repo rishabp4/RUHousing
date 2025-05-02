@@ -282,6 +282,7 @@ app.post("/api/submit-preferences", async (req, res) => {
     userId,
     gender,
     gender_importance,
+    self_description, 
   } = req.body;
 
   if (!db) {
@@ -318,6 +319,7 @@ app.post("/api/submit-preferences", async (req, res) => {
       cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", // Default if not provided
       gender: gender ? gender.trim() : "",
       gender_importance: gender_importance ? gender_importance.trim() : "not important", // Default if not provided
+      self_description: req.body.self_description ? req.body.self_description.trim() : "", // ADD THIS LINE
     });
 
     console.log(
@@ -383,6 +385,7 @@ app.post("/api/matched-profiles", async (req, res) => {
         study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : "",
         cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : "",
         gender: userPreferences.gender ? userPreferences.gender.trim() : "",
+        self_description: userPreferences.self_description ? userPreferences.self_description.trim() : "",
       };
 
       const trimmedProfile = {
