@@ -298,25 +298,25 @@ app.post("/api/submit-preferences", async (req, res) => {
       first_name: first_name ? first_name.trim() : "",
       last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
-      graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", // Default if not provided
+      graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", 
       major: major ? major.trim() : "",
-      major_importance: major_importance ? major_importance.trim() : "not important", // Default if not provided
+      major_importance: major_importance ? major_importance.trim() : "not important", 
       preferred_location: preferred_location ? preferred_location.trim() : "",
-      preferred_location_importance: preferred_location_importance ? preferred_location_importance.trim() : "not important", // Default if not provided
+      preferred_location_importance: preferred_location_importance ? preferred_location_importance.trim() : "not important", 
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
-      duration_of_stay_importance: duration_of_stay_importance ? duration_of_stay_importance.trim() : "not important", // Default if not provided
+      duration_of_stay_importance: duration_of_stay_importance ? duration_of_stay_importance.trim() : "not important", 
       allergies: allergies ? allergies.trim() : "",
-      allergies_importance: allergies_importance ? allergies_importance.trim() : "not important", // Default if not provided
+      allergies_importance: allergies_importance ? allergies_importance.trim() : "not important", 
       has_pets: has_pets ? has_pets.trim() : "",
-      has_pets_importance: has_pets_importance ? has_pets_importance.trim() : "not important", // Default if not provided
+      has_pets_importance: has_pets_importance ? has_pets_importance.trim() : "not important", 
       cooking_frequency: cooking_frequency ? cooking_frequency.trim() : "",
-      cooking_frequency_importance: cooking_frequency_importance ? cooking_frequency_importance.trim() : "not important", // Default if not provided
+      cooking_frequency_importance: cooking_frequency_importance ? cooking_frequency_importance.trim() : "not important", 
       sleep_schedule: sleep_schedule ? sleep_schedule.trim() : "",
-      sleep_schedule_importance: sleep_schedule_importance ? sleep_schedule_importance.trim() : "not important", // Default if not provided
+      sleep_schedule_importance: sleep_schedule_importance ? sleep_schedule_importance.trim() : "not important", 
       study_habits: study_habits ? study_habits.trim() : "",
-      study_habits_importance: study_habits_importance ? study_habits_importance.trim() : "not important", // Default if not provided
+      study_habits_importance: study_habits_importance ? study_habits_importance.trim() : "not important", 
       cleanliness: cleanliness ? cleanliness.trim() : "",
-      cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", // Default if not provided
+      cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", 
       gender: gender ? gender.trim() : "",
       gender_importance: gender_importance ? gender_importance.trim() : "not important", 
       self_description: req.body.self_description ? req.body.self_description.trim() : "", 
