@@ -31,7 +31,6 @@ function HomePage() {
   const [userId, setUserId] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(avatar);
 
-
   const [page, setPage] = useState(1);
 
   //// user filtering HERE ------ ////
@@ -107,7 +106,6 @@ function HomePage() {
   // IMPORTANT MAKE THIS INTO A COMMIT TO NOT RUN OUT OF THE API TRIALS WHEN YOU ARE TESTING THE WEBSITE!!!!! COMMENT useEffect FUNCTION!!!!
   // code that call sthe zilow API
   const fetchProperties = async () => {
-    console.log("The sort Order is ============== ");
     try {
       const res = await throttledAxios({
         method: "GET",
@@ -120,7 +118,7 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "paste api key here", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key": "PUT API KEY HERE", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -136,14 +134,13 @@ function HomePage() {
     fetchProperties();
   }, [page, query, homeTypeFilter, statusTypeFilter, sortOrder]);
 
-  console.log("the houses are ==== ", properties);
-
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.uid) {
         setUserId(user.uid);
-        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`);
+        setPhotoUrl(
+          `http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`
+        );
       } else {
         setUserId(null);
         setPhotoUrl(avatar);
@@ -224,18 +221,21 @@ function HomePage() {
           </h1>
         </div>
         <Link to="/profile">
-        <img
+          <img
             src={photoUrl /* or avatar */}
             alt="User Avatar"
             style={{
-            height: "60px",
-            width: "60px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            background: "#fafafa"
-  }}
-  onError={e => { e.target.onerror = null; e.target.src = avatar; }}
-/>
+              height: "60px",
+              width: "60px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              background: "#fafafa",
+            }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = avatar;
+            }}
+          />
         </Link>
       </div>
 
@@ -316,33 +316,24 @@ function HomePage() {
           </Link>
         </div>
 
-        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL */}
+        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input
-            type="text"
-            placeholder="Search"
-            style={{
-              padding: "6px 12px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              fontSize: "14px",
-              width: "180px",
-            }}
-          />
-          <button
-            className="top-search-button"
-            style={{
-              padding: "6px 14px",
-              backgroundColor: "#388E3C",
-              color: "white",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              border: "none",
-            }}
-          >
-            Search
-          </button>
+          <Link to="/login">
+            <button
+              className="top-search-button"
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#66BB6A",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -429,11 +420,7 @@ function HomePage() {
                   if (filterUpdate.statusType !== undefined)
                     setStatusTypeFilter(filterUpdate.statusType);
                   if (filterUpdate.sortOrder !== undefined)
-                    console.log(
-                      "the sortOrder in Homepage.js ----------------: ",
-                      filterUpdate.sortOrder
-                    );
-                  setSortOrder(filterUpdate.sortOrder);
+                    setSortOrder(filterUpdate.sortOrder);
                   setPage(1);
                 }}
               />

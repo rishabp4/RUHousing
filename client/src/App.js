@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./Home";
+import LandingPage from "./LandingPage"; // ✅ new landing page
 import NewUser from "./NewUser";
 import Login from "./Login";
 import Student from "./Student";
@@ -22,7 +22,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} /> {/* ✅ updated route */}
         <Route path="/new-user" element={<NewUser />} />
         <Route path="/login" element={<Login />} />
         <Route path="/student" element={<Student />} />
