@@ -87,10 +87,22 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
               ? `$${Number(house.price).toLocaleString()}/month`
               : "Price Not Listed"}
           </h2>
-          <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
+          {/* <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
             {house.address || "Address not available"}
-          </p>
-
+          </p> */}
+          <a
+            style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}
+            href={
+              "https://www.google.com/maps/search/?api=1&basemap=satellite&query=" +
+              encodeURIComponent(house.address)
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="address-link"
+            onClick={(e) => e.stopPropagation()} // keeps parent card from closing
+          >
+            {house.address}
+          </a>
           {/* Status and Rating clearly displayed separately */}
           <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
             <div
@@ -120,7 +132,6 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
               ⭐ {house.rating.toFixed(1)} / 5
             </div>
           </div>
-
           <div
             style={{
               display: "flex",
@@ -133,7 +144,6 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
             <span>🛁 {house.bathrooms || "N/A"} baths</span>
             <span>📐 {house.livingArea || "N/A"} sqft</span>
           </div>
-
           <div style={{ fontSize: "15px", color: "#555" }}>
             <p>
               <strong>Property Type:</strong> {house.propertyType || "N/A"}
@@ -146,7 +156,6 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
               <strong>Status:</strong> {house.listingStatus || "N/A"}
             </p>
           </div>
-
           <div style={{ marginTop: "20px", fontSize: "15px", color: "#555" }}>
             <h3 style={{ marginBottom: "10px" }}>Preferences:</h3>
             <ul>
@@ -158,7 +167,6 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
               ))}
             </ul>
           </div>
-
           <button
             onClick={handleUnSavedClick}
             style={{
@@ -175,7 +183,6 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
           >
             Unsave
           </button>
-
           <button
             onClick={onRequestClose}
             style={{

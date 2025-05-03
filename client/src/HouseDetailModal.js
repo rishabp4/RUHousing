@@ -146,9 +146,23 @@ function HouseDetailModal({
               ? `$${Number(house.price).toLocaleString()}/month`
               : "Price Not Listed"}
           </h2>
-          <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
+          {/* <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
             {house.address || "Address not available"}
-          </p>
+          </p> */}
+
+          <a
+            style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}
+            href={
+              "https://www.google.com/maps/search/?api=1&basemap=satellite&query=" +
+              encodeURIComponent(house.address)
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="address-link"
+            onClick={(e) => e.stopPropagation()} // keeps parent card from closing
+          >
+            {house.address}
+          </a>
 
           {/* Status and Rating clearly displayed separately */}
           <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
