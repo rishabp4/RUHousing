@@ -346,9 +346,10 @@ app.post("/api/matched-profiles", async (req, res) => {
 
   try {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
+    const usersCollection = db.collection("users");
     const potentialMatches = await roommatePreferencesCollection
       .find({
-        userId: { $ne: userId }, // userID not equal itself - prevent from giving current user as a match itself
+        userId: { $ne: userId }, 
       })
       .toArray();
 
@@ -371,7 +372,7 @@ app.post("/api/matched-profiles", async (req, res) => {
     let matchScore = 0;
 
     for (const profile of potentialMatches) {
-      const trimmedUserPreferences = { // using trims to remove extra white spaces 
+      const trimmedUserPreferences = { 
         first_name: userPreferences.first_name ? userPreferences.first_name.trim() : "",
         last_name: userPreferences.last_name ? userPreferences.last_name.trim() : "",
         graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim(): "",
@@ -405,7 +406,6 @@ app.post("/api/matched-profiles", async (req, res) => {
         gender: profile.gender ? profile.gender.trim() : "",
       };
 
-      // Calculate the maximum possible score (all "very important" match)
       const maxPossibleScore =
         getWeight(userPreferences.graduation_year_importance) +
         getWeight(userPreferences.major_importance) +
@@ -419,7 +419,6 @@ app.post("/api/matched-profiles", async (req, res) => {
         getWeight(userPreferences.cleanliness_importance) +
         getWeight(userPreferences.gender_importance);
 
-      // Compare each preference and add to the score based on importance
       if (trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year) {
         matchScore += getWeight(userPreferences.graduation_year_importance);
       }
@@ -466,6 +465,8 @@ app.post("/api/matched-profiles", async (req, res) => {
       } else if (matchScore >= goodMatchThreshold) {
         matchLevel = "Good Match";
       }
+      const matchedUser = await usersCollection.findOne({ userId: profile.userId }); 
+      const photoId = matchedUser ? matchedUser.photoId : null;
 
       matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore }); // Include score for potential debugging or more info
     }
