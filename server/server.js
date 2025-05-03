@@ -468,7 +468,8 @@ app.post("/api/matched-profiles", async (req, res) => {
       const matchedUser = await usersCollection.findOne({ userId: profile.userId }); 
       const photoId = matchedUser ? matchedUser.photoId : null;
 
-      matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore }); // Include score for potential debugging or more info
+      matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore, photoId }); // Include score for potential debugging or more info
+
     }
 
     // Sort profiles by match score (descending from best to good percentages)

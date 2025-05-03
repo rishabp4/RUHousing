@@ -67,10 +67,36 @@ const headingStyle = {
   marginBottom: '20px',
 };
 
-const profileCardStyle = { backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', padding: '15px', marginBottom: '15px', width: '80%', maxWidth: '600px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center', }; 
-const profileImageContainerStyle = { width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginRight: '15px', backgroundColor: '#ccc', }; 
-const profileImageStyle = { width: '100%', height: '100%', objectFit: 'cover', }; 
-const profileInfoStyle = { flexGrow: 1, };
+const profileCardStyle = {
+  backgroundColor: 'white',
+  border: '1px solid #ddd',
+  borderRadius: '6px',
+  padding: '15px',
+  marginBottom: '15px',
+  width: '80%',
+  maxWidth: '600px',
+  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+  display: 'flex', // Enable flex layout for image and info
+  justifyContent: 'space-between', // Space out image and info
+  alignItems: 'center', // Vertically align items in the center
+};
+const profileImageContainerStyle = {
+  width: '80px',
+  height: '80px',
+  borderRadius: '50%',
+  overflow: 'hidden',
+  marginLeft: '15px', // Move image to the right
+  backgroundColor: '#ccc',
+};
+const profileImageStyle = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+};
+const profileInfoStyle = {
+  flexGrow: 1,
+  textAlign: 'left', // Align text to the left
+};
 
 const attributeStyle = {
   margin: '5px 0',
@@ -186,97 +212,98 @@ function MatchedProfiles() {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
-// How matched profiles should appear 
-return ( <div style={matchedProfilesContainerStyle}> 
-<h1 style={headingStyle}>Matched Roommate Profiles</h1> 
-{matchedProfiles.length > 0 ? ( 
-  matchedProfiles.map((profile) => ( 
-  <div key={profile._id} style={profileCardStyle}> 
-  <div style={profileImageContainerStyle}> 
-    {profile.photoId ? ( 
-      <img 
-      src={`http://localhost:5002/api/profile-photo/<span class="math-inline">\{profile\.userId\}?</span>{Date.now()}`}
-      alt="Profile" style={profileImageStyle} 
-      onError={(e) => (e.target.src = defaultAvatar)} />
-     ) : ( 
-     <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} /> 
-    )} </div>
-     <div style={profileInfoStyle}> 
-      <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
-      <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p> 
-      <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p> 
-      <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p> 
-      <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p> 
-      <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p> 
-      <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p> 
-      <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p> 
-      <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p> 
-      <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p> 
-      <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p> 
-      <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p> 
-      <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p> 
-      <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p> 
-      <p style={matchLevelStyle}>{profile.matchLevel}</p>
-       {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>} 
-       </div> 
-       </div> 
-       ))
-      ) : (
-        <p>No matching profiles found.</p>
-      )}
-
-      <div style={reportButtonStyle} onClick={handleReportIconClick}>
-        Report an Issue with a Roommate
+// How matched profiles should appear
+return ( <div style={matchedProfilesContainerStyle}>
+<h1 style={headingStyle}>Matched Roommate Profiles</h1>
+{matchedProfiles.length > 0 ? (
+  matchedProfiles.map((profile) => (
+    <div key={profile._id} style={profileCardStyle}>
+      <div style={profileInfoStyle}>
+        <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
+        <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
+        <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
+        <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
+        <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
+        <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
+        <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p>
+        <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p>
+        <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p>
+        <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p>
+        <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
+        <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
+        <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
+        <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p>
+        <p style={matchLevelStyle}>{profile.matchLevel}</p>
+        {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
       </div>
-
-      {showReportForm && (
-        <div style={reportFormContainerStyle}>
-          <h2>Report an Issue with a Roommate</h2>
-          <form style={reportFormStyle} onSubmit={handleReportSubmit}>
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={reportData.name}
-              onChange={handleReportInputChange}
-              style={reportInputStyle}
-              required
-            />
-
-            <label htmlFor="ruid">RUID:</label>
-            <input
-              type="text"
-              id="ruid"
-              name="ruid"
-              value={reportData.ruid}
-              onChange={handleReportInputChange}
-              style={reportInputStyle}
-              required
-            />
-
-            <label htmlFor="issue">Issue:</label>
-            <textarea
-              id="issue"
-              name="issue"
-              value={reportData.issue}
-              onChange={handleReportInputChange}
-              style={{ ...reportInputStyle, height: '200px', width: '750px' }}
-              required
-            />
-
-            <button type="submit" style={reportSubmitButtonStyle}>
-              Submit
-            </button>
-            {reportStatus && <p>{reportStatus}</p>}
-            <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
-              Close
-            </button>
-          </form>
-        </div>
-      )}
+      <div style={profileImageContainerStyle}>
+        {profile.photoId ? (
+          <img
+          src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
+            alt="Profile" style={profileImageStyle}
+            onError={(e) => (e.target.src = defaultAvatar)} />
+        ) : (
+          <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
+        )}
+      </div>
     </div>
-  );
+  ))
+) : (
+  <p>No matching profiles found.</p>
+)}
+
+    <div style={reportButtonStyle} onClick={handleReportIconClick}>
+      Report an Issue with a Roommate
+    </div>
+
+    {showReportForm && (
+      <div style={reportFormContainerStyle}>
+        <h2>Report an Issue with a Roommate</h2>
+        <form style={reportFormStyle} onSubmit={handleReportSubmit}>
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={reportData.name}
+            onChange={handleReportInputChange}
+            style={reportInputStyle}
+            required
+          />
+
+          <label htmlFor="ruid">RUID:</label>
+          <input
+            type="text"
+            id="ruid"
+            name="ruid"
+            value={reportData.ruid}
+            onChange={handleReportInputChange}
+            style={reportInputStyle}
+            required
+          />
+
+          <label htmlFor="issue">Issue:</label>
+          <textarea
+            id="issue"
+            name="issue"
+            value={reportData.issue}
+            onChange={handleReportInputChange}
+            style={{ ...reportInputStyle, height: '200px', width: '750px' }}
+            required
+          />
+
+          <button type="submit" style={reportSubmitButtonStyle}>
+            Submit
+          </button>
+          {reportStatus && <p>{reportStatus}</p>}
+          <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
+            Close
+          </button>
+        </form>
+      </div>
+    )}
+  </div>
+);
 }
 
 export default MatchedProfiles;
