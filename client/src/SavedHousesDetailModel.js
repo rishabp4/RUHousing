@@ -6,46 +6,10 @@ import owners from "./ownerData";
 import { preferencesList, leaseTerms } from "./preferencesData";
 import axios from "axios";
 
-// Generate consistent preferences based on house ID (zpid)
-const getPreferences = (zpid) => {
-  const seed = parseInt(zpid.slice(-4), 10);
-
-  const selectedPreferences = preferencesList.filter((_, index) => {
-    return (seed + index) % 2 === 0; // Consistent selection
-  });
-
-  // Ensure each house clearly has at least 3 preferences and at most 6
-  const minPreferences = 3;
-  const maxPreferences = 6;
-  const count = Math.max(minPreferences, seed % (maxPreferences + 1));
-
-  return selectedPreferences.slice(0, count);
-};
-
-// Always select exactly one lease term per property
-const getLeaseTerm = (zpid) => {
-  const seed = parseInt(zpid.slice(-4), 10);
-  return leaseTerms[seed % leaseTerms.length];
-};
-
 Modal.setAppElement("#root");
 
-// Function clearly assigns an owner to a house based on its zpid
-const getOwnerInfo = (zpid) => {
-  const index = parseInt(zpid.slice(-3), 10) % owners.length;
-  return owners[index];
-};
-
-function HouseDetailModal({
-  isOpen,
-  onRequestClose,
-  house,
-  available,
-  rating,
-}) {
+function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
   if (!house) return null;
-
-  const owner = getOwnerInfo(house.zpid); // get the owner data clearly
 
   const photos = house.carouselPhotos
     ? house.carouselPhotos
@@ -60,49 +24,26 @@ function HouseDetailModal({
   // const preferenceList = [ ... ] <-- REMOVE THIS
 
   // Replace with this clearly:
-  const preferences = getPreferences(house.zpid);
-  const leaseTerm = getLeaseTerm(house.zpid);
+  const preferences = house.preferences;
+  const leaseTerm = house.leaseTerm;
 
   // save house when clicking button
-  const handleSavedClick = async (e) => {
+  const handleUnSavedClick = async (e) => {
     e.preventDefault();
     // 1. get the userId from local storage
     const userId = localStorage.getItem("userId");
 
-    //2. get all the house information we need
-    let body = {
-      userId: userId,
-      address: house.address,
-      bathrooms: house.bathrooms,
-      bedrooms: house.bedrooms,
-      livingArea: house.livingArea,
-      propertyType: house.propertyType,
-      lotAreaValue: house.lotAreaValue,
-      listingStatus: house.listingStatus,
-      price: house.price,
-      imgSrc: house.imgSrc,
-      preferences: preferences,
-      owner: owner,
-      carouselPhotos: house.carouselPhotos,
-      rating: rating,
-      available: available,
-      leaseTerm: leaseTerm,
-    };
-
-    // 3.) call the api/house route to save house
+    // 2.) delete the house
     try {
-      const response = await axios.post(
-        "http://localhost:5002/api/house",
-        body
+      const response = await axios.delete(
+        `http://localhost:5002/api/house/${house._id}`
       );
-
       alert(response.data.message);
-      // setIsSaved((prev) => !prev);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         alert(`Error: ${error.response.data.error}`);
       } else {
-        alert("An unexpected error occurred while saving the house.");
+        alert("An unexpected error occurred while deleting the house.");
       }
     }
   };
@@ -155,7 +96,7 @@ function HouseDetailModal({
             <div
               style={{
                 color: "white",
-                backgroundColor: available ? "#4CAF50" : "#E53935",
+                backgroundColor: house.available ? "#4CAF50" : "#E53935",
                 padding: "5px 10px",
                 borderRadius: "5px",
                 fontWeight: "bold",
@@ -163,7 +104,7 @@ function HouseDetailModal({
               }}
             >
               Status:{" "}
-              {available ? "Currently Available" : "No Longer Available"}
+              {house.available ? "Currently Available" : "No Longer Available"}
             </div>
 
             <div
@@ -176,7 +117,7 @@ function HouseDetailModal({
                 color: "#ffffff",
               }}
             >
-              ⭐ {rating.toFixed(1)} / 5
+              ⭐ {house.rating.toFixed(1)} / 5
             </div>
           </div>
 
@@ -212,14 +153,14 @@ function HouseDetailModal({
               <li>
                 ✅ <strong>Minimum lease term:</strong> {leaseTerm}
               </li>
-              {preferences.map((pref, idx) => (
+              {house.preferences.map((pref, idx) => (
                 <li key={idx}>✅ {pref}</li>
               ))}
             </ul>
           </div>
 
           <button
-            onClick={handleSavedClick}
+            onClick={handleUnSavedClick}
             style={{
               padding: "10px 20px",
               backgroundColor: "#4CAF50",
@@ -232,7 +173,7 @@ function HouseDetailModal({
               marginRight: "10px",
             }}
           >
-            Save
+            Unsave
           </button>
 
           <button
@@ -274,7 +215,7 @@ function HouseDetailModal({
             }}
           />
           <p style={{ fontWeight: "bold", marginBottom: "5px" }}>
-            Owner: {owner.name}
+            Owner: {house.owner.name}
           </p>
           <p
             style={{
@@ -284,10 +225,10 @@ function HouseDetailModal({
               color: "#333",
             }}
           >
-            Email: {owner.email}
+            Email: {house.owner.email}
           </p>
           <p style={{ fontWeight: "bold", fontSize: "14px", color: "#333" }}>
-            Phone Number: {owner.phone}
+            Phone Number: {house.owner.phone}
           </p>
         </div>
       </div>
@@ -295,4 +236,4 @@ function HouseDetailModal({
   );
 }
 
-export default HouseDetailModal;
+export default SavedHousesDetailModel;

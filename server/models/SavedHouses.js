@@ -32,6 +32,19 @@ const SavedHouseSchema = new mongoose.Schema({
   imgSrc: {
     type: String,
   },
+  isSaved: {
+    type: Boolean,
+    default: false,
+  },
+  rating: {
+    type: Number,
+  },
+  available: {
+    type: Boolean,
+  },
+  leaseTerm: {
+    type: String,
+  },
   owner: {
     name: {
       type: String,

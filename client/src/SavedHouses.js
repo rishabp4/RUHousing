@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "./images/RuLogo.png";
 import rutgersR from "./images/Rutgers-R.png";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/college_ave_background.png";
+import axios from "axios";
 
 function SavedHouses() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [properties, setProperties] = useState([]);
+
+  const fetchSavedHouses = async () => {
+    const userId = localStorage.getItem("userId");
+    const userSavedHouses = await axios.get(
+      `http://localhost:5002/api/house/${userId}`
+    );
+    setProperties(res.data.props || []);
+  };
+
+  useEffect(() => {
+    fetchSavedHouses();
+  }, []);
   // Home‑button behaviour: go to /home or refresh if already there
   const handleHomeClick = () => {
     if (location.pathname === "/home") {
