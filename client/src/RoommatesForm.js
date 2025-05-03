@@ -158,6 +158,8 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
       self_description: selfDescription,
     };
 
+    console.log("Data being sent:", preferencesData);
+
     try {
       const response = await fetch('http://localhost:5002/api/submit-preferences', {
         method: 'POST',
@@ -247,9 +249,13 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
       <input
         type="text"
         id={id}
+        name={id}
         placeholder={`Enter your ${label.toLowerCase()}`}
         value={value}
-        onChange={onChange}
+        onChange={(e) => {
+          onChange(e);
+          console.log(`State for ${id}:`, e.target.value);
+        }}
         required
         style={inputStyle}
       />

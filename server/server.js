@@ -257,8 +257,8 @@ app.get("/api/profile", async (req, res) => {
 // ------------ Submit user preferences form ----------- //
 app.post("/api/submit-preferences", async (req, res) => {
   const {
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     graduation_year,
     graduation_year_importance,
     major,
@@ -282,7 +282,7 @@ app.post("/api/submit-preferences", async (req, res) => {
     userId,
     gender,
     gender_importance,
-    self_description, 
+    self_description,
   } = req.body;
 
   if (!db) {
@@ -295,8 +295,8 @@ app.post("/api/submit-preferences", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const result = await roommatePreferencesCollection.insertOne({
       userId,
-      firstName: firstName ? firstName.trim() : "",
-      lastName: lastName ? lastName.trim() : "",
+      first_name: first_name ? first_name.trim() : "",
+      last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
       graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", // Default if not provided
       major: major ? major.trim() : "",
@@ -318,8 +318,8 @@ app.post("/api/submit-preferences", async (req, res) => {
       cleanliness: cleanliness ? cleanliness.trim() : "",
       cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", // Default if not provided
       gender: gender ? gender.trim() : "",
-      gender_importance: gender_importance ? gender_importance.trim() : "not important", // Default if not provided
-      self_description: req.body.self_description ? req.body.self_description.trim() : "", // ADD THIS LINE
+      gender_importance: gender_importance ? gender_importance.trim() : "not important", 
+      self_description: req.body.self_description ? req.body.self_description.trim() : "", 
     });
 
     console.log(
@@ -372,8 +372,8 @@ app.post("/api/matched-profiles", async (req, res) => {
 
     for (const profile of potentialMatches) {
       const trimmedUserPreferences = { // using trims to remove extra white spaces 
-        firstName: userPreferences.firstName ? userPreferences.firstName.trim() : "",
-        lastName: userPreferences.lastName ? userPreferences.lastName.trim() : "",
+        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : "",
+        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : "",
         graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim(): "",
         major: userPreferences.major ? userPreferences.major.trim() : "",
         preferred_location: userPreferences.preferred_location ? userPreferences.preferred_location.trim() : "",
@@ -390,8 +390,8 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       const trimmedProfile = {
         ...profile,
-        firstName: profile.firstName ? profile.firstName.trim() : "",
-        lastName: profile.lastName ? profile.lastName.trim() : "",
+        first_name: profile.first_name ? profile.first_name.trim() : "",
+        last_name: profile.last_name ? profile.last_name.trim() : "",
         graduation_year: profile.graduation_year ? profile.graduation_year.trim() : "",
         major: profile.major ? profile.major.trim() : "",
         preferred_location: profile.preferred_location ? profile.preferred_location.trim() : "",

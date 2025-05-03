@@ -197,8 +197,8 @@ function MatchedProfiles() {
       {matchedProfiles.length > 0 ? (
         matchedProfiles.map((profile) => (
           <div key={profile._id} style={profileCardStyle}>
-            <p style={attributeStyle}><strong>First Name:</strong> {profile.firstName}</p>
-            <p style={attributeStyle}><strong>Last Name:</strong> {profile.lastName}</p>
+            <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p> 
+            <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p> 
             <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
             <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
             <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
@@ -210,6 +210,7 @@ function MatchedProfiles() {
             <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
             <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
             <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
+            <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p> 
             <p style={matchLevelStyle}>{profile.matchLevel}</p>
             {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
           </div>
