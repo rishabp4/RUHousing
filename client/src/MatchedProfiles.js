@@ -190,9 +190,9 @@ function MatchedProfiles() {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
-
+// How matched profiles should appear 
   return (
-    <div style={matchedProfilesContainerStyle}>
+    <div style={matchedProfilesContainerStyle}> 
       <h1 style={headingStyle}>Matched Roommate Profiles</h1>
       {matchedProfiles.length > 0 ? (
         matchedProfiles.map((profile) => (

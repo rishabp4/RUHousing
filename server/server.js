@@ -254,7 +254,7 @@ app.get("/api/profile", async (req, res) => {
 });
 //!ends here
 
-// ------------ Submit user preferences form ----------- //
+// ------------ Submit user preferences form ----------- //Part 1
 app.post("/api/submit-preferences", async (req, res) => {
   const {
     first_name,
@@ -333,7 +333,7 @@ app.post("/api/submit-preferences", async (req, res) => {
   }
 });
 
-// ------------ Matching Profiles ----------- //
+// ------------ Matching Profiles ----------- //Part 2
 app.post("/api/matched-profiles", async (req, res) => {
   const userPreferences = req.body;
   const userId = userPreferences.userId;
