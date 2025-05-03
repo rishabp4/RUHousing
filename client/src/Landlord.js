@@ -1,56 +1,44 @@
 import React from 'react';
-import background1 from './images/background.webp';
+import background1 from './images/background1.png';
 
 function Landlord() {
-
-    return (
-        <div
-            style={{
-                backgroundImage: `url(${background1})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh'
-            }}
-        >
-            <h2 style={{ textAlign: 'center', marginBottom: '90px', marginLeft: '50px'}}>
-                <p className="text-black">WELCOME, LANDLORD!</p>
-                <form className="margin-top fs-6 d-flex flex-column gap-1"p>
-
-                    <div className="col-auto text-black d-flex justify-content-evenly align-items-center">
-                        <label for="inputEmail" className='fs-6 w-140'>Email</label>
-                        <input type="email" class="form-control" id="inputEmail" placeholder="Email" />
-                    </div>
-
-                    <div class="col-auto text-black d-flex justify-content-evenly align-items-center">
-                        <label for="inputFirstName" className='fs-6 w-140'>First  Name</label>
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" />
-                    </div>
-
-                    <div className="col-auto text-black d-flex justify-content-evenly align-items-center" >
-                        <label for="inputRUID" className='fs-6 w-140'>Last Name</label>
-                        <input type="text" class="form-control" id="inputRUID" placeholder="Last Name" />
-                    </div>
-
-                    <div className="col-auto text-black d-flex justify-content-evenly align-items-center">
-                        <label for="inputUsername" className='fs-6 w-140'>Username</label>
-                        <input type="text" class="form-control" id="inputUsername" placeholder="Username" />
-                    </div>
-
-                    <div className="col-auto text-black d-flex justify-content-evenly align-items-center">
-                        <label for="inputPassword2" className='fs-6 w-140'>Password</label>
-                        <input type="password" class="form-control" id="inputPassword2" placeholder="Password" required />
-                    </div>
-                    <div className="col-auto d-flex justify-content-evenly align-items-center mt-4">
-                        <button type="submit" class="btn btn-secondary mb-3" >CREATE ACCOUNT</button>
-                    </div>
-                </form>
-            </h2>
-        </div>
-    );
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${background1})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'Arial, sans-serif'
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: '40px',
+          borderRadius: '20px',
+          boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
+          color: 'white',
+          width: '360px'
+        }}
+      >
+        <h2 className="text-center mb-4">Welcome, Landlord!</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input type="email" placeholder="Email" className="form-control mb-3" />
+          <input type="text" placeholder="First Name" className="form-control mb-3" />
+          <input type="text" placeholder="Last Name" className="form-control mb-3" />
+          <input type="text" placeholder="Username" className="form-control mb-3" />
+          <input type="password" placeholder="Password" className="form-control mb-4" />
+          <button type="submit" className="btn btn-danger w-100" style={{ borderRadius: '10px' }}>
+            Create Account
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default Landlord;

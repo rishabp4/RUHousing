@@ -82,7 +82,7 @@ app.post("/api/house", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// ------------ Routes for saving house ----------- //
+
 
 // --------- Route to get saved houses ----------- //
 app.get("/api/house/:userId", async (req, res) => {
@@ -109,7 +109,7 @@ app.get("/api/house/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// --------- Route to get saved houses ----------- //
+
 
 // ---------- Route to delete saved house -------- //
 app.delete("/api/house/:id", async (req, res) => {
@@ -137,9 +137,9 @@ app.delete("/api/house/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// ---------- Route to delete saved house -------- //
 
-// Upload profile picture (expects field name 'photo')
+
+// ---------- Upload profile picture (expects field name 'photo') -------- //
 app.post("/api/profile-photo", upload.single("photo"), async (req, res) => {
   try {
     const { uid } = req.body;
@@ -252,20 +252,37 @@ app.get("/api/profile", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//!ends here
 
-// ------------ Submit user preferences form ----------- //
+// ------------ Submit user preferences form ----------- //Part 1
 app.post("/api/submit-preferences", async (req, res) => {
   const {
     first_name,
     last_name,
     graduation_year,
+    graduation_year_importance,
     major,
+    major_importance,
+    preferred_location,
+    preferred_location_importance,
     duration_of_stay,
+    duration_of_stay_importance,
     allergies,
+    allergies_importance,
+    has_pets,
+    has_pets_importance,
+    cooking_frequency,
+    cooking_frequency_importance,
     sleep_schedule,
+    sleep_schedule_importance,
     study_habits,
+    study_habits_importance,
     cleanliness,
+    cleanliness_importance,
     userId,
+    gender,
+    gender_importance,
+    self_description,
   } = req.body;
 
   if (!db) {
@@ -281,12 +298,28 @@ app.post("/api/submit-preferences", async (req, res) => {
       first_name: first_name ? first_name.trim() : "",
       last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
+      graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", 
       major: major ? major.trim() : "",
+      major_importance: major_importance ? major_importance.trim() : "not important", 
+      preferred_location: preferred_location ? preferred_location.trim() : "",
+      preferred_location_importance: preferred_location_importance ? preferred_location_importance.trim() : "not important", 
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
+      duration_of_stay_importance: duration_of_stay_importance ? duration_of_stay_importance.trim() : "not important", 
       allergies: allergies ? allergies.trim() : "",
+      allergies_importance: allergies_importance ? allergies_importance.trim() : "not important", 
+      has_pets: has_pets ? has_pets.trim() : "",
+      has_pets_importance: has_pets_importance ? has_pets_importance.trim() : "not important", 
+      cooking_frequency: cooking_frequency ? cooking_frequency.trim() : "",
+      cooking_frequency_importance: cooking_frequency_importance ? cooking_frequency_importance.trim() : "not important", 
       sleep_schedule: sleep_schedule ? sleep_schedule.trim() : "",
+      sleep_schedule_importance: sleep_schedule_importance ? sleep_schedule_importance.trim() : "not important", 
       study_habits: study_habits ? study_habits.trim() : "",
+      study_habits_importance: study_habits_importance ? study_habits_importance.trim() : "not important", 
       cleanliness: cleanliness ? cleanliness.trim() : "",
+      cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", 
+      gender: gender ? gender.trim() : "",
+      gender_importance: gender_importance ? gender_importance.trim() : "not important", 
+      self_description: req.body.self_description ? req.body.self_description.trim() : "", 
     });
 
     console.log(
@@ -300,7 +333,7 @@ app.post("/api/submit-preferences", async (req, res) => {
   }
 });
 
-// ------------ Matching Profiles ----------- //
+// ------------ Matching Profiles ----------- //Part 2
 app.post("/api/matched-profiles", async (req, res) => {
   const userPreferences = req.body;
   const userId = userPreferences.userId;
@@ -315,96 +348,130 @@ app.post("/api/matched-profiles", async (req, res) => {
     const roommatePreferencesCollection = db.collection("roommate_preferences");
     const potentialMatches = await roommatePreferencesCollection
       .find({
-        userId: { $ne: userId }, 
+        userId: { $ne: userId }, // userID not equal itself - prevent from giving current user as a match itself
       })
       .toArray();
 
     const matchedProfilesWithLevel = [];
 
+    // Function to get the weight based on importance level
+    const getWeight = (importance) => {
+      switch (importance) {
+        case "very important":
+          return 3;
+        case "important":
+          return 2;
+        case "not important":
+          return 1; 
+        default:
+          return 1; // Default weight
+      }
+    };
+    
+    let matchScore = 0;
+
     for (const profile of potentialMatches) {
-      const trimmedUserPreferences = {
-        first_name: userPreferences.first_name
-          ? userPreferences.first_name.trim()
-          : "",
-        last_name: userPreferences.last_name
-          ? userPreferences.last_name.trim()
-          : "",
-        graduation_year: userPreferences.graduation_year
-          ? userPreferences.graduation_year.trim()
-          : "",
+      const trimmedUserPreferences = { // using trims to remove extra white spaces 
+        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : "",
+        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : "",
+        graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim(): "",
         major: userPreferences.major ? userPreferences.major.trim() : "",
-        duration_of_stay: userPreferences.duration_of_stay
-          ? userPreferences.duration_of_stay.trim()
-          : "",
-        allergies: userPreferences.allergies
-          ? userPreferences.allergies.trim()
-          : "",
-        sleep_schedule: userPreferences.sleep_schedule
-          ? userPreferences.sleep_schedule.trim()
-          : "",
-        study_habits: userPreferences.study_habits
-          ? userPreferences.study_habits.trim()
-          : "",
-        cleanliness: userPreferences.cleanliness
-          ? userPreferences.cleanliness.trim()
-          : "",
+        preferred_location: userPreferences.preferred_location ? userPreferences.preferred_location.trim() : "",
+        duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : "",
+        allergies: userPreferences.allergies ? userPreferences.allergies.trim() : "",
+        has_pets: userPreferences.has_pets ? userPreferences.has_pets.trim() : "",
+        cooking_frequency: userPreferences.cooking_frequency ? userPreferences.cooking_frequency.trim() : "",
+        sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : "",
+        study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : "",
+        cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : "",
+        gender: userPreferences.gender ? userPreferences.gender.trim() : "",
+        self_description: userPreferences.self_description ? userPreferences.self_description.trim() : "",
       };
 
       const trimmedProfile = {
         ...profile,
         first_name: profile.first_name ? profile.first_name.trim() : "",
         last_name: profile.last_name ? profile.last_name.trim() : "",
-        graduation_year: profile.graduation_year
-          ? profile.graduation_year.trim()
-          : "",
+        graduation_year: profile.graduation_year ? profile.graduation_year.trim() : "",
         major: profile.major ? profile.major.trim() : "",
-        duration_of_stay: profile.duration_of_stay
-          ? profile.duration_of_stay.trim()
-          : "",
+        preferred_location: profile.preferred_location ? profile.preferred_location.trim() : "",
+        duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim(): "",
         allergies: profile.allergies ? profile.allergies.trim() : "",
-        sleep_schedule: profile.sleep_schedule
-          ? profile.sleep_schedule.trim()
-          : "",
+        has_pets: profile.has_pets ? profile.has_pets.trim() : "",
+        cooking_frequency: profile.cooking_frequency ? profile.cooking_frequency.trim() : "",
+        sleep_schedule: profile.sleep_schedule ? profile.sleep_schedule.trim() : "",
         study_habits: profile.study_habits ? profile.study_habits.trim() : "",
         cleanliness: profile.cleanliness ? profile.cleanliness.trim() : "",
+        gender: profile.gender ? profile.gender.trim() : "",
       };
 
-      let matchLevel = "";
-      let allMatch = true;
+      // Calculate the maximum possible score (all "very important" match)
+      const maxPossibleScore =
+        getWeight(userPreferences.graduation_year_importance) +
+        getWeight(userPreferences.major_importance) +
+        getWeight(userPreferences.preferred_location_importance) +
+        getWeight(userPreferences.duration_of_stay_importance) +
+        getWeight(userPreferences.allergies_importance) +
+        getWeight(userPreferences.has_pets_importance) +
+        getWeight(userPreferences.cooking_frequency_importance) +
+        getWeight(userPreferences.sleep_schedule_importance) +
+        getWeight(userPreferences.study_habits_importance) +
+        getWeight(userPreferences.cleanliness_importance) +
+        getWeight(userPreferences.gender_importance);
 
-     
-      if (
-        trimmedProfile.graduation_year !==
-          trimmedUserPreferences.graduation_year  ||
-        trimmedProfile.duration_of_stay !==
-          trimmedUserPreferences.duration_of_stay ||
-        trimmedProfile.allergies !== trimmedUserPreferences.allergies
-        
-      ) {
-        allMatch = false;
+      // Compare each preference and add to the score based on importance
+      if (trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year) {
+        matchScore += getWeight(userPreferences.graduation_year_importance);
+      }
+      if (trimmedProfile.major === trimmedUserPreferences.major) {
+        matchScore += getWeight(userPreferences.major_importance);
+      }
+      if (trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location) {
+        matchScore += getWeight(userPreferences.preferred_location_importance);
+      }
+      if (trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay) {
+        matchScore += getWeight(userPreferences.duration_of_stay_importance);
+      }
+      if (trimmedProfile.allergies === trimmedUserPreferences.allergies) {
+        matchScore += getWeight(userPreferences.allergies_importance);
+      }
+      if (trimmedProfile.has_pets === trimmedUserPreferences.has_pets) {
+        matchScore += getWeight(userPreferences.has_pets_importance);
+      }
+      if (trimmedProfile.cooking_frequency === trimmedUserPreferences.cooking_frequency) {
+        matchScore += getWeight(userPreferences.cooking_frequency_importance);
+      }
+      if (trimmedProfile.sleep_schedule === trimmedUserPreferences.sleep_schedule) {
+        matchScore += getWeight(userPreferences.sleep_schedule_importance);
+      }
+      if (trimmedProfile.study_habits === trimmedUserPreferences.study_habits) {
+        matchScore += getWeight(userPreferences.study_habits_importance);
+      }
+      if (trimmedProfile.cleanliness === trimmedUserPreferences.cleanliness) {
+        matchScore += getWeight(userPreferences.cleanliness_importance);
+      }
+      if (trimmedProfile.gender === trimmedUserPreferences.gender || trimmedUserPreferences.gender === "Any") {
+        matchScore += getWeight(userPreferences.gender_importance);
       }
 
-      if (allMatch) {
+      let matchLevel = "Fair Match"; // Default 
+
+      //Score thresholds here (adjust as needed)
+      const bestMatchThreshold = maxPossibleScore * 0.8; // 80% or higher
+      const goodMatchThreshold = maxPossibleScore * 0.5; // 50% or higher
+
+      if (matchScore >= bestMatchThreshold) {
         matchLevel = "Best Match";
-      } else if (
-        trimmedProfile.duration_of_stay ===
-          trimmedUserPreferences.duration_of_stay &&
-        trimmedProfile.allergies === trimmedUserPreferences.allergies &&
-        trimmedProfile.study_habits === trimmedUserPreferences.study_habits
-      ) {
-        matchLevel = "Avg Match";
-      } else if (
-        trimmedProfile.duration_of_stay ===
-          trimmedUserPreferences.duration_of_stay &&
-        trimmedProfile.allergies === trimmedUserPreferences.allergies
-      ) {
-        matchLevel = "Ok Match";
+
+      } else if (matchScore >= goodMatchThreshold) {
+        matchLevel = "Good Match";
       }
 
-      if (matchLevel) {
-        matchedProfilesWithLevel.push({ ...profile, matchLevel });
-      }
+      matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore }); // Include score for potential debugging or more info
     }
+
+    // Sort profiles by match score (descending from best to good percentages)
+    matchedProfilesWithLevel.sort((a, b) => b.matchScore - a.matchScore);
 
     res.status(200).json(matchedProfilesWithLevel);
   } catch (error) {
@@ -413,6 +480,8 @@ app.post("/api/matched-profiles", async (req, res) => {
   }
 });
 
+
+// ------------ Reporting Issue Form ----------- //
 app.post("/api/report-issue", async (req, res) => {
   const { name, ruid, issue } = req.body;
 
@@ -442,9 +511,10 @@ app.post("/api/report-issue", async (req, res) => {
     res.status(500).json({ error: "Failed to report issue." });
   }
 });
-//!chat here
-//  Save a chat message
 
+
+//!chat beings here
+ // ------------ Save a chat message ----------- //
 app.post('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -479,9 +549,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-// Get chat history between two users
-
-
+// ------------ Get chat history between two users ----------- //
 app.get('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -533,6 +601,62 @@ app.get("/api/all-users", async (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello from the RUHousing Express server!');
 
+});
+
+// ---------- Login Routes ----------- //
+app.post("/user", async (req, res) => {
+  const { uid, email, firstName, lastName, netID, photoURL } = req.body;
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: "Missing UID or email" });
+  }
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const existingUser = await usersCollection.findOne({ uid });
+
+    if (existingUser) {
+      await usersCollection.updateOne(
+        { uid },
+        { $set: { firstName, lastName, netID, photoURL, email } }
+      );
+      return res.json({ message: "✅ Profile updated" });
+    }
+
+    await usersCollection.insertOne({
+      uid,
+      email,
+      firstName,
+      lastName,
+      netID,
+      photoURL,
+    });
+    res.json({ message: "✅ Profile created" });
+  } catch (err) {
+    console.error("❌ Error saving profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/user/:userId", async (req, res) => {
+  const { uid } = req.query;
+
+  if (!uid) return res.status(400).json({ error: "UID is required" });
+
+  try {
+    const db = client.db("RUHousing");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ uid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 const PORT = process.env.PORT || 5002;
