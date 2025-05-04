@@ -6,10 +6,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
 import logo from "./images/RuLogo.png";
-import rutgersR from "./images/Rutgers-R.png";
 import headerImg from "./images/Header.png";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/CollegeAveBlue.png";
+import building from "./images/Building.png";
 
 import SavedHousesDetailModel from "./SavedHousesDetailModel";
 import "./HomePage.css"; // re-use hover colours, buttons, etc.
@@ -164,7 +164,7 @@ function SavedHousesPage() {
       {/* ███  blue skyline background  ███ */}
       <div
         style={{
-          backgroundImage: `url(${collegeAveBg})`,
+          backgroundImage: `url(${building})`,
           backgroundSize: "100% auto",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",

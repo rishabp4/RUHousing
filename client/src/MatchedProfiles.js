@@ -61,7 +61,7 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#566978',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
