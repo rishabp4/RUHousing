@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
-import profileRoom from "./images/ProfileRoom.png";
 import building from "./images/Building.png";
 
 
@@ -62,7 +61,7 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#4682B4',
+  backgroundColor: '#2F5E87',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',

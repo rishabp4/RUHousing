@@ -12,7 +12,15 @@ import './ProfilePage.css';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
 
-
+const profilesContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '80px',
+  backgroundColor: '#F8F8FF',
+  borderRadius: '8px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  margin: '20px',
+};
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -149,7 +157,7 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
-<>
+    <>
       <HeaderBar photoUrl={photoUrl} />
 
       <div
@@ -192,105 +200,93 @@ function ProfilePage() {
         </div>
       </div>
 
-    <div style={{
-      backgroundImage: `url(${building})`,
-      backgroundSize: "100% auto",
-      backgroundPosition: "top center",
-      backgroundRepeat: "no-repeat",
-      backgroundAttachment: "fixed",
-      minHeight: "calc(100vh - 130px)",
-      padding: "40px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "flex-start",
-    }}>
-      <div className="profile-page" style={{backgroundColor:"#4682B4"}}>
-  
-        {/* Profile Photo */}
-        <section className="photo-section">
-          <img
-            src={photoUrl}
-            alt="Profile"
-            className="profile-avatar"
-            onError={(e) => (e.target.src = avatar)}
-          />
-          <div className="upload-controls">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setPhotoFile(e.target.files[0])}
-            />
-            <button onClick={handlePhotoUpload} disabled={!photoFile}>
-              Upload
+      <div style={{
+        backgroundImage: `url(${building})`,
+        backgroundSize: "100% auto",
+        backgroundPosition: "top center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        minHeight: "calc(100vh - 130px)",
+        padding: "40px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}>
+        <div className="profile-page" style={{ backgroundColor: "#2F5E87" }}>
+          <div style={profilesContainerStyle}>
+            {/* Profile Photo */}
+            <section className="photo-section">
+              <img
+                src={photoUrl}
+                alt="Profile"
+                className="profile-avatar"
+                onError={(e) => (e.target.src = avatar)}
+              />
+              <div className="upload-controls">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhotoFile(e.target.files[0])}
+                />
+                <button onClick={handlePhotoUpload} disabled={!photoFile}>
+                  Upload
+                </button>
+              </div>
+            </section>
+            <section className="profile-form">
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="firstName"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  placeholder="First Name"
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  placeholder="Last Name"
+                />
+                <input
+                  type="text"
+                  name="netID"
+                  value={netID}
+                  onChange={(e) => setNetID(e.target.value)}
+                  placeholder="NetID"
+                />
+              </div>
+
+              <button className="save-profile-button" onClick={handleSave}>
+                Save Profile
+              </button>
+            </section>
+
+            <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
+              Find Roommates
             </button>
+
+            <Link to="/chat">
+              <button
+                className="find-roommates-button"
+              >
+                Go to Chats
+              </button>
+            </Link>
+
           </div>
-        </section>
-  
-        <br /><br />
-  
-        <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
-          Find Roommates
-        </button>
-        
-        <br /><br />
-
-        <Link to="/chat">
-  <button
-    className="find-roommates-button"
-    style={{
-      marginTop: "10px",
-      backgroundColor: "#cc0033",
-      color: "white",
-      fontWeight: "bold"
-    }}
-  >
-    Go to Chats
-  </button>
-</Link>
-
-
-  
-        <section className="profile-form">
-          <div className="form-group">
-            <input
-              type="text"
-              name="firstName"
-              value={firstName}
-              onChange={handleFirstNameChange}
-              placeholder="First Name"
-            />
-            <input
-              type="text"
-              name="lastName"
-              value={lastName}
-              onChange={handleLastNameChange}
-              placeholder="Last Name"
-            />
-            <input
-              type="text"
-              name="netID"
-              value={netID}
-              onChange={(e) => setNetID(e.target.value)}
-              placeholder="NetID"
-            />
-          </div>
-  
-          <button className="save-profile-button" onClick={handleSave}>
-            Save Profile
-          </button>
-        </section>
-  
-        <section className="roommates-form-section">
-          <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
-        </section>
+          <section className="roommates-form-section">
+            <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
+          </section>
+        </div>
       </div>
-    </div>
     </>
 
-   
+
   );
-  
-  
+
+
 }
 
 export default ProfilePage;
