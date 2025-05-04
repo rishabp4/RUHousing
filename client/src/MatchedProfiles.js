@@ -81,19 +81,28 @@ const profileCardStyle = {
   padding: '15px',
   marginBottom: '15px',
   width: '80%',
-  maxWidth: '600px',
+  maxWidth: '500px',
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-  display: 'flex', // Enable flex layout for image and info
-  justifyContent: 'space-between', // Space out image and info
-  alignItems: 'center', // Vertically align items in the center
+  display: 'grid',
+  gridTemplateColumns: '1fr 150px', // Adjusted image width
+  gridTemplateRows: 'auto auto',
+  alignItems: 'start',
+  gap: '10px',
 };
+
+const profilePreviewInfoStyle = {
+  textAlign: 'left',
+  gridColumn: '1 / 2',
+};
+
 const profileImageContainerStyle = {
-  width: '80px',
-  height: '80px',
+  width: '145px',
+  height: '145px',
   borderRadius: '50%',
   overflow: 'hidden',
-  marginLeft: '15px', // Move image to the right
   backgroundColor: '#ccc',
+  gridColumn: '2 / 3',
+  gridRow: '1 / 3',
 };
 const profileImageStyle = {
   width: '100%',
@@ -101,8 +110,16 @@ const profileImageStyle = {
   objectFit: 'cover',
 };
 const profileInfoStyle = {
-  flexGrow: 1,
-  textAlign: 'left', // Align text to the left
+  textAlign: 'left',
+  marginTop: '10px',
+  gridColumn: '1 / 2',
+  display: 'none',
+};
+
+const expandedProfileInfoStyle = {
+  display: 'block',
+  gridColumn: '1 / 2',
+  marginTop: '10px',
 };
 
 const attributeStyle = {
@@ -121,6 +138,17 @@ const matchScoreStyle = {
   marginTop: '5px',
 };
 
+const knowMoreButtonStyle = {
+  backgroundColor: '#007bff',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  padding: '8px 12px',
+  cursor: 'pointer',
+  marginTop: '10px',
+  fontSize: '0.9em',
+};
+
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
 function MatchedProfiles({ photoUrl }) {
@@ -128,6 +156,7 @@ function MatchedProfiles({ photoUrl }) {
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedProfiles, setExpandedProfiles] = useState({}); // Track expanded profiles
   const navigate = useNavigate();
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportData, setReportData] = useState({
@@ -220,6 +249,7 @@ function MatchedProfiles({ photoUrl }) {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
+
 //! julio was here!
 //! say hello button
   const handleSayHello = async (recipientId) => {
@@ -379,59 +409,147 @@ function MatchedProfiles({ photoUrl }) {
           <p>No matching profiles found.</p>
         )}
 
-        <div style={reportButtonStyle} onClick={handleReportIconClick}>
-          Report an Issue with a Roommate
-        </div>
 
-        {showReportForm && (
-          <div style={reportFormContainerStyle}>
-            <h2>Report an Issue with a Roommate</h2>
-            <form style={reportFormStyle} onSubmit={handleReportSubmit}>
-              <label htmlFor="name">Name:</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={reportData.name}
-                onChange={handleReportInputChange}
-                style={reportInputStyle}
-                required
-              />
+  const handleKnowMoreClick = (profileId) => {
+    setExpandedProfiles((prevState) => ({
+      ...prevState,
+      [profileId]: !prevState[profileId],
+    }));
+  };
 
-              <label htmlFor="ruid">RUID:</label>
-              <input
-                type="text"
-                id="ruid"
-                name="ruid"
-                value={reportData.ruid}
-                onChange={handleReportInputChange}
-                style={reportInputStyle}
-                required
-              />
-
-              <label htmlFor="issue">Issue:</label>
-              <textarea
-                id="issue"
-                name="issue"
-                value={reportData.issue}
-                onChange={handleReportInputChange}
-                style={{ ...reportInputStyle, height: '200px', width: '750px' }}
-                required
-              />
-
-              <button type="submit" style={reportSubmitButtonStyle}>
-                Submit
+  return (
+    <div style={matchedProfilesContainerStyle}>
+      <h1 style={headingStyle}>Matched Roommate Profiles</h1>
+      {matchedProfiles.length > 0 ? (
+        matchedProfiles.map((profile) => (
+          <div key={profile._id} style={profileCardStyle}>
+            <div style={profilePreviewInfoStyle}>
+              <p style={attributeStyle}>
+                <strong>First Name:</strong> {profile.first_name}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Last Name:</strong> {profile.last_name}
+              </p>
+              <p style={matchLevelStyle}>{profile.matchLevel}</p>
+              {profile.matchScore !== undefined && (
+                <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>
+              )}
+              <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
+                {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
               </button>
-              {reportStatus && <p>{reportStatus}</p>}
-              <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
-                Close
-              </button>
-            </form>
+            </div>
+            <div style={profileImageContainerStyle}>
+              {profile.photoId ? (
+                <img
+                  src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
+                  alt="Profile"
+                  style={profileImageStyle}
+                  onError={(e) => (e.target.src = defaultAvatar)}
+                />
+              ) : (
+                <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
+              )}
+            </div>
+            <div style={expandedProfiles[profile._id] ? expandedProfileInfoStyle : profileInfoStyle}>
+              <p style={attributeStyle}>
+                <strong>Graduation Year:</strong> {profile.graduation_year}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Major:</strong> {profile.major}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Preferred Location:</strong> {profile.preferred_location}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Duration of Stay:</strong> {profile.duration_of_stay}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Allergies:</strong> {profile.allergies}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Has Pets:</strong> {profile.has_pets}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Cooking Frequency:</strong> {profile.cooking_frequency}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Sleep Schedule:</strong> {profile.sleep_schedule}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Study Habits:</strong> {profile.study_habits}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Cleanliness:</strong> {profile.cleanliness}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Gender:</strong> {profile.gender}
+              </p>
+              <p style={attributeStyle}>
+                <strong>Self Description:</strong> {profile.self_description}
+              </p>
+              {/* Match Level and Score are already in the preview */}
+            </div>
           </div>
-        )}
+        ))
+      ) : (
+        <p>No matching profiles found.</p>
+      )}
+
+      <div style={reportButtonStyle} onClick={handleReportIconClick}>
+        Report an Issue with a Roommate
       </div>
-      </div>
-    </>
+
+      {showReportForm && (
+        <div style={reportFormContainerStyle}>
+          <h2>Report an Issue with a Roommate</h2>
+          <form style={reportFormStyle} onSubmit={handleReportSubmit}>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={reportData.name}
+              onChange={handleReportInputChange}
+              style={reportInputStyle}
+              required
+            />
+
+            <label htmlFor="ruid">RUID:</label>
+            <input
+              type="text"
+              id="ruid"
+              name="ruid"
+              value={reportData.ruid}
+              onChange={handleReportInputChange}
+              style={reportInputStyle}
+              required
+            />
+
+            <label htmlFor="issue">Issue:</label>
+            <textarea
+              id="issue"
+              name="issue"
+              value={reportData.issue}
+              onChange={handleReportInputChange}
+              style={{ ...reportInputStyle, height: '200px', width: '750px' }}
+              required
+            />
+
+            <button type="submit" style={reportSubmitButtonStyle}>
+              Submit
+            </button>
+            {reportStatus && <p>{reportStatus}</p>}
+            <button
+              type="button"
+              onClick={handleReportFormClose}
+              style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}
+            >
+              Close
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
 
