@@ -134,17 +134,32 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       )}
 
 <div style={{
-  padding: "1rem",
+  padding: "10px 20px",
   backgroundColor: "#202c33",
   borderBottom: "1px solid #333",
   display: "flex",
-  flexDirection: "column",
-  boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
+  alignItems: "center",
+  gap: "12px"
 }}>
+  <img
+    src={`http://localhost:5002/api/profile-photo/${chattingWith.uid}`}
+    alt="avatar"
+    onError={(e) => (e.target.src = require('./images/default_avatar.png'))}
+    style={{
+      width: "42px",
+      height: "42px",
+      borderRadius: "50%",
+      objectFit: "cover"
+    }}
+  />
+  <div>
+    <div style={{ color: "#fff", fontWeight: "bold", fontSize: "16px" }}>
+      {chattingWith.firstName} {chattingWith.lastName}
+    </div>
+    <div style={{ color: "#0f0", fontSize: "13px" }}>Online</div>
+  </div>
+</div>
 
-        <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
-        <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p>
-      </div>
 
       <div
         style={{
