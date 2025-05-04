@@ -65,6 +65,7 @@ const matchedProfilesContainerStyle = {
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
+  width: '800px'
 };
 
 const headingStyle = {
