@@ -26,18 +26,23 @@ function ChatPage() {
         }
       }
     };
-
-    const handleMouseUp = () => setIsResizing(false);
-
+    
+  
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.body.style.userSelect = "auto";
+    };
+  
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
-
+  
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
+    
   }, [isResizing]);
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -216,14 +221,18 @@ function ChatPage() {
       </div>
 
       <div
-        onMouseDown={() => setIsResizing(true)}
-        style={{
-          width: '6px',
-          cursor: 'col-resize',
-          backgroundColor: '#ddd',
-          zIndex: 10,
-        }}
-      ></div>
+  onMouseDown={() => {
+    setIsResizing(true);
+    document.body.style.userSelect = "none"; // prevent weird text selection
+  }}
+  style={{
+    width: '6px',
+    cursor: 'col-resize',
+    background: 'linear-gradient(to right, #444, #888)',
+    zIndex: 10,
+  }}
+></div>
+
 
       <div style={{ flex: 1 }}>
         {chattingWith ? (
