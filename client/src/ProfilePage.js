@@ -170,7 +170,7 @@ function ProfilePage() {
           margin: 0,
           flexGrow: 1
         }}>
-          Welcome, {firebaseUser.email}!
+          Welcome,  <strong>{firstName || firebaseUser.email}</strong>!
         </h2>
 
         <div>
