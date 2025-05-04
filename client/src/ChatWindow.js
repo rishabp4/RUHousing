@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import bgpattern from './images/backchat.jpg'; // Use .jpg — change to .png if that's the correct version
 import { io } from 'socket.io-client';
+import EmojiPicker from 'emoji-picker-react';
+
 
 const socket = io("http://localhost:5002");
 
@@ -11,7 +13,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
   const bottomRef = useRef(null);
-
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);//! julio was here, emojis uu
   const scrollToBottom = () => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "auto" });
@@ -70,7 +72,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         setNewMessage("");
         setJustSentMessage(true);
         setMessages((prev) => [...prev, newMsgObj]); // Show message now
-        socket.emit("sendMessage", newMsgObj); // 🧠 Real-time notify others
+        socket.emit("sendMessage", newMsgObj); 
       } else {
         console.error("Failed to send message");
       }
@@ -129,6 +131,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   }, [messages, isTyping]);
 
   return (
+    
     <div style={{
       backgroundColor: "#121212",
       height: "100vh",
@@ -267,7 +270,39 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   backgroundColor: '#1e1e1e',
   borderTop: '1px solid #333',
   gap: '10px',
+  position: 'relative' //! JULIO WAS HERE!This makes emoji picker position work!
 }}>
+
+
+  {/* 😊 Emoji Button */}
+<button
+  onClick={() => setShowEmojiPicker((prev) => !prev)}
+  style={{
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "24px",
+    color: "white"
+  }}
+>
+  😊
+</button>
+
+{/* Emoji Picker Dropdown */}
+{showEmojiPicker && (
+  <div style={{ position: 'absolute', bottom: '60px', left: '10px', zIndex: 10 }}>
+    <EmojiPicker
+  theme="dark"
+  onEmojiClick={(emojiData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false); // Auto close after selecting, NEEDED!! IT BOTHERED ME
+  }}
+/>
+
+  </div>
+)}
+
+
   <input
     type="text"
     placeholder="Type a message..."
