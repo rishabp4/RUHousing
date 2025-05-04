@@ -102,8 +102,8 @@ function ChatPage() {
   alt="profile"
   onError={(e) => (e.target.src = avatar)}
   style={{
-    width: 32,
-    height: 32,
+    width: 48, //! JULIO WAS HERE, change photo size at will
+    height: 48,
     borderRadius: '50%',
     objectFit: 'cover',
     marginRight: 10,
