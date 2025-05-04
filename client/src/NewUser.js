@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import background1 from './images/background1.png';
 
 function NewUser() {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -13,20 +15,38 @@ function NewUser() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'Arial, sans-serif',
+        position: 'relative'
       }}
     >
-      <div
+      <button
+        onClick={() => navigate("/")}
         style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '40px',
-          borderRadius: '20px',
-          boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
-          textAlign: 'center',
+          position: 'absolute',
+          top: '30px',
+          left: '30px',
+          background: 'transparent',
+          border: '2px solid white',
           color: 'white',
-          width: '300px'
+          padding: '8px 16px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          zIndex: 1000
         }}
       >
+        ⬅ Back
+      </button>
+
+      <div style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: '40px',
+        borderRadius: '20px',
+        boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
+        textAlign: 'center',
+        color: 'white',
+        width: '300px'
+      }}>
         <h2 style={{ marginBottom: '30px' }}>Welcome, New User!</h2>
         <Link to="/student">
           <button className="btn btn-danger w-100 mb-3" style={{ borderRadius: '10px' }}>

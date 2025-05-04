@@ -28,7 +28,7 @@ const getLeaseTerm = (zpid) => {
   return leaseTerms[seed % leaseTerms.length];
 };
 
-Modal.setAppElement("#root");
+Modal.setAppElement("#root"); 
 
 // Function clearly assigns an owner to a house based on its zpid
 const getOwnerInfo = (zpid) => {
@@ -43,6 +43,49 @@ function HouseDetailModal({
   available,
   rating,
 }) {
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState("");
+
+  useEffect(() => {
+    if (house && house.zpid) {
+
+      axios.get(`http://localhost:5002/api/houses/${house.zpid}/reviews`)
+        .then(res => setReviews(res.data))
+        .catch(err => console.error("Error loading reviews", err));
+    }
+  }, [house]);
+  
+  const submitReview = () => {
+
+    console.error("Submit review function called");
+    if (!house || !house.zpid) {
+      console.error("Cannot submit review: House ID is undefined");
+      return;
+    }
+  
+    if (!newReview.trim()) {
+      console.log("Empty review, not submitting");
+      return;
+    }
+    
+    console.log("Submitting review:", newReview, "for house:", house.zpid);
+    
+    axios.post(`http://localhost:5002/api/houses/${house.zpid}/reviews`, { text: newReview })
+      .then(res => {
+        console.log("Review submission response:", res.data);
+        // Fetch the updated reviews instead of relying on response
+        return axios.get(`http://localhost:5002/api/houses/${house.zpid}/reviews`);
+      })
+      .then(res => {
+        console.log("Updated reviews:", res.data);
+        setReviews(res.data);
+        setNewReview("");
+      })
+      .catch(err => {
+        console.error("Error submitting review:", err.response || err);
+      });
+  };
+  
   if (!house) return null;
 
   const owner = getOwnerInfo(house.zpid); // get the owner data clearly
@@ -55,9 +98,6 @@ function HouseDetailModal({
     original: pic.url,
     thumbnail: pic.url,
   }));
-
-  // Remove the old fixed preference list completely
-  // const preferenceList = [ ... ] <-- REMOVE THIS
 
   // Replace with this clearly:
   const preferences = getPreferences(house.zpid);
@@ -146,9 +186,6 @@ function HouseDetailModal({
               ? `$${Number(house.price).toLocaleString()}/month`
               : "Price Not Listed"}
           </h2>
-          {/* <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
-            {house.address || "Address not available"}
-          </p> */}
 
           <a
             style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}
@@ -264,6 +301,55 @@ function HouseDetailModal({
           >
             Close
           </button>
+          
+          <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#f5f5f5", borderRadius: "8px" }}>
+            <h3 style={{ marginBottom: "15px" }}>Reviews</h3>
+            <ul style={{ marginBottom: "15px" }}>
+              {reviews.length > 0 ? (
+                reviews.map((r, i) => (
+                  <li key={i} style={{ marginBottom: "8px", padding: "5px", borderBottom: "1px solid #ddd" }}>
+                    {r.text} <small>({new Date(r.date).toLocaleDateString()})</small>
+                  </li>
+                ))
+              ) : (
+                <li>No reviews yet. Be the first to review!</li>
+              )}
+            </ul>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              console.log("Form submitted");
+              submitReview();
+            }}>
+              <textarea
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+                placeholder="Write a review..."
+                style={{ 
+                  width: "100%", 
+                  padding: "10px", 
+                  marginBottom: "10px", 
+                  minHeight: "80px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc"
+                }}
+              />
+              <button 
+                type="submit"
+                style={{
+                  padding: "8px 15px",
+                  backgroundColor: "#1976D2",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                Submit Review
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Right Side: Owner Info */}

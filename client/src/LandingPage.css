@@ -98,17 +98,17 @@
     .hero-heading {
     text-align: center;
     font-weight: bold;
-    font-size: 28px;
-    margin-bottom: 14px;
+    font-size: 36px;
+    margin-bottom: 20px;
     color: white;
     }
 
     .hero-description {
     text-align: center;    
-    font-size: 17px;
+    font-size: 20px;
     color: #d0d0d0;
-    margin-bottom: 28px;
-    max-width: 480px;
+    margin-bottom: 32px;
+    max-width: 600px;
     }
 
     /* BUTTONS */
@@ -120,21 +120,21 @@
     }
 
     .btn {
-    all: unset;
-    display: inline-block;
-    padding: 24px 48px;
-    font-size: 20px;
-    border-radius: 24px;
-    cursor: pointer;
-    transition: 0.3s ease all;
-    width: 100%;
-    max-width: 350px;
-    font-weight: 500;
-    text-align: center;
-    box-sizing: border-box;
-    max-height: 500px;
-    height: 100%;
+      display: inline-block;
+      padding: 24px 48px !important;
+      font-size: 22px !important;
+      border-radius: 28px !important;
+      cursor: pointer;
+      transition: 0.3s ease all;
+      width: 100%;
+      max-width: 400px;
+      font-weight: 500;
+      text-align: center;
+      box-sizing: border-box;
+      max-height: 500px;
+      height: 100%;
     }
+    
 
     .btn.primary {    
     background-color: #e53935;
@@ -362,3 +362,118 @@
     z-index: 1;
   }
   
+  .scroll-container {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    width: 100%;
+    padding-bottom: 24px;
+  }
+  
+  .scroll-panels {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 40px;
+  }
+  
+  .scroll-panel {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-behavior: smooth;
+  }
+/* Scrollable container */
+.scroll-container {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 0 20px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #e53935 transparent;
+}
+
+/* Webkit scrollbar styling (for Chrome) */
+.scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #e53935;
+  border-radius: 10px;
+}
+
+/* Panel sizing */
+.scroll-panels {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 40px;
+  max-width: 100%;
+  justify-content: flex-start;
+}
+
+.scroll-panel {
+  flex: 0 0 48%; /* Show ~2 panels per screen */
+  scroll-snap-align: start;
+  scroll-behavior: smooth;
+  transition: transform 0.3s ease;
+}
+/* Make all scroll panels same size */
+.scroll-panel {
+  display: flex;
+  align-items: stretch;
+}
+
+.hero-box {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.reviews-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 16px;
+}
+
+.review-bubble {
+  background-color: #4b4b4b;
+  padding: 20px 24px;
+  border-radius: 18px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  line-height: 1.4;
+  color: #fff;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.review-bubble:hover {
+  transform: scale(1.02);
+  background-color: #6a6a6a;
+}
+.review-rating {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffcc00;
+}
+
+
+
+.review-name {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #ff4d4d;
+  font-style: italic;
+}

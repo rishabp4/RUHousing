@@ -5,6 +5,8 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
+//import collegeAveBg from "./images/CollegeAveBlue.png";
+
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -173,7 +175,7 @@ function ProfilePage() {
             cursor: photoFile ? "pointer" : "not-allowed"
           }}
         >
-          Upload
+          Upload Profile Photo
         </button>
       </div>
 
@@ -221,6 +223,8 @@ function ProfilePage() {
       {/* Pass the lifted state and userId as props to RoommatesForm */}
       <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
     </div>
+  
+    
   );
 }
 
