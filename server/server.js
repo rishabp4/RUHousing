@@ -756,6 +756,28 @@ app.get("/api/chat/rooms", async (req, res) => {
 });
 
 
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.post("/api/upload-image", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+
+    const fileName = uuidv4() + path.extname(req.file.originalname);
+    const filePath = path.join(__dirname, "uploads", fileName);
+
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    const imageUrl = `http://localhost:5002/uploads/${fileName}`;
+    res.json({ imageUrl });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Server error uploading image" });
+  }
+});
 
 
 const server = http.createServer(app);
