@@ -15,6 +15,7 @@ function ChatPage() {
   const [sidebarWidth, setSidebarWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const [typingUsers, setTypingUsers] = useState({});
+  const [unreadCounts, setUnreadCounts] = useState({});
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -73,6 +74,9 @@ function ChatPage() {
         const rest = prevUsers.filter((u) => u.uid !== idToMove);
         return [movedUser, ...rest];
       });
+      if (receiverId === currentUserId && chattingWith?.uid !== senderId) {
+        setUnreadCounts((prev) => ({ ...prev, [senderId]: (prev[senderId] || 0) + 1 }));
+      }
       fetchChats();
     });
 
@@ -97,7 +101,7 @@ function ChatPage() {
       socket.off("typing");
       socket.off("stopTyping");
     };
-  }, [currentUserId]);
+  }, [currentUserId, chattingWith]);
 
   if (!currentUserId) return <p>Loading chat...</p>;
 
@@ -139,10 +143,14 @@ function ChatPage() {
           {allUsers.map((user) => {
             const isActive = chattingWith?.uid === user.uid;
             const isTyping = typingUsers[user.uid];
+            const unread = unreadCounts[user.uid] || 0;
             return (
               <div
                 key={user.uid}
-                onClick={() => setChattingWith(user)}
+                onClick={() => {
+                  setChattingWith(user);
+                  setUnreadCounts((prev) => ({ ...prev, [user.uid]: 0 }));
+                }}
                 style={{
                   margin: '10px',
                   padding: '12px',
@@ -152,6 +160,7 @@ function ChatPage() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   boxShadow: isActive ? '0 0 10px rgba(204, 0, 51, 0.8)' : '0 2px 4px rgba(0, 0, 0, 0.3)',
                   transition: 'all 0.2s ease-in-out',
                 }}
@@ -162,29 +171,44 @@ function ChatPage() {
                   if (!isActive) e.currentTarget.style.backgroundColor = '#1e1e1e';
                 }}
               >
-                <img
-                  src={`http://localhost:5002/api/profile-photo/${user.uid}`}
-                  alt="profile"
-                  onError={(e) => (e.target.src = avatar)}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    marginRight: 12,
-                    border: '2px solid white'
-                  }}
-                />
-                <div>
-                  <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
-                  <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
-                    {isTyping
-                      ? <span style={{ color: '#0f0' }}>Typing...</span>
-                      : user.lastMessage
-                        ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
-                        : 'No messages yet'}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src={`http://localhost:5002/api/profile-photo/${user.uid}`}
+                    alt="profile"
+                    onError={(e) => (e.target.src = avatar)}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      marginRight: 12,
+                      border: '2px solid white'
+                    }}
+                  />
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
+                      {isTyping
+                        ? <span style={{ color: '#0f0' }}>Typing...</span>
+                        : user.lastMessage
+                          ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
+                          : 'No messages yet'}
+                    </div>
                   </div>
                 </div>
+                {unread > 0 && (
+                  <div style={{
+                    backgroundColor: '#00ff00',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    borderRadius: '12px',
+                    padding: '2px 8px',
+                    fontSize: '0.75rem',
+                    marginLeft: '10px'
+                  }}>
+                    {unread}
+                  </div>
+                )}
               </div>
             );
           })}
