@@ -197,12 +197,16 @@ function ProfilePage() {
               placeholder="NetID"
             />
           </div>
-  
+
           <button className="save-profile-button" onClick={handleSave}>
             Save Profile
           </button>
         </section>
-  
+        
+  <br /><br />
+      <button onClick={() => window.location.href = "/chat"} style={{ marginBottom: "1rem", padding: "8px" }}>
+  Go to Chats
+</button>
         <section className="roommates-form-section">
           <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
         </section>
