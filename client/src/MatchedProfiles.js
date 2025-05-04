@@ -231,13 +231,13 @@ function MatchedProfiles({ photoUrl }) {
         <div></div> {/* Left side blank to balance the center */}
 
         <h2 style={{
-          color: "#DCD0FF",
+          color: "#F5F5F5",
           fontWeight: "bold",
           fontSize: "24px",
           margin: 0,
           flexGrow: 1
         }}>
-          Top Picks for Your Living Style
+          Top Picks for Your Living Style 🏠
         </h2>
 
         <div>
