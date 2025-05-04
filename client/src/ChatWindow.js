@@ -416,7 +416,9 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     }}
   />
   <button
-    onClick={sendMessage}
+  type="button"
+  onClick={() => sendMessage()}
+
     style={{
       backgroundColor: "#cc0033",
       color: "white",
