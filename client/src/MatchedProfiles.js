@@ -6,6 +6,8 @@ import building from "./images/Building.png";
 import avatar from "./images/default_avatar.png";
 
 
+
+
 const reportButtonStyle = {
   position: 'fixed',
   bottom: '20px',
@@ -122,6 +124,7 @@ const matchScoreStyle = {
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
 function MatchedProfiles({ photoUrl }) {
+  const [helloStatus, setHelloStatus] = useState({});// !julio was here!, SAY HELLO BUTTON CONSTANT
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -217,6 +220,39 @@ function MatchedProfiles({ photoUrl }) {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
+//! julio was here!
+//! say hello button
+  const handleSayHello = async (recipientId) => {
+    const senderId = localStorage.getItem("userId");
+    try {
+      const response = await fetch("http://localhost:5002/api/send-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          senderId,
+          recipientId,
+          content: "Hello!",
+        }),
+      });
+  
+      if (response.ok) {
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Sent!" }));
+        setTimeout(() => {
+          setHelloStatus((prev) => ({ ...prev, [recipientId]: null }));
+        }, 2000);
+      } else {
+        throw new Error("Failed to send");
+      }
+    } catch (error) {
+      setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" }));
+      setTimeout(() => {
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: null }));
+      }, 2000);
+    }
+  };
+  
   // How matched profiles should appear
   return (
     <>
@@ -298,6 +334,36 @@ function MatchedProfiles({ photoUrl }) {
                 <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p>
                 <p style={matchLevelStyle}>{profile.matchLevel}</p>
                 {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
+
+
+                {profile.matchScore !== undefined && (
+  <p style={matchScoreStyle}>
+    Match Score: {profile.matchScore.toFixed(2)}
+  </p>
+)}
+
+<button
+  onClick={() => handleSayHello(profile.userId)}
+  style={{
+    marginTop: "10px",
+    padding: "8px 12px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  }}
+>
+  Say Hello
+</button>
+
+{helloStatus[profile.userId] && (
+  <p style={{ color: "green", marginTop: "5px" }}>
+    {helloStatus[profile.userId]}
+  </p>
+)}
+
               </div>
               <div style={profileImageContainerStyle}>
   <img

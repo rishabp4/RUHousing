@@ -10,6 +10,8 @@ const upload = multer({ storage: storage });
 
 const http = require("http"); //!julio was here 
 const { Server } = require("socket.io");// real time updates, chat, etc.
+// const Message = require('./models/Message'); 
+
 
 
 
@@ -778,6 +780,32 @@ app.post("/api/upload-image", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Server error uploading image" });
   }
 });
+// post say hello!
+app.post('/api/send-message', async (req, res) => {
+  const { senderId, recipientId, content } = req.body;
+
+  if (!senderId || !recipientId || !content) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const chatsCollection = db.collection("chats"); // ✅ important
+    const newMessage = {
+      senderId,
+      receiverId: recipientId,
+      message: content,
+      timestamp: new Date(),
+    };
+
+    await chatsCollection.insertOne(newMessage); // ✅ stored in chats, like your other messages
+    res.status(200).json({ message: 'Message sent successfully' });
+  } catch (err) {
+    console.error('Error saving message:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 
 
 const server = http.createServer(app);
