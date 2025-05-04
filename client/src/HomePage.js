@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/CollegeAveBlue.png";
-import header from './images/Header.png';
+import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
@@ -119,7 +119,8 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "PUT API KEY HERE", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key":
+            "fef89518b2mshe2d6472c04120f1p1a5a35jsn02515fa84898", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -274,8 +275,6 @@ function HomePage() {
               </button>
             </Link>
           </div>
-
-
         </div>
         <Link to="/profile">
           <img
@@ -314,9 +313,9 @@ function HomePage() {
             color: "#DCD0FF",
           }}
         >
-          Welcome home, Scarlet Knight! Your search for off-campus living starts here :)
+          Welcome home, Scarlet Knight! Your search for off-campus living starts
+          here :)
         </div>
-        
 
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -529,9 +528,9 @@ function HomePage() {
                     >
                       ♥{" "}
                       {localStorage.getItem("savedHouses") &&
-                        JSON.parse(localStorage.getItem("savedHouses")).includes(
-                          home.zpid
-                        )
+                      JSON.parse(localStorage.getItem("savedHouses")).includes(
+                        home.zpid
+                      )
                         ? "Unsave"
                         : "Save"}
                     </button>
