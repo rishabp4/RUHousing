@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
 import building from "./images/Building.png";
-
+import avatar from "./images/default_avatar.png";
 
 
 const reportButtonStyle = {
@@ -220,7 +220,7 @@ function MatchedProfiles({ photoUrl }) {
   // How matched profiles should appear
   return (
     <>
-      <HeaderBar photoUrl={photoUrl} />
+      <HeaderBar photoUrl={(photoUrl)} />
 
       <div
         style={{
@@ -300,15 +300,13 @@ function MatchedProfiles({ photoUrl }) {
                 {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
               </div>
               <div style={profileImageContainerStyle}>
-                {profile.photoId ? (
-                  <img
-                    src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
-                    alt="Profile" style={profileImageStyle}
-                    onError={(e) => (e.target.src = defaultAvatar)} />
-                ) : (
-                  <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
-                )}
-              </div>
+  <img
+    src={`http://localhost:5002/api/profile-photo/${profile.userId}`}
+    alt="profile"
+    style={profileImageStyle}
+    onError={(e) => (e.target.src = avatar)}
+  />
+</div>
             </div>
           ))
         ) : (
