@@ -231,6 +231,23 @@ function ProfilePage() {
         <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
           Find Roommates
         </button>
+        <br /><br />
+
+        <Link to="/chat">
+  <button
+    className="find-roommates-button"
+    style={{
+      marginTop: "10px",
+      backgroundColor: "#cc0033",
+      color: "white",
+      fontWeight: "bold"
+    }}
+  >
+    Go to Chats
+  </button>
+</Link>
+
+
   
         <section className="profile-form">
           <div className="form-group">
