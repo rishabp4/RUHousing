@@ -309,7 +309,7 @@ function HomePage() {
           style={{
             fontWeight: "bold",
             fontSize: "24px",
-            color: "#DCD0FF",
+            color: "#F5F5F5",
           }}
         >
           Welcome home, Scarlet Knight! Your search for off-campus living starts
