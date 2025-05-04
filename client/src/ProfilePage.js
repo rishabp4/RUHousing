@@ -5,8 +5,22 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
-//import collegeAveBg from "./images/CollegeAveBlue.png";
+import building from "./images/Building.png";
+import './ProfilePage.css';
 
+//import collegeAveBg from "./images/CollegeAveBlue.png";
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
+
+const profilesContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '80px',
+  backgroundColor: '#F8F8FF',
+  borderRadius: '8px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  margin: '20px',
+};
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -119,7 +133,7 @@ function ProfilePage() {
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
 
-//! CHATTTING WITH JULIO
+  //! CHATTTING WITH JULIO
   if (chattingWith) {
     return (
       <ChatWindow
@@ -129,7 +143,7 @@ function ProfilePage() {
       />
     );
   }
-// FPR THE USERS, JULIO BACK HERE
+  // FPR THE USERS, JULIO BACK HERE
   if (showFindUsers) {
     return (
       <div style={{ padding: "2rem" }}>
@@ -143,89 +157,136 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Welcome, {firebaseUser.email}</h2>
-      <div style={{ margin: "22px 0", textAlign: "center" }}>
-        {/* Profile Photo */}
-        <img
-          src={photoUrl}
-          alt="Profile"
-          width={120}
-          height={120}
-          style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc", background: "#fafafa" }}
-          onError={e => (e.target.src = avatar)}
-        />
-        <br />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => setPhotoFile(e.target.files[0])}
-          style={{ marginTop: 8 }}
-        />
-        <button
-          onClick={handlePhotoUpload}
-          disabled={!photoFile}
-          style={{
-            marginLeft: 8,
-            padding: "6px 16px",
-            borderRadius: 4,
-            background: "#ffffe0",
-            color: "black",
-            border: "1px solid #ccc",
-            cursor: photoFile ? "pointer" : "not-allowed"
-          }}
-        >
-          Upload Profile Photo
-        </button>
+    <>
+      <HeaderBar photoUrl={photoUrl} />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+        }}
+      >
+        <div></div> {/* Left side blank to balance the center */}
+
+        <h2 style={{
+          color: "#F5F5F5",
+          fontWeight: "bold",
+          fontSize: "24px",
+          margin: 0,
+          flexGrow: 1
+        }}>
+          Welcome,  <strong>{firstName || firebaseUser.email}</strong>!
+        </h2>
+
+        <div>
+          <Link to="/login">
+            <button
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#800000",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
       </div>
 
-      <br /><br />
+      <div style={{
+        backgroundImage: `url(${building})`,
+        backgroundSize: "100% auto",
+        backgroundPosition: "top center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        minHeight: "calc(100vh - 130px)",
+        padding: "40px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}>
+        <div className="profile-page" style={{ backgroundColor: "#2F5E87" }}>
+          <div style={profilesContainerStyle}>
+            {/* Profile Photo */}
+            <section className="photo-section">
+              <img
+                src={photoUrl}
+                alt="Profile"
+                className="profile-avatar"
+                onError={(e) => (e.target.src = avatar)}
+              />
+              <div className="upload-controls">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhotoFile(e.target.files[0])}
+                />
+                <button onClick={handlePhotoUpload} disabled={!photoFile}>
+                  Upload
+                </button>
+              </div>
+            </section>
+            <section className="profile-form">
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="firstName"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  placeholder="First Name"
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  placeholder="Last Name"
+                />
+                <input
+                  type="text"
+                  name="netID"
+                  value={netID}
+                  onChange={(e) => setNetID(e.target.value)}
+                  placeholder="NetID"
+                />
+              </div>
 
-      <button onClick={() => setShowFindUsers(true)} style={{ marginBottom: "1rem", padding: "8px" }}>
-        Find Roommates
-      </button>
+              <button className="save-profile-button" onClick={handleSave}>
+                Save Profile
+              </button>
+            </section>
 
-      <div>
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={handleFirstNameChange}
-          placeholder="First Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={handleLastNameChange}
-          placeholder="Last Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="netID"
-          value={netID}
-          onChange={(e) => setNetID(e.target.value)}
-          placeholder="NetID"
-          style={{ margin: "10px", padding: "5px" }}
-        />
+            <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
+              Find Roommates
+            </button>
+
+            <Link to="/chat">
+              <button
+                className="find-roommates-button"
+              >
+                Go to Chats
+              </button>
+            </Link>
+
+          </div>
+          <section className="roommates-form-section">
+            <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
+          </section>
+        </div>
       </div>
-
-      <button onClick={handleSave}>Save Profile</button>
-     
-     <br /><br />
-      <button onClick={() => window.location.href = "/chat"} style={{ marginBottom: "1rem", padding: "8px" }}>
-  Go to Chats
-</button>
+    </>
 
 
-      {/* Pass the lifted state and userId as props to RoommatesForm */}
-      <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
-    </div>
-  
-    
   );
+
+
 }
 
 export default ProfilePage;

@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/CollegeAveBlue.png";
-import header from './images/Header.png';
+import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
@@ -119,7 +119,7 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "PUT API KEY HERE", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key": "PUT API key here", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -274,8 +274,6 @@ function HomePage() {
               </button>
             </Link>
           </div>
-
-
         </div>
         <Link to="/profile">
           <img
@@ -301,7 +299,7 @@ function HomePage() {
         style={{
           display: "flex",
           backgroundColor: "#A52A2A",
-          padding: "10px 30px",
+          padding: "5px 15px",
           alignItems: "center",
           justifyContent: "center",
           justifyContent: "space-between",
@@ -311,12 +309,12 @@ function HomePage() {
           style={{
             fontWeight: "bold",
             fontSize: "24px",
-            color: "#DCD0FF",
+            color: "#F5F5F5",
           }}
         >
-          Welcome home, Scarlet Knight! Your search for off-campus living starts here :)
+          Welcome home, Scarlet Knight! Your search for off-campus living starts
+          here :)
         </div>
-        
 
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -372,7 +370,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#737CA1", //light blue
+              backgroundColor: "#737CA1", 
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
@@ -529,9 +527,9 @@ function HomePage() {
                     >
                       ♥{" "}
                       {localStorage.getItem("savedHouses") &&
-                        JSON.parse(localStorage.getItem("savedHouses")).includes(
-                          home.zpid
-                        )
+                      JSON.parse(localStorage.getItem("savedHouses")).includes(
+                        home.zpid
+                      )
                         ? "Unsave"
                         : "Save"}
                     </button>

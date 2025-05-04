@@ -1,44 +1,50 @@
+/*  ───────────  SavedHousesPage.js  ───────────  */
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import logo from "./images/RuLogo.png";
-import rutgersR from "./images/Rutgers-R.png";
-import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/college_ave_background.png";
 import axios from "axios";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+
+import logo from "./images/RuLogo.png";
+import rutgersR from "./images/Rutgers-R.png";
+import headerImg from "./images/Header.png";
+import avatar from "./images/default_avatar.png";
+import collegeAveBg from "./images/CollegeAveBlue.png";
+
 import SavedHousesDetailModel from "./SavedHousesDetailModel";
+import "./HomePage.css"; // re-use hover colours, buttons, etc.
+import "./SavedHousePage.css"; // **new**, only a few extra rules
 
 function SavedHousesPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [properties, setProperties] = useState([]);
-  const [selectedHouse, setSelectedHouse] = useState(null);
+  const [selectedHouse, setSelected] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const [photoUrl, setPhotoUrl] = useState(avatar);
   const [userId, setUserId] = useState(null);
 
+  /* ── grab saved houses (once on mount + when userId ready) ── */
   useEffect(() => {
-    const fetchSavedHouses = async () => {
-      const userId = localStorage.getItem("userId");
-      let config;
-      const userSavedHouses = await axios
-        .get(`http://localhost:5002/api/house/${userId}`)
-        .then((response) => {
-          setProperties(response.data.props || []);
-        })
-        .catch((error) => {
-          console.error("Error fetching houses:", error);
-        });
+    if (!userId) return; // wait for auth
+    const fetch = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:5002/api/house/${userId}`
+        );
+        setProperties(data.props || []);
+      } catch (err) {
+        console.error("Error fetching saved houses:", err);
+      }
     };
+    fetch();
+  }, [userId]);
 
-    fetchSavedHouses();
-  }, []);
-
+  /* ── auth listener just like HomePage ── */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, (user) => {
       if (user && user.uid) {
         setUserId(user.uid);
         setPhotoUrl(
@@ -49,218 +55,113 @@ function SavedHousesPage() {
         setPhotoUrl(avatar);
       }
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  // Home‑button behaviour: go to /home or refresh if already there
-  const handleHomeClick = () => {
-    if (location.pathname === "/home") {
-      navigate(0); // full reload of /home
-    } else {
-      navigate("/home");
-    }
-  };
+  /* ── navigation helpers (identical to HomePage.js) ── */
+  const goHome = () =>
+    location.pathname === "/home" ? navigate(0) : navigate("/home");
+  const goSaved = () =>
+    location.pathname === "/saved-houses"
+      ? navigate(0)
+      : navigate("/saved-houses");
 
-  // Saved-Houses button behaviour (refresh if already here)
-  const handleSavedClick = () => {
-    if (location.pathname === "/saved-houses") {
-      navigate(0); // reload page
-    } else {
-      navigate("/saved-houses");
-    }
-  };
-
-  const openModal = (house) => {
-    setSelectedHouse(house);
+  /* ── modal helpers ── */
+  const openModal = (h) => {
+    setSelected(h);
     setModalOpen(true);
   };
-
   const closeModal = () => {
+    setSelected(null);
     setModalOpen(false);
-    setSelectedHouse(null);
   };
 
-  const isHouseAvailable = (house) => {
-    return house.available;
-  };
-
-  // Helper function to generate consistent star ratings
-  const getHouseRating = (house) => {
-    return house.rating;
-  };
-
-  const handleUnSaveHouse = async (houseId) => {
-    // 1. get the userId from local storage
-    const userId = localStorage.getItem("userId");
-
-    // 2.) delete the house
+  /* ── unsave button inside the grid ── */
+  const handleUnsave = async (houseId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5002/api/house/${houseId}`
-      );
-      alert(response.data.message);
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
-        alert(`Error: ${error.response.data.error}`);
-      } else {
-        alert("An unexpected error occurred while deleting the house.");
-      }
+      await axios.delete(`http://localhost:5002/api/house/${houseId}`);
+      setProperties((prev) => prev.filter((h) => h._id !== houseId));
+      if (selectedHouse && selectedHouse._id === houseId) closeModal();
+    } catch (err) {
+      alert("Could not unsave this house. Please try again.");
+      console.error(err);
     }
   };
 
+  /* ─────────────────────────  render  ───────────────────────── */
   return (
     <>
-      {/* Header */}
-      <div
+      {/* ███  Scarlet header (identical to HomePage)  ███ */}
+      <header
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          backgroundColor: "#585757",
+          backgroundImage: `url(${headerImg})`,
+          backgroundSize: "cover",
           padding: "15px 20px",
-          color: "white",
+          color: "#ffffff",
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={rutgersR}
-            alt="Rutgers R"
-            style={{ height: "60px", marginRight: "15px" }}
-          />
-          <img
             src={logo}
-            alt="RU Housing Logo"
-            style={{ height: "80px", marginRight: "20px" }}
+            alt="RU Housing"
+            style={{ height: 80, marginRight: 20 }}
           />
-          <h1
-            style={{
-              fontSize: "27px",
-              color: "rgb(204, 146, 60)",
-              fontWeight: "bold",
-            }}
-          >
-            RU Housing
-          </h1>
+          <div style={{ display: "flex", gap: 25 }}>
+            <button onClick={goHome} className="home-button     nav-btn">
+              Home
+            </button>
+            <button onClick={goSaved} className="saved-houses-button nav-btn">
+              Saved Houses
+            </button>
+            <Link to="/matched-profiles">
+              <button className="roommates-button nav-btn">My Roommates</button>
+            </Link>
+            <Link to="/profile">
+              <button className="profile-button nav-btn">Profile</button>
+            </Link>
+          </div>
         </div>
+
         <Link to="/profile">
           <img
-            src={photoUrl /* or avatar */}
-            alt="User Avatar"
+            src={photoUrl}
+            alt="avatar"
             style={{
-              height: "60px",
-              width: "60px",
+              height: 60,
+              width: 60,
               borderRadius: "50%",
               objectFit: "cover",
               background: "#fafafa",
             }}
             onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = avatar;
+              e.currentTarget.src = avatar;
             }}
           />
         </Link>
-      </div>
+      </header>
 
-      {/* Navbar */}
+      {/* ███  greeting / logout bar  ███ */}
       <div
         style={{
           display: "flex",
-          backgroundColor: "#4CAF50",
-          padding: "10px 30px",
-          alignItems: "center",
           justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
         }}
       >
-        <div style={{ display: "flex", gap: "25px" }}>
-          <button
-            className="home-button"
-            style={{
-              backgroundColor: "#66BB6A",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              border: "none",
-              fontWeight: "bold",
-            }}
-            onClick={handleHomeClick}
-          >
-            Home
-          </button>
-          <button
-            className="saved-houses-button"
-            style={{
-              backgroundColor: "#66BB6A",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              border: "none",
-              fontWeight: "bold",
-            }}
-            onClick={handleSavedClick}
-          >
-            Saved Houses
-          </button>
-          <Link to="/matched-profiles">
-            {" "}
-            {/* Updated Link here */}
-            <button
-              className="roommates-button"
-              style={{
-                backgroundColor: "#66BB6A",
-                color: "white",
-                padding: "8px 16px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                border: "none",
-                fontWeight: "bold",
-              }}
-            >
-              My Roommates
-            </button>
-          </Link>
-          <Link to="/profile">
-            <button
-              className="profile-button"
-              style={{
-                backgroundColor: "#66BB6A",
-                color: "white",
-                padding: "8px 16px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                border: "none",
-                fontWeight: "bold",
-              }}
-            >
-              Profile
-            </button>
-          </Link>
-        </div>
-
-        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Link to="/login">
-            <button
-              className="top-search-button"
-              style={{
-                padding: "6px 14px",
-                backgroundColor: "#66BB6A",
-                color: "white",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                border: "none",
-              }}
-            >
-              Logout
-            </button>
-          </Link>
-        </div>
+        <span style={{ color: "#F5F5F5", fontWeight: "bold", fontSize: 24 }}>
+          Saved Houses
+        </span>
+        <Link to="/login">
+          <button className="top-search-button">Logout</button>
+        </Link>
       </div>
 
-      {/* Background and Grid */}
-      {/* Background and Grid */}
+      {/* ███  blue skyline background  ███ */}
       <div
         style={{
           backgroundImage: `url(${collegeAveBg})`,
@@ -269,158 +170,63 @@ function SavedHousesPage() {
           backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
           minHeight: "calc(100vh - 130px)",
-          padding: "40px",
+          padding: 40,
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-start",
         }}
       >
-        {/* Main Content Window */}
-        <div
-          style={{
-            backgroundColor: "#d3d3d3",
-            borderRadius: "12px",
-            padding: "30px",
-            width: "90%",
-            maxWidth: "1200px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          {/* Search bar and Filter Button (Restored EXACTLY) */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: "#2c3e50",
-              padding: "12px 20px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-            }}
-          >
-            {/* <input
-              type="text"
-              placeholder="Search for houses..."
-              style={{
-                padding: "8px 12px",
-                width: "250px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-            /> */}
-            <div style={{ position: "relative" }}></div>
-          </div>
+        {/* ███  grey “window”  ███ */}
+        <div className="saved-window">
+          {/*  ❱❱  **THIS BLOCK INTENTIONALLY LEFT BLANK**  ❰❰  */}
+          {/*     (Search / filter removed per spec)                */}
 
-          {/* House Cards Grid (Restored EXACTLY with Save button) */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            {properties && properties.length > 0 ? (
-              <>
-                {properties.map((home, i) => {
-                  return (
-                    <div
-                      key={home.zpid}
-                      onClick={() => openModal(home)}
-                      style={{
-                        backgroundColor: "#f9f9f9",
-                        borderRadius: "10px",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                        textAlign: "center",
-                        cursor: "pointer",
-                        transition: "transform 0.2s ease",
+          {/* ███  card grid  ███ */}
+          <div className="house-grid">
+            {properties.length ? (
+              properties.map((h, i) => (
+                <div
+                  key={h._id}
+                  className="house-card"
+                  onClick={() => openModal(h)}
+                >
+                  <img src={h.imgSrc} alt={`house ${i + 1}`} />
+                  <div className="card-body">
+                    <p className="price">
+                      {h.price
+                        ? String(h.price).startsWith("$")
+                          ? h.price
+                          : `$${h.price}`
+                        : "Price Not Listed"}
+                    </p>
+                    <p className={h.available ? "avail ok" : "avail no"}>
+                      {h.available
+                        ? "Currently Available"
+                        : "No Longer Available"}
+                    </p>
+                    <span className="rating">⭐ {h.rating.toFixed(1)} / 5</span>
+
+                    <button
+                      className="save-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUnsave(h._id);
                       }}
                     >
-                      <img
-                        src={home.imgSrc}
-                        alt={`House ${i + 1}`}
-                        style={{
-                          width: "100%",
-                          height: "160px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div style={{ padding: "10px" }}>
-                        {/* Clearly improved price styling */}
-                        <p
-                          style={{
-                            margin: "8px 0",
-                            fontWeight: "700",
-                            fontSize: "18px",
-                            color: "#2c3e50",
-                          }}
-                        >
-                          {home.price
-                            ? String(home.price).startsWith("$")
-                              ? home.price
-                              : `$${home.price}`
-                            : "Price Not Listed"}
-                        </p>
-
-                        {/* Availability Status */}
-                        <p
-                          style={{
-                            color: home.available ? "green" : "red",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {home.available
-                            ? "Currently Available"
-                            : "No Longer Available"}
-                        </p>
-
-                        {/* Star Rating clearly ABOVE Save button */}
-                        <div
-                          style={{
-                            marginTop: "8px",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                            color: "#ffffff", // White text
-                            backgroundColor: "#909090", // Light grayish background
-                            borderRadius: "4px",
-                            padding: "3px 8px",
-                            display: "inline-block",
-                          }}
-                        >
-                          ⭐ {home.rating.toFixed(1)} / 5
-                        </div>
-
-                        {/* Save button clearly BELOW Rating */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUnSaveHouse(home._id);
-                          }}
-                          style={{
-                            padding: "5px 12px",
-                            backgroundColor: "white",
-                            border: "1px solid #ccc",
-                            borderRadius: "20px",
-                            cursor: "pointer",
-                            color: "#e91e63",
-                            fontWeight: "bold",
-                            display: "block", // clearly forces button below rating, not inline
-                            margin: "0 auto",
-                          }}
-                        >
-                          Unsave
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </>
+                      ♥ Unsave
+                    </button>
+                  </div>
+                </div>
+              ))
             ) : (
-              <p>You have yet to save any houses</p>
+              <p style={{ textAlign: "center", margin: 0 }}>
+                You haven’t saved any houses yet.
+              </p>
             )}
           </div>
         </div>
       </div>
+
+      {/*  modal  */}
       <SavedHousesDetailModel
         isOpen={modalOpen}
         onRequestClose={closeModal}

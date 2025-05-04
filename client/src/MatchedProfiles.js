@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
+import building from "./images/Building.png";
+import avatar from "./images/default_avatar.png";
+
 
 const reportButtonStyle = {
   position: 'fixed',
@@ -56,14 +61,14 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#f4f4f4',
+  backgroundColor: '#2F5E87',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
 };
 
 const headingStyle = {
-  color: '#333',
+  color: '#F8F8FF',
   marginBottom: '20px',
 };
 
@@ -144,7 +149,7 @@ const knowMoreButtonStyle = {
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles() {
+function MatchedProfiles({ photoUrl }) {
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
