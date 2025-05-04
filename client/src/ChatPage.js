@@ -75,6 +75,20 @@ function ChatPage() {
     boxShadow: '2px 0 6px rgba(0,0,0,0.4)' // 🔥 Adds right-side glow
   }}
 >
+<input
+  type="text"
+  placeholder="Search chats..."
+  style={{
+    width: '90%',
+    margin: '10px',
+    padding: '8px 12px',
+    borderRadius: '20px',
+    border: 'none',
+    outline: 'none',
+    backgroundColor: '#1e1e1e',
+    color: 'white',
+  }}
+/>
 
 
         <h3 style={{ padding: '1rem', backgroundColor: '#cc0033', color: 'white', margin: 0 }}>

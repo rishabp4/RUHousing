@@ -212,6 +212,10 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         }}
       >
         {msg.message}
+        <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
+  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+</div>
+
       </div>
     </div>
   );
