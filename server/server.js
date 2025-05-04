@@ -8,6 +8,10 @@ const path = require("path");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const http = require("http"); //!julio was here 
+const { Server } = require("socket.io");// real time updates, chat, etc.
+
+
 
 const app = express();
 app.use(cors());
@@ -734,15 +738,31 @@ app.get("/api/chat/rooms", async (req, res) => {
 
 
 
-const PORT = process.env.PORT || 5002;
-app
-  .listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  })
-  .on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Try a different one.`);
-    } else {
-      console.error("Server error:", err);
-    }
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  socket.on("sendMessage", (data) => {
+    console.log("📨 Message received:", data);
+    io.emit("receiveMessage", data);
+
   });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
+const PORT = process.env.PORT || 5002;
+server.listen(PORT, () => {
+  console.log(`🚀 WebSocket + Express server running at http://localhost:${PORT}`);
+});
+
