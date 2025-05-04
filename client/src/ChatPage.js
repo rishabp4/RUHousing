@@ -5,10 +5,13 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import avatar from "./images/default_avatar.png";
 import { io } from 'socket.io-client';
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
+
 
 const socket = io("http://localhost:5002");
 
-function ChatPage() {
+function ChatPage({photoUrl = avatar}) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [chattingWith, setChattingWith] = useState(null);
@@ -111,6 +114,48 @@ function ChatPage() {
   if (!currentUserId) return <p>Loading chat...</p>;
 
   return (
+    <>
+    <HeaderBar photoUrl={(photoUrl)} />
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: "#A52A2A",
+        padding: "5px 15px",
+      }}
+    >
+      <div></div> {/* Left side blank to balance the center */}
+
+      <h2 style={{
+        color: "#F5F5F5",
+        fontWeight: "bold",
+        fontSize: "24px",
+        margin: 0,
+        flexGrow: 1
+      }}>
+        Message Potenial Roommates
+      </h2>
+
+      <div>
+        <Link to="/login">
+          <button
+            style={{
+              padding: "6px 14px",
+              backgroundColor: "#800000",
+              color: "white",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              border: "none",
+            }}
+          >
+            Logout
+          </button>
+        </Link>
+      </div>
+    </div>
     <div style={{ display: 'flex', height: '100vh' }}>
       <div
         style={{
@@ -246,6 +291,7 @@ function ChatPage() {
         )}
       </div>
     </div>
+    </>
   );
 }
 
