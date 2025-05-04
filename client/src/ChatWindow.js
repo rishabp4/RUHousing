@@ -47,7 +47,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
   const sendMessage = async () => {
     if (newMessage.trim() === "") return;
-
+  
     try {
       const res = await fetch('http://localhost:5002/api/chat', {
         method: "POST",
@@ -58,11 +58,19 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
           message: newMessage.trim(),
         }),
       });
-
+  
       if (res.ok) {
+        const newMsgObj = {
+          senderId: currentUserId,
+          receiverId: chattingWith.uid,
+          message: newMessage.trim(),
+          timestamp: new Date(),
+        };
+  
         setNewMessage("");
         setJustSentMessage(true);
-        await fetchMessages();
+        setMessages((prev) => [...prev, newMsgObj]); // Show message now
+        socket.emit("sendMessage", newMsgObj); // 🧠 Real-time notify others
       } else {
         console.error("Failed to send message");
       }
@@ -70,6 +78,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       console.error("Error sending message:", error);
     }
   };
+  
 
   useEffect(() => {
     if (chattingWith?.uid) {
@@ -271,6 +280,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       if (e.key === "Enter") {
         e.preventDefault();
         sendMessage();
+        
       }
     }}
     style={{
