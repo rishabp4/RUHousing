@@ -83,6 +83,49 @@ app.post("/api/house", async (req, res) => {
   }
 });
 
+// add and fetch reviews for a house
+
+app.get("/api/houses/:id/reviews", async (req, res) => {
+  const houseId = req.params.id;
+  try {
+    const collection = db.collection("reviews");
+    const reviews = await collection.find({ houseId }).toArray();
+    res.json(reviews);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// Review get/post
+app.post("/api/houses/:id/reviews", async (req, res) => {
+  console.log("Review submission received:", req.params, req.body);
+  const houseId = req.params.id;
+  const { text } = req.body;
+
+  if (!text) return res.status(400).json({ error: "Review text required" });
+
+  try {
+    const collection = db.collection("reviews");
+
+    await collection.insertOne({
+      houseId,
+      text,
+      date: new Date(),
+    });
+
+    // Return all updated reviews
+    const updatedReviews = await collection.find({ houseId }).toArray();
+    res.json(updatedReviews);
+  } catch (err) {
+    console.error("Error saving review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 
 // --------- Route to get saved houses ----------- //
 app.get("/api/house/:userId", async (req, res) => {
