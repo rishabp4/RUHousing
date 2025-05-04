@@ -176,7 +176,7 @@ function SavedHousesPage() {
         }}
       >
         {/* ███  grey “window”  ███ */}
-        <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+        <div className="saved-window">
           {/*  ❱❱  **THIS BLOCK INTENTIONALLY LEFT BLANK**  ❰❰  */}
           {/*     (Search / filter removed per spec)                */}
 
@@ -218,7 +218,7 @@ function SavedHousesPage() {
                 </div>
               ))
             ) : (
-              <p style={{ textAlign: "center", margin: 0}}>
+              <p style={{ textAlign: "center", margin: 0 }}>
                 You haven’t saved any houses yet.
               </p>
             )}
