@@ -218,7 +218,7 @@ function SavedHousesPage() {
                 </div>
               ))
             ) : (
-              <p style={{ textAlign: "center", margin: 0 }}>
+              <p style={{ textAlign: "center", margin: 0, color: "white" }}>
                 You haven’t saved any houses yet.
               </p>
             )}
