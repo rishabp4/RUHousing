@@ -1,3 +1,4 @@
+// src/ChatPage.js
 import React, { useState, useEffect } from 'react';
 import ChatWindow from './ChatWindow';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -56,12 +57,10 @@ function ChatPage() {
           setChattingWith(data[0]);
         }
       });
-  }, [currentUserId]);
+  }, [currentUserId, chattingWith]);
 
   useEffect(() => {
     socket.on("messageSent", ({ senderId, receiverId }) => {
-      if (senderId !== currentUserId && receiverId !== currentUserId) return;
-    
       const idToMove = senderId === currentUserId ? receiverId : senderId;
       setAllUsers((prevUsers) => {
         const movedUser = prevUsers.find((u) => u.uid === idToMove);
@@ -70,7 +69,6 @@ function ChatPage() {
         return [movedUser, ...rest];
       });
     });
-    
     return () => {
       socket.off("messageSent");
     };
@@ -128,6 +126,7 @@ function ChatPage() {
                   transition: 'background-color 0.2s',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) e.currentTarget.style.backgroundColor = '#2a2a2a';
@@ -136,19 +135,26 @@ function ChatPage() {
                   if (!isActive) e.currentTarget.style.backgroundColor = '#1c1c1c';
                 }}
               >
-                <img
-                  src={`http://localhost:5002/api/profile-photo/${user.uid}`}
-                  alt="profile"
-                  onError={(e) => (e.target.src = avatar)}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    marginRight: 10,
-                  }}
-                />
-                <span>{user.firstName} {user.lastName}</span>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src={`http://localhost:5002/api/profile-photo/${user.uid}`}
+                    alt="profile"
+                    onError={(e) => (e.target.src = avatar)}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      marginRight: 10,
+                    }}
+                  />
+                  <div>
+                    <div>{user.firstName} {user.lastName}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#ccc', marginTop: '2px' }}>
+                      {user.lastMessage ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '') : 'No messages yet'}
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}

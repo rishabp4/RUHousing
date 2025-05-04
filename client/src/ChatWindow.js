@@ -99,20 +99,27 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
   useEffect(() => {
     socket.on('receiveMessage', (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
+      if (
+        (msg.senderId === chattingWith.uid && msg.receiverId === currentUserId) ||
+        (msg.senderId === currentUserId && msg.receiverId === chattingWith.uid)
+      ) {
+        setMessages((prevMessages) => [...prevMessages, msg]);
+      }
     });
+    
 
     socket.on('typing', (data) => {
-      if (data.from === chattingWith.uid) {
+      if (data.from === chattingWith.uid && data.to === currentUserId) {
         setIsTyping(true);
       }
     });
-
+    
     socket.on('stopTyping', (data) => {
-      if (data.from === chattingWith.uid) {
+      if (data.from === chattingWith.uid && data.to === currentUserId) {
         setIsTyping(false);
       }
     });
+    
 
     return () => {
       socket.off('receiveMessage');
