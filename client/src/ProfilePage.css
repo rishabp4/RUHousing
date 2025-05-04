@@ -1,0 +1,211 @@
+:root {
+    --rutgers-red: #cc0033;
+    --rutgers-red-dark: #a60028;
+    --black: #000000;
+    --white: #ffffff;
+    --gray-light: #f9f9f9;
+    --gray-border: #cccccc;
+  }
+  
+  /* Container */
+  .profile-page {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    background: #fafafa; /* soft off-white background */
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out; /* soft animation */
+  }
+
+  /*.profile-bg-wrapper {
+    background-image: url('/Building.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+  }*/
+  
+  
+  
+  /* Header Title */
+  .welcome-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: var(--black);
+  }
+  
+  /* Profile Photo */
+  .photo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gray-border);
+    background-color: var(--gray-light);
+  }
+  
+  /* Upload Controls */
+  .upload-controls {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .upload-controls button {
+    padding: 8px 16px;
+    border: none;
+    background-color: var(--rutgers-red);
+    color: var(--white);
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .upload-controls button:hover {
+    background-color: var(--rutgers-red-dark);
+  }
+  
+  /* Action Buttons */
+  .find-roommates-button,
+  .save-profile-button {
+    padding: 8px 16px;
+    border: none;
+    background-color: var(--rutgers-red);
+    color: var(--white);
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 10px;
+  }
+  
+  .find-roommates-button:hover,
+  .save-profile-button:hover {
+    background-color: var(--rutgers-red-dark);
+  }
+  
+  /* Profile Form */
+  .profile-form {
+    margin-top: 30px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group input {
+    padding: 10px;
+    border: 1px solid var(--gray-border);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  
+  /* Roommate Form Section */
+  .roommates-form-section {
+    margin-top: 40px;
+  }
+  
+  /* Header for Roommate Preferences */
+  .roommate-preference-header {
+    background-color: var(--gray-light);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+  
+  .roommate-preference-header h3 {
+    font-size: 24px;
+    margin-bottom: 20px; /* was 10px */
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--rutgers-red);
+  }
+  
+  
+  .preference-subtext {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 0;
+  }
+
+  .submit-preferences-button {
+    padding: 12px 20px;
+    background-color: var(--rutgers-red);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .submit-preferences-button:hover {
+    background-color: var(--rutgers-red-dark);
+  }
+  .form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #000;
+    font-weight: bold;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #000; /* full black */
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  
+  /* Animate all interactive elements */
+input,
+select,
+textarea,
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Focus effect */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--rutgers-red);
+  outline: none;
+  box-shadow: 0 0 4px rgba(204, 0, 51, 0.4);
+}
+
+/* Button hover glow */
+button:hover {
+  box-shadow: 0 4px 12px rgba(204, 0, 51, 0.2);
+  transform: translateY(-1px);
+}
+
+  
+  
