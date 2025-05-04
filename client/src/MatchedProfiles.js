@@ -123,7 +123,7 @@ const matchScoreStyle = {
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles({ photoUrl }) {
+function MatchedProfiles({photoUrl = avatar}) {
   const [helloStatus, setHelloStatus] = useState({});// !julio was here!, SAY HELLO BUTTON CONSTANT
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
