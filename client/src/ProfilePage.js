@@ -211,6 +211,13 @@ function ProfilePage() {
       </div>
 
       <button onClick={handleSave}>Save Profile</button>
+     
+     <br /><br />
+      <button onClick={() => window.location.href = "/chat"} style={{ marginBottom: "1rem", padding: "8px" }}>
+  Go to Chats
+</button>
+
+
       {/* Pass the lifted state and userId as props to RoommatesForm */}
       <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
     </div>
