@@ -391,7 +391,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#686A6C", 
+              backgroundColor: "#F5F5F5", 
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
