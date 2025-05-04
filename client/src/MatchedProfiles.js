@@ -4,6 +4,7 @@ import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
 import building from "./images/Building.png";
 import avatar from "./images/default_avatar.png";
+import ChatPage from './ChatPage';
 
 
 
@@ -279,23 +280,40 @@ function MatchedProfiles({ photoUrl }) {
           Top Picks for Your Living Style 🏠
         </h2>
 
-        <div>
-          <Link to="/login">
-            <button
-              style={{
-                padding: "6px 14px",
-                backgroundColor: "#800000",
-                color: "white",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                border: "none",
-              }}
-            >
-              Logout
-            </button>
-          </Link>
-        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+  <Link to="/chat">
+    <button
+      style={{
+        padding: "6px 14px",
+        backgroundColor: "#A52A2A",
+        color: "white",
+        borderRadius: "4px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        border: "none",
+      }}
+    >
+      Chats
+    </button>
+  </Link>
+
+  <Link to="/login">
+    <button
+      style={{
+        padding: "6px 14px",
+        backgroundColor: "#800000",
+        color: "white",
+        borderRadius: "4px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        border: "none",
+      }}
+    >
+      Logout
+    </button>
+  </Link>
+</div>
+
       </div>
 
       <div
