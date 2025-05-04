@@ -95,13 +95,20 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
 
       <div>
-        <input
-          type="text"
-          placeholder="Type your message"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          style={{ padding: "5px", width: "70%" }}
-        />
+      <input
+  type="text"
+  placeholder="Type your message"
+  value={newMessage}
+  onChange={(e) => setNewMessage(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  }}
+  style={{ padding: "5px", width: "70%" }}
+/>
+
         <button onClick={sendMessage} style={{ padding: "5px 10px", marginLeft: "5px" }}>
           Send
         </button>
