@@ -190,11 +190,9 @@ function ChatPage() {
                     <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
                       {isTyping
                         ? <span style={{ color: '#0f0' }}>Typing...</span>
-                        : user.lastMessage?.startsWith('img:')
-                          ? '[Image]'
-                          : user.lastMessage
-                            ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
-                            : 'No messages yet'}
+                        : user.lastMessage
+                          ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
+                          : 'No messages yet'}
                     </div>
                   </div>
                 </div>
@@ -233,7 +231,6 @@ function ChatPage() {
             key={chattingWith.uid}
             currentUserId={currentUserId}
             chattingWith={chattingWith}
-            socket={socket}
           />
         ) : (
           <div style={{ padding: '2rem' }}>Select a user to start chatting</div>
