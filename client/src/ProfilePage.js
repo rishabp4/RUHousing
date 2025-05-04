@@ -5,6 +5,8 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
+import './ProfilePage.css';
+
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -141,80 +143,74 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Welcome, {firebaseUser.email}</h2>
-      <div style={{ margin: "22px 0", textAlign: "center" }}>
+    <div className="profile-bg-wrapper">
+      <div className="profile-page">
+        <h2 className="welcome-title">Welcome, {firebaseUser.email}</h2>
+  
         {/* Profile Photo */}
-        <img
-          src={photoUrl}
-          alt="Profile"
-          width={120}
-          height={120}
-          style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc", background: "#fafafa" }}
-          onError={e => (e.target.src = avatar)}
-        />
-        <br />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => setPhotoFile(e.target.files[0])}
-          style={{ marginTop: 8 }}
-        />
-        <button
-          onClick={handlePhotoUpload}
-          disabled={!photoFile}
-          style={{
-            marginLeft: 8,
-            padding: "6px 16px",
-            borderRadius: 4,
-            background: "#ffffe0",
-            color: "black",
-            border: "1px solid #ccc",
-            cursor: photoFile ? "pointer" : "not-allowed"
-          }}
-        >
-          Upload
+        <section className="photo-section">
+          <img
+            src={photoUrl}
+            alt="Profile"
+            className="profile-avatar"
+            onError={(e) => (e.target.src = avatar)}
+          />
+          <div className="upload-controls">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhotoFile(e.target.files[0])}
+            />
+            <button onClick={handlePhotoUpload} disabled={!photoFile}>
+              Upload
+            </button>
+          </div>
+        </section>
+  
+        <br /><br />
+  
+        <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
+          Find Roommates
         </button>
+  
+        <section className="profile-form">
+          <div className="form-group">
+            <input
+              type="text"
+              name="firstName"
+              value={firstName}
+              onChange={handleFirstNameChange}
+              placeholder="First Name"
+            />
+            <input
+              type="text"
+              name="lastName"
+              value={lastName}
+              onChange={handleLastNameChange}
+              placeholder="Last Name"
+            />
+            <input
+              type="text"
+              name="netID"
+              value={netID}
+              onChange={(e) => setNetID(e.target.value)}
+              placeholder="NetID"
+            />
+          </div>
+  
+          <button className="save-profile-button" onClick={handleSave}>
+            Save Profile
+          </button>
+        </section>
+  
+        <section className="roommates-form-section">
+          <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
+        </section>
       </div>
-
-      <br /><br />
-
-      <button onClick={() => setShowFindUsers(true)} style={{ marginBottom: "1rem", padding: "8px" }}>
-        Find Roommates
-      </button>
-
-      <div>
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={handleFirstNameChange}
-          placeholder="First Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={handleLastNameChange}
-          placeholder="Last Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="netID"
-          value={netID}
-          onChange={(e) => setNetID(e.target.value)}
-          placeholder="NetID"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-      </div>
-
-      <button onClick={handleSave}>Save Profile</button>
-      {/* Pass the lifted state and userId as props to RoommatesForm */}
-      <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
     </div>
   );
+  
+  
 }
 
 export default ProfilePage;

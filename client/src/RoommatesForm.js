@@ -29,9 +29,10 @@ const formGroupStyle = {
 const labelStyle = {
   display: 'block',
   marginBottom: '5px',
-  color: '#555',
+  color: '#555',          // changed from #555 to pure black
   fontWeight: 'bold',
 };
+
 
 const inputStyle = {
   width: '100%',
@@ -438,8 +439,13 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
 
   return (
     <div style={formContainerStyle}>
-      <h1 style={headingStyle}>Please enter your preferences to find your roommates!</h1>
-      <h2 style={headingStyle}>Rate your Preferences by choosing "Not Important", "Important", or "Very Important"</h2>
+      <div className="roommate-preference-header">
+  <h3>Please enter your preferences to find your roommates!</h3>
+  <p className="preference-subtext">
+    Rate your preferences by choosing <strong>"Not Important"</strong>, <strong>"Important"</strong>, or <strong>"Very Important"</strong>
+  </p>
+</div>
+
       <form onSubmit={handleSubmit} style={formStyle}>
         {renderTextRow('First Name', 'firstName', firstName, (e) => setFirstName(e.target.value))}
         {renderTextRow('Last Name', 'lastName', lastName, (e) => setLastName(e.target.value))}
@@ -456,12 +462,10 @@ function RoommatesForm({ firstName: initialFirstName, lastName: initialLastName,
         {renderCleanlinessRow('Cleanliness', 'cleanliness', cleanliness, (e) => setCleanliness(e.target.value), cleanlinessImportance, (e) => setCleanlinessImportance(e.target.value))}
         {renderSelfDescription('Include a brief description of yourself', 'selfDescription', selfDescription, (e) => setSelfDescription(e.target.value))}
 
-        <button
-          type="submit"
-          style={{ ...submitButtonStyle, ':hover': submitButtonHoverStyle }}
-        >
-          Submit Preferences
-        </button>
+        <button type="submit" className="submit-preferences-button">
+  Submit Preferences
+</button>
+
 
         {submissionStatus && <p>{submissionStatus}</p>}
       </form>
