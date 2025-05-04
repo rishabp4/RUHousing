@@ -133,13 +133,15 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         </button>
       )}
 
-      <div style={{
-        padding: "1rem",
-        backgroundColor: "#202c33",
-        borderBottom: "1px solid #333",
-        display: "flex",
-        flexDirection: "column"
-      }}>
+<div style={{
+  padding: "1rem",
+  backgroundColor: "#202c33",
+  borderBottom: "1px solid #333",
+  display: "flex",
+  flexDirection: "column",
+  boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
+}}>
+
         <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
         <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p>
       </div>
