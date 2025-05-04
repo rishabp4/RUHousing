@@ -1,22 +1,16 @@
 // src/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
 import bgpattern from './images/backchat.png'; // Adjust the path if necessary
-import { io } from 'socket.io-client';
 
-
-const socket = io('http://localhost:5002');
 function ChatWindow({ currentUserId, chattingWith, goBack }) {
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [justSentMessage, setJustSentMessage] = useState(false);
   const bottomRef = useRef(null);
-  
-
 
   const scrollToBottom = () => {
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current.scrollIntoView({ behavior: "auto" });
     }
   };
 
@@ -58,16 +52,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       if (res.ok) {
         setNewMessage("");
         setJustSentMessage(true); // trigger scroll on next message update
-        socket.emit('sendMessage', {
-          senderId: currentUserId,
-          receiverId: chattingWith.uid,
-          message: newMessage.trim(),
-        });
-        
-        setNewMessage("");
-        setJustSentMessage(true);
-        
-        
+        await fetchMessages();
       } else {
         console.error("Failed to send message");
       }
@@ -81,38 +66,17 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       fetchMessages(true); // scroll on chat switch or initial load
     }
   }, [chattingWith?.uid]);
-  //
-  useEffect(() => {
-    socket.connect(); //  Establish the socket connection
-    return () => {
-      socket.disconnect(); //  Clean up when ChatWindow unmounts
-    };
-  }, []);
   
-  //!! Socket.io logic
-  useEffect(() => {
-    socket.on('receiveMessage', (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
-    });
-    
   
-    return () => {
-      socket.off('receiveMessage');
-    };
-  }, []);
+
   
-  //!! Socket.io logic ends
-  
+
   useEffect(() => {
     if (justSentMessage) {
       scrollToBottom();
       setJustSentMessage(false);
-    } else {
-      // scroll after receiving a message
-      setTimeout(() => scrollToBottom(), 100); // small delay ensures DOM update
     }
   }, [messages]);
-  
 
   return (
     <div style={{ 
