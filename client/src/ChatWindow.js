@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import bgpattern from './images/backchat.jpg'; // Use .jpg — change to .png if that's the correct version
 import { io } from 'socket.io-client';
 
 const socket = io("http://localhost:5002");
+
 
 function ChatWindow({ currentUserId, chattingWith, goBack }) {
   const [messages, setMessages] = useState([]);
@@ -61,7 +63,9 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
       if (res.ok) {
         setNewMessage("");
+
         setJustSentMessage(true);
+
         await fetchMessages();
       } else {
         console.error("Failed to send message");
@@ -76,6 +80,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       fetchMessages(true);
     }
   }, [chattingWith?.uid]);
+
 
   useEffect(() => {
     socket.connect();
@@ -108,6 +113,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     };
   }, [chattingWith.uid]);
 
+
   useEffect(() => {
     if (justSentMessage) {
       scrollToBottom();
@@ -115,9 +121,11 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     }
   }, [messages]);
 
+
   useEffect(() => {
     setTimeout(() => scrollToBottom(), 50);
   }, [messages, isTyping]);
+
 
   return (
     <div style={{
