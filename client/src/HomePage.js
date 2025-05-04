@@ -259,22 +259,40 @@ function HomePage() {
                 My Roommates
               </button>
             </Link>
-            <Link to="/profile">
-              <button
-                className="profile-button"
-                style={{
-                  backgroundColor: "#A52A2A",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  border: "none",
-                  fontWeight: "bold",
-                }}
-              >
-                Profile
-              </button>
-            </Link>
+            <Link to="/chat">
+  <button
+    className="chat-button"
+    style={{
+      backgroundColor: "#A52A2A",
+      color: "white",
+      padding: "8px 16px",
+      borderRadius: "5px",
+      cursor: "pointer",
+      border: "none",
+      fontWeight: "bold",
+    }}
+  >
+    Chats
+  </button>
+</Link>
+
+<Link to="/profile">
+  <button
+    className="profile-button"
+    style={{
+      backgroundColor: "#A52A2A",
+      color: "white",
+      padding: "8px 16px",
+      borderRadius: "5px",
+      cursor: "pointer",
+      border: "none",
+      fontWeight: "bold",
+    }}
+  >
+    Profile
+  </button>
+</Link>
+
           </div>
         </div>
         <Link to="/profile">
