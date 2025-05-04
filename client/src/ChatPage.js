@@ -68,12 +68,14 @@ function ChatPage() {
     width: `${sidebarWidth}px`,
     minWidth: '200px',
     maxWidth: `${window.innerWidth / 2}px`,
-    backgroundColor: '#121212',  // 🔥 make sidebar dark
+    backgroundColor: '#121212',
     borderRight: '1px solid #333',
     overflowY: 'auto',
-    color: 'white'               // make sure text inside is white by default
+    color: 'white',
+    boxShadow: '2px 0 6px rgba(0,0,0,0.4)' // 🔥 Adds right-side glow
   }}
 >
+
 
         <h3 style={{ padding: '1rem', backgroundColor: '#cc0033', color: 'white', margin: 0 }}>
   Your Chats
