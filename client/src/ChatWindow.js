@@ -1,5 +1,6 @@
 // src/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
+import bgpattern from './images/backchat.png'; // Adjust the path if necessary
 
 function ChatWindow({ currentUserId, chattingWith, goBack }) {
   const [messages, setMessages] = useState([]);
@@ -78,27 +79,41 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   }, [messages]);
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ 
+      padding: "2rem", 
+      backgroundColor: "#121212",  // dark background
+      height: "100vh",             // make it full height
+      color: "white",              // text will now be white
+      display: "flex",
+      flexDirection: "column"
+    }}>
+  
       {goBack && (
         <button onClick={goBack} style={{ marginBottom: "1rem", padding: "8px" }}>
           Back to Find Users
         </button>
       )}
 
-      <h2>Chat with {chattingWith.firstName}</h2>
+<div style={{ marginBottom: '1rem' }}>
+  <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
+  <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p> {/* Or "Last seen 2 hours ago" */}
+</div>
 
-      <div
-        style={{
-          maxHeight: "400px",
-          overflowY: "auto",
-          border: "1px solid gray",
-          padding: "10px",
-          marginBottom: "1rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
+
+<div
+  style={{
+    flex: 1,
+    overflowY: "auto",
+    backgroundImage: `url(${bgpattern})`, //! the background image :3, julio was here!
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    padding: "10px",
+    borderRadius: "10px",
+    display: "flex",
+    flexDirection: "column",
+  }}
+>
+
         {messages.map((msg, index) => {
           const isMine = msg.senderId === currentUserId;
           return (
@@ -106,12 +121,16 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
               key={index}
               style={{
                 alignSelf: isMine ? "flex-end" : "flex-start",
-                backgroundColor: isMine ? "#dcf8c6" : "#f1f0f0",
-                padding: "8px 12px",
-                borderRadius: "12px",
+                backgroundColor: isMine ? "#005c4b" : "#2e2e2e", // Dark green for sender, gray for receiver
+                color: "white",
+                padding: "10px 14px",
+                borderRadius: "18px",
                 maxWidth: "60%",
                 wordBreak: "break-word",
+                fontSize: "15px",
+                marginBottom: "6px"
               }}
+              
             >
               <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
             </div>
@@ -121,23 +140,42 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       </div>
 
       <div>
-        <input
-          type="text"
-          placeholder="Type your message"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          style={{ padding: "5px", width: "70%" }}
-        />
+      <input
+  type="text"
+  placeholder="Type your message"
+  value={newMessage}
+  onChange={(e) => setNewMessage(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  }}
+  style={{
+    padding: "10px",
+    width: "70%",
+    backgroundColor: "#1e1e1e",
+    color: "white",
+    border: "1px solid #555",
+    borderRadius: "20px"
+  }}
+/>
 
-        <button onClick={sendMessage} style={{ padding: "5px 10px", marginLeft: "5px" }}>
-          Send
-        </button>
+<button
+  onClick={sendMessage}
+  style={{
+    padding: "10px 20px",
+    marginLeft: "10px",
+    backgroundColor: "#cc0033", // Rutgers red
+    color: "white",
+    border: "none",
+    borderRadius: "20px",
+    cursor: "pointer"
+  }}
+>
+  Send
+</button>
+
       </div>
     </div>
   );

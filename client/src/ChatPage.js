@@ -64,17 +64,22 @@ function ChatPage() {
     <div style={{ display: 'flex', height: '100vh' }}>
       {/* Sidebar */}
       <div
-        style={{
-          width: `${sidebarWidth}px`,
-          minWidth: '200px',
-          maxWidth: `${window.innerWidth / 2}px`,
-          borderRight: '1px solid #ccc',
-          overflowY: 'auto',
-        }}
-      >
-        <h3 style={{ padding: '1rem', backgroundColor: '#990000', color: 'white' }}>
-          Your Chats
-        </h3>
+  style={{
+    width: `${sidebarWidth}px`,
+    minWidth: '200px',
+    maxWidth: `${window.innerWidth / 2}px`,
+    backgroundColor: '#121212',  // 🔥 make sidebar dark
+    borderRight: '1px solid #333',
+    overflowY: 'auto',
+    color: 'white'               // make sure text inside is white by default
+  }}
+>
+
+        <h3 style={{ padding: '1rem', backgroundColor: '#cc0033', color: 'white', margin: 0 }}>
+  Your Chats
+</h3>
+
+
         {allUsers.map((user) => {
           const isActive = chattingWith?.uid === user.uid;
           return (
@@ -84,18 +89,21 @@ function ChatPage() {
   style={{
     padding: '10px',
     cursor: 'pointer',
-    backgroundColor: isActive ? '#e6e6e6' : 'white',
-    borderBottom: '1px solid #ddd',
+    backgroundColor: isActive ? '#cc0033' : '#1c1c1c', // Scarlet red if selected
+    color: isActive ? 'white' : '#f0f0f0',
+    borderBottom: '1px solid #333',
     transition: 'background-color 0.2s',
     display: 'flex',
     alignItems: 'center',
   }}
+  
   onMouseEnter={(e) => {
-    if (!isActive) e.currentTarget.style.backgroundColor = '#f5f5f5';
+    if (!isActive) e.currentTarget.style.backgroundColor = '#2a2a2a';
   }}
   onMouseLeave={(e) => {
-    if (!isActive) e.currentTarget.style.backgroundColor = 'white';
+    if (!isActive) e.currentTarget.style.backgroundColor = '#1c1c1c';
   }}
+  
 >
 <img
   src={`http://localhost:5002/api/profile-photo/${user.uid}`}
