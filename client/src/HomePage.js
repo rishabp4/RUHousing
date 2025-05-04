@@ -299,7 +299,7 @@ function HomePage() {
         style={{
           display: "flex",
           backgroundColor: "#A52A2A",
-          padding: "10px 30px",
+          padding: "5px 15px",
           alignItems: "center",
           justifyContent: "center",
           justifyContent: "space-between",

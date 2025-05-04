@@ -150,7 +150,7 @@ function SavedHousesPage() {
           justifyContent: "space-between",
           alignItems: "center",
           backgroundColor: "#A52A2A",
-          padding: "10px 30px",
+          padding: "5px 15px",
         }}
       >
         <span style={{ color: "#DCD0FF", fontWeight: "bold", fontSize: 24 }}>
