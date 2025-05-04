@@ -248,57 +248,64 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       </div>
 
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '10px',
-        backgroundColor: '#202c33',
-        borderTop: '1px solid #333'
-      }}>
-        <input
-          type="text"
-          placeholder="Type a message"
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            handleTyping();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          style={{
-            flex: 1,
-            padding: "10px 15px",
-            backgroundColor: "#2a3942",
-            color: "white",
-            border: "none",
-            borderRadius: "20px",
-            fontSize: "15px",
-            outline: "none",
-            marginRight: "10px",
-            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)"
-          }}
-        />
-        <button
-          onClick={sendMessage}
-          style={{
-            backgroundColor: "#cc0033",
-            color: "white",
-            border: "none",
-            borderRadius: "50%",
-            width: "45px",
-            height: "45px",
-            fontWeight: "bold",
-            fontSize: "16px",
-            cursor: "pointer",
-            boxShadow: "0px 2px 4px rgba(0,0,0,0.4)"
-          }}
-        >
-          ⇨
-        </button>
-      </div>
+  display: 'flex',
+  alignItems: 'center',
+  padding: '12px 16px',
+  backgroundColor: '#1e1e1e',
+  borderTop: '1px solid #333',
+  gap: '10px',
+}}>
+  <input
+    type="text"
+    placeholder="Type a message..."
+    value={newMessage}
+    onChange={(e) => {
+      setNewMessage(e.target.value);
+      handleTyping();
+    }}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    }}
+    style={{
+      flex: 1,
+      padding: "12px 16px",
+      backgroundColor: "#2a2f32",
+      color: "white",
+      border: "none",
+      borderRadius: "24px",
+      fontSize: "15px",
+      outline: "none",
+      boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)",
+    }}
+  />
+  <button
+    onClick={sendMessage}
+    style={{
+      backgroundColor: "#cc0033",
+      color: "white",
+      border: "none",
+      borderRadius: "50%",
+      width: "45px",
+      height: "45px",
+      fontWeight: "bold",
+      fontSize: "16px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "background-color 0.3s ease",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+    }}
+    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#a60027"}
+    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#cc0033"}
+  >
+    ➤
+  </button>
+</div>
+
     </div>
   );
 }
