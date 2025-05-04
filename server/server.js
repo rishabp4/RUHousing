@@ -508,7 +508,7 @@ app.post("/api/matched-profiles", async (req, res) => {
       } else if (matchScore >= goodMatchThreshold) {
         matchLevel = "Good Match";
       }
-      const matchedUser = await usersCollection.findOne({ userId: profile.userId }); 
+      const matchedUser = await usersCollection.findOne({ uid: profile.userId }); 
       const photoId = matchedUser ? matchedUser.photoId : null;
 
       matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore, photoId }); // Include score for potential debugging or more info
