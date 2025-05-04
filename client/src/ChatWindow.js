@@ -11,6 +11,9 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   const [newMessage, setNewMessage] = useState("");
   const [justSentMessage, setJustSentMessage] = useState(false);
   const bottomRef = useRef(null);
+// !! Socket.io, real time updates, typing indicator, etc.
+  const [isTyping, setIsTyping] = useState(false);
+const typingTimeoutRef = useRef(null);
   
 
 
@@ -40,6 +43,17 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     }
   };
   
+//! typing indicator logic
+const handleTyping = () => {
+  socket.emit("typing", { to: chattingWith.uid, from: currentUserId });
+
+  if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+  typingTimeoutRef.current = setTimeout(() => {
+    socket.emit("stopTyping", { to: chattingWith.uid, from: currentUserId });
+  }, 1000);
+};
+
 
   const sendMessage = async () => {
     if (newMessage.trim() === "") return;
@@ -94,12 +108,26 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     socket.on('receiveMessage', (msg) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
-    
+  
+    socket.on('typing', (data) => {
+      if (data.from === chattingWith.uid) {
+        setIsTyping(true);
+      }
+    });
+  
+    socket.on('stopTyping', (data) => {
+      if (data.from === chattingWith.uid) {
+        setIsTyping(false);
+      }
+    });
   
     return () => {
       socket.off('receiveMessage');
+      socket.off('typing');
+      socket.off('stopTyping');
     };
-  }, []);
+  }, [chattingWith.uid]);
+  
   
   //!! Socket.io logic ends
   
@@ -150,29 +178,36 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   }}
 >
 
-        {messages.map((msg, index) => {
-          const isMine = msg.senderId === currentUserId;
-          return (
-            <div
-              key={index}
-              style={{
-                alignSelf: isMine ? "flex-end" : "flex-start",
-                backgroundColor: isMine ? "#005c4b" : "#2e2e2e", // Dark green for sender, gray for receiver
-                color: "white",
-                padding: "10px 14px",
-                borderRadius: "18px",
-                maxWidth: "60%",
-                wordBreak: "break-word",
-                fontSize: "15px",
-                marginBottom: "6px"
-              }}
-              
-            >
-              <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
-            </div>
-          );
-        })}
-        <div ref={bottomRef}></div>
+{messages.map((msg, index) => {
+  const isMine = msg.senderId === currentUserId;
+  return (
+    <div
+      key={index}
+      style={{
+        alignSelf: isMine ? "flex-end" : "flex-start",
+        backgroundColor: isMine ? "#005c4b" : "#2e2e2e",
+        color: "white",
+        padding: "10px 14px",
+        borderRadius: "18px",
+        maxWidth: "60%",
+        wordBreak: "break-word",
+        fontSize: "15px",
+        marginBottom: "6px"
+      }}
+    >
+      <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
+    </div>
+  );
+})}
+
+{isTyping && (
+  <div style={{ fontSize: "13px", color: "#ccc", marginLeft: "10px", marginBottom: "6px" }}>
+    {chattingWith.firstName} is typing...
+  </div>
+)}
+
+<div ref={bottomRef}></div>
+
       </div>
 
       <div>
@@ -180,7 +215,11 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   type="text"
   placeholder="Type your message"
   value={newMessage}
-  onChange={(e) => setNewMessage(e.target.value)}
+  onChange={(e) => {
+    setNewMessage(e.target.value);
+    handleTyping(); // this is what notifies the other user you're typing
+  }}
+  
   onKeyDown={(e) => {
     if (e.key === "Enter") {
       e.preventDefault();

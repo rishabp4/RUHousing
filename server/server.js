@@ -753,13 +753,22 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", (data) => {
     console.log("📨 Message received:", data);
     io.emit("receiveMessage", data);
+  });
 
+  // ✅ Add these two handlers for typing
+  socket.on("typing", ({ to, from }) => {
+    io.emit("typing", { to, from });
+  });
+
+  socket.on("stopTyping", ({ to, from }) => {
+    io.emit("stopTyping", { to, from });
   });
 
   socket.on("disconnect", () => {
     console.log("🔴 Client disconnected:", socket.id);
   });
 });
+
 
 const PORT = process.env.PORT || 5002;
 server.listen(PORT, () => {
