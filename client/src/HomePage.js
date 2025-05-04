@@ -6,7 +6,8 @@ import rutgersR from "./images/Rutgers-R.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/college_ave_background.png";
+import collegeAveBg from "./images/CollegeAveBlue.png";
+import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
@@ -118,7 +119,7 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "PUT API KEY HERE", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key": "PUT API key here", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
@@ -194,31 +195,85 @@ function HomePage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          backgroundColor: "#585757",
+          backgroundImage: `url(${header})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           padding: "15px 20px",
           color: "white",
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={rutgersR}
-            alt="Rutgers R"
-            style={{ height: "60px", marginRight: "15px" }}
-          />
-          <img
             src={logo}
             alt="RU Housing Logo"
             style={{ height: "80px", marginRight: "20px" }}
           />
-          <h1
-            style={{
-              fontSize: "27px",
-              color: "rgb(204, 146, 60)",
-              fontWeight: "bold",
-            }}
-          >
-            RU Housing
-          </h1>
+          <div style={{ display: "flex", gap: "25px" }}>
+            <button
+              className="home-button"
+              style={{
+                backgroundColor: "#A52A2A",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+                fontWeight: "bold",
+              }}
+              onClick={handleHomeClick}
+            >
+              Home
+            </button>
+            <button
+              className="saved-houses-button"
+              style={{
+                backgroundColor: "#A52A2A",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+                fontWeight: "bold",
+              }}
+              onClick={handleSavedClick}
+            >
+              Saved Houses
+            </button>
+            <Link to="/matched-profiles">
+              {" "}
+              {/* Updated Link here */}
+              <button
+                className="roommates-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                My Roommates
+              </button>
+            </Link>
+            <Link to="/profile">
+              <button
+                className="profile-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Profile
+              </button>
+            </Link>
+          </div>
         </div>
         <Link to="/profile">
           <img
@@ -243,77 +298,22 @@ function HomePage() {
       <div
         style={{
           display: "flex",
-          backgroundColor: "#4CAF50",
-          padding: "10px 30px",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
           alignItems: "center",
+          justifyContent: "center",
           justifyContent: "space-between",
         }}
       >
-        <div style={{ display: "flex", gap: "25px" }}>
-          <button
-            className="home-button"
-            style={{
-              backgroundColor: "#66BB6A",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              border: "none",
-              fontWeight: "bold",
-            }}
-            onClick={handleHomeClick}
-          >
-            Home
-          </button>
-          <button
-            className="saved-houses-button"
-            style={{
-              backgroundColor: "#66BB6A",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              border: "none",
-              fontWeight: "bold",
-            }}
-            onClick={handleSavedClick}
-          >
-            Saved Houses
-          </button>
-          <Link to="/matched-profiles">
-            {" "}
-            {/* Updated Link here */}
-            <button
-              className="roommates-button"
-              style={{
-                backgroundColor: "#66BB6A",
-                color: "white",
-                padding: "8px 16px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                border: "none",
-                fontWeight: "bold",
-              }}
-            >
-              My Roommates
-            </button>
-          </Link>
-          <Link to="/profile">
-            <button
-              className="profile-button"
-              style={{
-                backgroundColor: "#66BB6A",
-                color: "white",
-                padding: "8px 16px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                border: "none",
-                fontWeight: "bold",
-              }}
-            >
-              Profile
-            </button>
-          </Link>
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "24px",
+            color: "#DCD0FF",
+          }}
+        >
+          Welcome home, Scarlet Knight! Your search for off-campus living starts
+          here :)
         </div>
 
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
@@ -323,7 +323,7 @@ function HomePage() {
               className="top-search-button"
               style={{
                 padding: "6px 14px",
-                backgroundColor: "#66BB6A",
+                backgroundColor: "#800000",
                 color: "white",
                 borderRadius: "4px",
                 cursor: "pointer",
@@ -370,7 +370,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#2c3e50",
+              backgroundColor: "#737CA1", //light blue
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",

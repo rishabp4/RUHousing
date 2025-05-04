@@ -8,6 +8,10 @@ const path = require("path");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const http = require("http"); //!julio was here 
+const { Server } = require("socket.io");// real time updates, chat, etc.
+
+
 
 const app = express();
 app.use(cors());
@@ -82,6 +86,49 @@ app.post("/api/house", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// add and fetch reviews for a house
+
+app.get("/api/houses/:id/reviews", async (req, res) => {
+  const houseId = req.params.id;
+  try {
+    const collection = db.collection("reviews");
+    const reviews = await collection.find({ houseId }).toArray();
+    res.json(reviews);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// Review get/post
+app.post("/api/houses/:id/reviews", async (req, res) => {
+  console.log("Review submission received:", req.params, req.body);
+  const houseId = req.params.id;
+  const { text } = req.body;
+
+  if (!text) return res.status(400).json({ error: "Review text required" });
+
+  try {
+    const collection = db.collection("reviews");
+
+    await collection.insertOne({
+      houseId,
+      text,
+      date: new Date(),
+    });
+
+    // Return all updated reviews
+    const updatedReviews = await collection.find({ houseId }).toArray();
+    res.json(updatedReviews);
+  } catch (err) {
+    console.error("Error saving review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 
 // --------- Route to get saved houses ----------- //
@@ -551,7 +598,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-// ------------ Get chat history between two users ----------- //
+// -- Get chat history between two users --- //
 app.get('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -660,16 +707,71 @@ app.get("/user/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//! get chats for new chatpage
+app.get("/api/chat/rooms", async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: "Missing userId" });
+  }
+
+  try {
+    const chatsCollection = db.collection("chats");
+    const usersCollection = db.collection("users");
+
+    // Find distinct users the current user has chatted with
+    const sent = await chatsCollection.distinct("receiverId", { senderId: userId });
+    const received = await chatsCollection.distinct("senderId", { receiverId: userId });
+    const uniqueUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
+
+    const userDetails = await usersCollection
+      .find({ uid: { $in: uniqueUserIds } })
+      .project({ firstName: 1, lastName: 1, uid: 1, email: 1, netID: 1 })
+      .toArray();
+
+    res.status(200).json(userDetails);
+  } catch (error) {
+    console.error("Error fetching chat rooms:", error);
+    res.status(500).json({ error: "Failed to fetch chat rooms." });
+  }
+});
+
+
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  socket.on("sendMessage", (data) => {
+    console.log("📨 Message received:", data);
+    io.emit("receiveMessage", data);
+  });
+
+  // ✅ Add these two handlers for typing
+  socket.on("typing", ({ to, from }) => {
+    io.emit("typing", { to, from });
+  });
+
+  socket.on("stopTyping", ({ to, from }) => {
+    io.emit("stopTyping", { to, from });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
 
 const PORT = process.env.PORT || 5002;
-app
-  .listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  })
-  .on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Try a different one.`);
-    } else {
-      console.error("Server error:", err);
-    }
-  });
+server.listen(PORT, () => {
+  console.log(`🚀 WebSocket + Express server running at http://localhost:${PORT}`);
+});
+

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
 
 const reportButtonStyle = {
   position: 'fixed',
@@ -116,7 +118,7 @@ const matchScoreStyle = {
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles() {
+function MatchedProfiles({ photoUrl }) {
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -212,98 +214,143 @@ function MatchedProfiles() {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
-// How matched profiles should appear
-return ( <div style={matchedProfilesContainerStyle}>
-<h1 style={headingStyle}>Matched Roommate Profiles</h1>
-{matchedProfiles.length > 0 ? (
-  matchedProfiles.map((profile) => (
-    <div key={profile._id} style={profileCardStyle}>
-      <div style={profileInfoStyle}>
-        <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
-        <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
-        <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
-        <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
-        <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
-        <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
-        <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p>
-        <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p>
-        <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p>
-        <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p>
-        <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
-        <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
-        <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
-        <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p>
-        <p style={matchLevelStyle}>{profile.matchLevel}</p>
-        {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
+  // How matched profiles should appear
+  return (
+    <>
+      <HeaderBar photoUrl={photoUrl} />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+        }}
+      >
+        <div></div> {/* Left side blank to balance the center */}
+
+        <h2 style={{
+          color: "#F5F5F5",
+          fontWeight: "bold",
+          fontSize: "24px",
+          margin: 0,
+          flexGrow: 1
+        }}>
+          Top Picks for Your Living Style 🏠
+        </h2>
+
+        <div>
+          <Link to="/login">
+            <button
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#800000",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
       </div>
-      <div style={profileImageContainerStyle}>
-        {profile.photoId ? (
-          <img
-          src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
-            alt="Profile" style={profileImageStyle}
-            onError={(e) => (e.target.src = defaultAvatar)} />
+
+      <div style={matchedProfilesContainerStyle}>
+        <h1 style={headingStyle}>Matched Roommate Profiles</h1>
+        {matchedProfiles.length > 0 ? (
+          matchedProfiles.map((profile) => (
+            <div key={profile._id} style={profileCardStyle}>
+              <div style={profileInfoStyle}>
+                <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
+                <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
+                <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
+                <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
+                <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
+                <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
+                <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p>
+                <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p>
+                <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p>
+                <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p>
+                <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
+                <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
+                <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
+                <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p>
+                <p style={matchLevelStyle}>{profile.matchLevel}</p>
+                {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
+              </div>
+              <div style={profileImageContainerStyle}>
+                {profile.photoId ? (
+                  <img
+                    src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
+                    alt="Profile" style={profileImageStyle}
+                    onError={(e) => (e.target.src = defaultAvatar)} />
+                ) : (
+                  <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
+                )}
+              </div>
+            </div>
+          ))
         ) : (
-          <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
+          <p>No matching profiles found.</p>
+        )}
+
+        <div style={reportButtonStyle} onClick={handleReportIconClick}>
+          Report an Issue with a Roommate
+        </div>
+
+        {showReportForm && (
+          <div style={reportFormContainerStyle}>
+            <h2>Report an Issue with a Roommate</h2>
+            <form style={reportFormStyle} onSubmit={handleReportSubmit}>
+              <label htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={reportData.name}
+                onChange={handleReportInputChange}
+                style={reportInputStyle}
+                required
+              />
+
+              <label htmlFor="ruid">RUID:</label>
+              <input
+                type="text"
+                id="ruid"
+                name="ruid"
+                value={reportData.ruid}
+                onChange={handleReportInputChange}
+                style={reportInputStyle}
+                required
+              />
+
+              <label htmlFor="issue">Issue:</label>
+              <textarea
+                id="issue"
+                name="issue"
+                value={reportData.issue}
+                onChange={handleReportInputChange}
+                style={{ ...reportInputStyle, height: '200px', width: '750px' }}
+                required
+              />
+
+              <button type="submit" style={reportSubmitButtonStyle}>
+                Submit
+              </button>
+              {reportStatus && <p>{reportStatus}</p>}
+              <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
+                Close
+              </button>
+            </form>
+          </div>
         )}
       </div>
-    </div>
-  ))
-) : (
-  <p>No matching profiles found.</p>
-)}
-
-    <div style={reportButtonStyle} onClick={handleReportIconClick}>
-      Report an Issue with a Roommate
-    </div>
-
-    {showReportForm && (
-      <div style={reportFormContainerStyle}>
-        <h2>Report an Issue with a Roommate</h2>
-        <form style={reportFormStyle} onSubmit={handleReportSubmit}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={reportData.name}
-            onChange={handleReportInputChange}
-            style={reportInputStyle}
-            required
-          />
-
-          <label htmlFor="ruid">RUID:</label>
-          <input
-            type="text"
-            id="ruid"
-            name="ruid"
-            value={reportData.ruid}
-            onChange={handleReportInputChange}
-            style={reportInputStyle}
-            required
-          />
-
-          <label htmlFor="issue">Issue:</label>
-          <textarea
-            id="issue"
-            name="issue"
-            value={reportData.issue}
-            onChange={handleReportInputChange}
-            style={{ ...reportInputStyle, height: '200px', width: '750px' }}
-            required
-          />
-
-          <button type="submit" style={reportSubmitButtonStyle}>
-            Submit
-          </button>
-          {reportStatus && <p>{reportStatus}</p>}
-          <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
-            Close
-          </button>
-        </form>
-      </div>
-    )}
-  </div>
-);
+    </>
+  );
 }
 
 export default MatchedProfiles;

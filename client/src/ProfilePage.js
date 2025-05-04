@@ -5,7 +5,13 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
+
 import './ProfilePage.css';
+
+//import collegeAveBg from "./images/CollegeAveBlue.png";
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
+
 
 
 function ProfilePage() {
@@ -119,7 +125,7 @@ function ProfilePage() {
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
 
-//! CHATTTING WITH JULIO
+  //! CHATTTING WITH JULIO
   if (chattingWith) {
     return (
       <ChatWindow
@@ -129,7 +135,7 @@ function ProfilePage() {
       />
     );
   }
-// FPR THE USERS, JULIO BACK HERE
+  // FPR THE USERS, JULIO BACK HERE
   if (showFindUsers) {
     return (
       <div style={{ padding: "2rem" }}>
@@ -143,6 +149,7 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
+
     <div className="profile-bg-wrapper">
       <div className="profile-page">
         <h2 className="welcome-title">Welcome, {firebaseUser.email}</h2>
@@ -212,6 +219,8 @@ function ProfilePage() {
         </section>
       </div>
     </div>
+
+   
   );
   
   

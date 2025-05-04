@@ -1,7 +1,10 @@
 import React from 'react';
 import background1 from './images/background1.png';
+import { useNavigate } from 'react-router-dom';
 
 function Landlord() {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -12,19 +15,37 @@ function Landlord() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'Arial, sans-serif',
+        position: 'relative'
       }}
     >
-      <div
+      <button
+        onClick={() => navigate("/new-user")}
         style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '40px',
-          borderRadius: '20px',
-          boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
+          position: 'absolute',
+          top: '30px',
+          left: '30px',
+          background: 'transparent',
+          border: '2px solid white',
           color: 'white',
-          width: '360px'
+          padding: '8px 16px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          zIndex: 1000
         }}
       >
+        ⬅ Back
+      </button>
+
+      <div style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: '40px',
+        borderRadius: '20px',
+        boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
+        color: 'white',
+        width: '360px'
+      }}>
         <h2 className="text-center mb-4">Welcome, Landlord!</h2>
         <form onSubmit={(e) => e.preventDefault()}>
           <input type="email" placeholder="Email" className="form-control mb-3" />

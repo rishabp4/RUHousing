@@ -70,8 +70,11 @@ const submitButtonHoverStyle = {
 
 const importanceSelectStyle = {
   ...selectStyle,
-  width: 'auto',
+  width: '100px', 
   marginLeft: '10px',
+  fontSize: '12px',
+  padding: '5px',
+  marginBottom: '5px',
 };
 
 const preferenceRowStyle = {
