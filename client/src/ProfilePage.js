@@ -148,36 +148,46 @@ function ProfilePage() {
     <>
       <HeaderBar photoUrl={photoUrl} />
       <div
-         style={{
-           display: "flex",
-           justifyContent: "center",
-           alignItems: "center",
-           position: "relative",
-         }}
-       >
-         <h2 style={{ color: "#560319", fontWeight: "bold", marginBottom: "1rem", textAlign: "center" }}>
-           Welcome, <strong>{firstName || firebaseUser.email}</strong>
-         </h2>
-         <div style={{ display: "flex", alignItems: "center", gap: "8px"}}>
-           <Link to="/login">
-             <button
-               className="top-search-button"
-               style={{
-                 padding: "6px 14px",
-                 backgroundColor: "#800000",
-                 color: "white",
-                 borderRadius: "4px",
-                 cursor: "pointer",
-                 fontWeight: "bold",
-                 border: "none"
-               }}
-             >
-               Logout
-             </button>
-           </Link>
-         </div>
-       </div>
+        style={{
+          display: "flex",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+          alignItems: "center",
+          justifyContent: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "24px",
+            color: "#F5F5F5",
+          }}
+        >
+          Welcome, <strong>{firstName || firebaseUser.email}</strong>!
+        </div>
 
+        {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Link to="/login">
+            <button
+              className="top-search-button"
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#800000",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
+      </div>
+      
         <div style={{ margin: "22px 0", textAlign: "center" }}>
           {/* Profile Photo */}
           <img
