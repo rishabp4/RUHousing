@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ChatWindow from './ChatWindow';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+import avatar from "./images/default_avatar.png";
 
 function ChatPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -78,24 +79,40 @@ function ChatPage() {
           const isActive = chattingWith?.uid === user.uid;
           return (
             <div
-              key={user.uid}
-              onClick={() => setChattingWith(user)}
-              style={{
-                padding: '10px',
-                cursor: 'pointer',
-                backgroundColor: isActive ? '#e6e6e6' : 'white',
-                borderBottom: '1px solid #ddd',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.backgroundColor = '#f5f5f5';
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.backgroundColor = 'white';
-              }}
-            >
-              {user.firstName} {user.lastName}
-            </div>
+  key={user.uid}
+  onClick={() => setChattingWith(user)}
+  style={{
+    padding: '10px',
+    cursor: 'pointer',
+    backgroundColor: isActive ? '#e6e6e6' : 'white',
+    borderBottom: '1px solid #ddd',
+    transition: 'background-color 0.2s',
+    display: 'flex',
+    alignItems: 'center',
+  }}
+  onMouseEnter={(e) => {
+    if (!isActive) e.currentTarget.style.backgroundColor = '#f5f5f5';
+  }}
+  onMouseLeave={(e) => {
+    if (!isActive) e.currentTarget.style.backgroundColor = 'white';
+  }}
+>
+<img
+  src={`http://localhost:5002/api/profile-photo/${user.uid}`}
+  alt="profile"
+  onError={(e) => (e.target.src = avatar)}
+  style={{
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    objectFit: 'cover',
+    marginRight: 10,
+  }}
+/>
+
+  <span>{user.firstName} {user.lastName}</span>
+</div>
+
           );
         })}
       </div>
