@@ -292,11 +292,13 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 {showEmojiPicker && (
   <div style={{ position: 'absolute', bottom: '60px', left: '10px', zIndex: 10 }}>
     <EmojiPicker
-      theme="dark"
-      onEmojiClick={(emojiData) => {
-        setNewMessage((prev) => prev + emojiData.emoji);
-      }}
-    />
+  theme="dark"
+  onEmojiClick={(emojiData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false); // Auto close after selecting, NEEDED!! IT BOTHERED ME
+  }}
+/>
+
   </div>
 )}
 
