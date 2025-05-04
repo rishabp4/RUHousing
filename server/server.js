@@ -551,7 +551,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-// ------------ Get chat history between two users ----------- //
+// -- Get chat history between two users --- //
 app.get('/api/chat', async (req, res) => {
   if (!db) {
     return res.status(500).json({ error: 'Database connection not established.' });
@@ -660,6 +660,36 @@ app.get("/user/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//! get chats for new chatpage
+app.get("/api/chat/rooms", async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: "Missing userId" });
+  }
+
+  try {
+    const chatsCollection = db.collection("chats");
+    const usersCollection = db.collection("users");
+
+    // Find distinct users the current user has chatted with
+    const sent = await chatsCollection.distinct("receiverId", { senderId: userId });
+    const received = await chatsCollection.distinct("senderId", { receiverId: userId });
+    const uniqueUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
+
+    const userDetails = await usersCollection
+      .find({ uid: { $in: uniqueUserIds } })
+      .project({ firstName: 1, lastName: 1, uid: 1, email: 1, netID: 1 })
+      .toArray();
+
+    res.status(200).json(userDetails);
+  } catch (error) {
+    console.error("Error fetching chat rooms:", error);
+    res.status(500).json({ error: "Failed to fetch chat rooms." });
+  }
+});
+
+
 
 const PORT = process.env.PORT || 5002;
 app

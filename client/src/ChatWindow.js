@@ -52,9 +52,12 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <button onClick={goBack} style={{ marginBottom: "1rem", padding: "8px" }}>
-        Back to Find Users
-      </button>
+     {goBack && (
+  <button onClick={goBack} style={{ marginBottom: "1rem", padding: "8px" }}>
+    Back to Find Users
+  </button>
+)}
+
 
       <h2>Chat with {chattingWith.firstName}</h2>
 
