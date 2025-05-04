@@ -1,6 +1,6 @@
 // src/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
-import bgpattern from './images/backchat.png'; // Adjust the path if necessary
+import bgpattern from './images/backchat.jpg'; // Adjust the path if necessary
 import { io } from 'socket.io-client';
 
 
@@ -132,151 +132,160 @@ const handleTyping = () => {
   //!! Socket.io logic ends
   
   useEffect(() => {
-    if (justSentMessage) {
-      scrollToBottom();
-      setJustSentMessage(false);
-    } else {
-      // scroll after receiving a message
-      setTimeout(() => scrollToBottom(), 100); // small delay ensures DOM update
-    }
-  }, [messages]);
+    setTimeout(() => scrollToBottom(), 50);
+  }, [messages, isTyping]);
+  
   
 
   return (
     <div style={{ 
-      padding: "2rem", 
-      backgroundColor: "#121212",  // dark background
-      height: "100vh",             // make it full height
-      color: "white",              // text will now be white
+      backgroundColor: "#121212",
+      height: "100vh",
+      color: "white",
       display: "flex",
       flexDirection: "column"
     }}>
-  
+    
+      {/* Header */}
       {goBack && (
-        <button onClick={goBack} style={{ marginBottom: "1rem", padding: "8px" }}>
-          Back to Find Users
+        <button onClick={goBack} style={{ margin: "1rem", padding: "8px" }}>
+          ← Back
         </button>
       )}
-
-<div style={{ marginBottom: '1rem' }}>
-  <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
-  <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p> {/* Or "Last seen 2 hours ago" */}
-</div>
-
-
-<div
-  style={{
-    flex: 1,
-    overflowY: "auto",
-    backgroundImage: `url(${bgpattern})`, //! the background image :3, julio was here!
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    padding: "10px",
-    borderRadius: "10px",
-    display: "flex",
-    flexDirection: "column",
-  }}
->
-
-{messages.map((msg, index) => {
-  const isMine = msg.senderId === currentUserId;
-  return (
-    <div
-      key={index}
-      style={{
-        alignSelf: isMine ? "flex-end" : "flex-start",
-        backgroundColor: isMine ? "#005c4b" : "#2e2e2e",
-        color: "white",
-        padding: "10px 14px",
-        borderRadius: "18px",
-        maxWidth: "60%",
-        wordBreak: "break-word",
-        fontSize: "15px",
-        marginBottom: "6px"
-      }}
-    >
-      <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
-    </div>
-  );
-})}
-
-{isTyping && (
-  <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
-    {chattingWith.firstName} is typing
-    <span className="dot">.</span>
-    <span className="dot">.</span>
-    <span className="dot">.</span>
-
-    <style>
-      {`
-        .dot {
-          animation: blink 1s infinite;
-        }
-        .dot:nth-child(2) {
-          animation-delay: 0.2s;
-        }
-        .dot:nth-child(3) {
-          animation-delay: 0.4s;
-        }
-        @keyframes blink {
-          0% { opacity: 0 }
-          50% { opacity: 1 }
-          100% { opacity: 0 }
-        }
-      `}
-    </style>
-  </div>
-)}
-
-
-<div ref={bottomRef}></div>
-
+      <div style={{
+        padding: "1rem",
+        backgroundColor: "#202c33",
+        borderBottom: "1px solid #333",
+        display: "flex",
+        flexDirection: "column"
+      }}>
+        <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
+        <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p>
       </div>
-
-      <div>
-      <input
-  type="text"
-  placeholder="Type your message"
-  value={newMessage}
-  onChange={(e) => {
-    setNewMessage(e.target.value);
-    handleTyping(); // this is what notifies the other user you're typing
-  }}
   
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-    }
-  }}
-  style={{
-    padding: "10px",
-    width: "70%",
-    backgroundColor: "#1e1e1e",
-    color: "white",
-    border: "1px solid #555",
-    borderRadius: "20px"
-  }}
-/>
-
-<button
-  onClick={sendMessage}
-  style={{
-    padding: "10px 20px",
-    marginLeft: "10px",
-    backgroundColor: "#cc0033", // Rutgers red
-    color: "white",
-    border: "none",
-    borderRadius: "20px",
-    cursor: "pointer"
-  }}
->
-  Send
-</button>
-
+      {/* Chat Messages */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          backgroundImage: `url(${bgpattern})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          padding: "10px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {messages.map((msg, index) => {
+          const isMine = msg.senderId === currentUserId;
+          return (
+            <div
+              key={index}
+              style={{
+                alignSelf: isMine ? "flex-end" : "flex-start",
+                backgroundColor: isMine ? "#005c4b" : "#3a3a3a",
+                color: "white",
+                padding: "10px 14px",
+                borderRadius: isMine ? "18px 18px 0 18px" : "18px 18px 18px 0",
+                maxWidth: "60%",
+                wordBreak: "break-word",
+                fontSize: "16px",
+                marginBottom: "8px",
+                boxShadow: "0px 2px 6px rgba(0,0,0,0.3)",
+                animation: "fadeIn 0.3s ease"
+              }}
+            >
+              <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
+            </div>
+          );
+        })}
+  
+        {isTyping && (
+          <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
+            {chattingWith.firstName} is typing
+            <span className="dot">.</span>
+            <span className="dot">.</span>
+            <span className="dot">.</span>
+            <style>
+              {`
+                .dot {
+                  animation: blink 1s infinite;
+                }
+                .dot:nth-child(2) {
+                  animation-delay: 0.2s;
+                }
+                .dot:nth-child(3) {
+                  animation-delay: 0.4s;
+                }
+                @keyframes blink {
+                  0% { opacity: 0 }
+                  50% { opacity: 1 }
+                  100% { opacity: 0 }
+                }
+              `}
+            </style>
+          </div>
+        )}
+  
+        <div ref={bottomRef}></div>
+      </div>
+  
+      {/* Input Bar */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px',
+        backgroundColor: '#202c33',
+        borderTop: '1px solid #333'
+      }}>
+        <input
+          type="text"
+          placeholder="Type a message"
+          value={newMessage}
+          onChange={(e) => {
+            setNewMessage(e.target.value);
+            handleTyping();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+          style={{
+            flex: 1,
+            padding: "10px 15px",
+            backgroundColor: "#2a3942",
+            color: "white",
+            border: "none",
+            borderRadius: "20px",
+            fontSize: "15px",
+            outline: "none",
+            marginRight: "10px",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)"
+          }}
+        />
+        <button
+          onClick={sendMessage}
+          style={{
+            backgroundColor: "#cc0033",
+            color: "white",
+            border: "none",
+            borderRadius: "50%",
+            width: "45px",
+            height: "45px",
+            fontWeight: "bold",
+            fontSize: "16px",
+            cursor: "pointer",
+            boxShadow: "0px 2px 4px rgba(0,0,0,0.4)"
+          }}
+        >
+          ⇨
+        </button>
       </div>
     </div>
   );
+  
 }
 
 export default ChatWindow;
