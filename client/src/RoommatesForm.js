@@ -12,10 +12,10 @@ const formContainerStyle = {
   margin: '20px',
 };
 
-const headingStyle = {
+/*const headingStyle = {
   color: '#333',
   marginBottom: '20px',
-};
+};*/
 
 const formStyle = {
   width: '100%',
@@ -52,7 +52,7 @@ const selectStyle = {
   backgroundSize: '16px',
 };
 
-const submitButtonStyle = {
+/*const submitButtonStyle = {
   backgroundColor: '#007bff',
   color: 'white',
   padding: '12px 20px',
@@ -62,7 +62,7 @@ const submitButtonStyle = {
   cursor: 'pointer',
   width: '100%',
   transition: 'background-color 0.3s ease',
-};
+};*/
 
 const submitButtonHoverStyle = {
   backgroundColor: '#0056b3',

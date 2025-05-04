@@ -135,7 +135,7 @@ function ChatPage({photoUrl = avatar}) {
         margin: 0,
         flexGrow: 1
       }}>
-        Message Potenial Roommates
+        Message Potential Roommates
       </h2>
 
       <div>

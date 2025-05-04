@@ -4,13 +4,13 @@ import React, { useState } from "react";
 const FilterDropdown = ({ show, onClose, onFilterChange }) => {
   const [minPriceRange, setMinPriceRange] = useState(0);
   const [maxPriceRange, setMaxPriceRange] = useState(0);
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  //const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [homeType, setHomeType] = useState("");
   const [statusType, setStatusType] = useState("");
 
   const [sortOrder, setSortOrder] = useState("");
 
-  const preferencesList = [
+  /*const preferencesList = [
     "No smoking",
     "No pets allowed",
     "No loud music after 11 PM",
@@ -23,13 +23,13 @@ const FilterDropdown = ({ show, onClose, onFilterChange }) => {
     "Parking for residents only",
     "Regular landlord inspections",
     "Proper disposal of trash and recycling required",
-  ];
+  ];*/
 
-  const handleCheckboxChange = (pref) => {
+  /*const handleCheckboxChange = (pref) => {
     setSelectedPreferences((prev) =>
       prev.includes(pref) ? prev.filter((p) => p !== pref) : [...prev, pref]
     );
-  };
+  };*/
 
   const handleSortSubmit = (e) => {
     console.log(e);

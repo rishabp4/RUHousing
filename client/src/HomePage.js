@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { houseData } from "./HouseDetail";
+//import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
-import rutgersR from "./images/Rutgers-R.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
@@ -13,6 +12,8 @@ import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
 import './HeaderBar.css';
+import building from "./images/Building.png";
+
 
 
 function HomePage() {
@@ -361,7 +362,7 @@ function HomePage() {
       {/* Background and Grid */}
       <div
         style={{
-          backgroundImage: `url(${collegeAveBg})`,
+          backgroundImage: `url(${building})`,
           backgroundSize: "100% auto",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
@@ -376,7 +377,7 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: "#d3d3d3",
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
@@ -390,7 +391,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#737CA1", 
+              backgroundColor: "#686A6C", 
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
