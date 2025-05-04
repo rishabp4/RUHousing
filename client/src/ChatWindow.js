@@ -47,7 +47,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
   const sendMessage = async () => {
     if (newMessage.trim() === "") return;
-
+  
     try {
       const res = await fetch('http://localhost:5002/api/chat', {
         method: "POST",
@@ -58,11 +58,19 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
           message: newMessage.trim(),
         }),
       });
-
+  
       if (res.ok) {
+        const newMsgObj = {
+          senderId: currentUserId,
+          receiverId: chattingWith.uid,
+          message: newMessage.trim(),
+          timestamp: new Date(),
+        };
+  
         setNewMessage("");
         setJustSentMessage(true);
-        await fetchMessages();
+        setMessages((prev) => [...prev, newMsgObj]); // Show message now
+        socket.emit("sendMessage", newMsgObj); // 🧠 Real-time notify others
       } else {
         console.error("Failed to send message");
       }
@@ -70,6 +78,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       console.error("Error sending message:", error);
     }
   };
+  
 
   useEffect(() => {
     if (chattingWith?.uid) {
@@ -134,17 +143,32 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       )}
 
 <div style={{
-  padding: "1rem",
+  padding: "10px 20px",
   backgroundColor: "#202c33",
   borderBottom: "1px solid #333",
   display: "flex",
-  flexDirection: "column",
-  boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
+  alignItems: "center",
+  gap: "12px"
 }}>
+  <img
+    src={`http://localhost:5002/api/profile-photo/${chattingWith.uid}`}
+    alt="avatar"
+    onError={(e) => (e.target.src = require('./images/default_avatar.png'))}
+    style={{
+      width: "42px",
+      height: "42px",
+      borderRadius: "50%",
+      objectFit: "cover"
+    }}
+  />
+  <div>
+    <div style={{ color: "#fff", fontWeight: "bold", fontSize: "16px" }}>
+      {chattingWith.firstName} {chattingWith.lastName}
+    </div>
+    <div style={{ color: "#0f0", fontSize: "13px" }}>Online</div>
+  </div>
+</div>
 
-        <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
-        <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p>
-      </div>
 
       <div
         style={{
@@ -158,29 +182,54 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
           flexDirection: "column",
         }}
       >
-        {messages.map((msg, index) => {
-          const isMine = msg.senderId === currentUserId;
-          return (
-            <div
-              key={index}
-              style={{
-                alignSelf: isMine ? "flex-end" : "flex-start",
-                backgroundColor: isMine ? "#005c4b" : "#3a3a3a",
-                color: "white",
-                padding: "10px 14px",
-                borderRadius: isMine ? "18px 18px 0 18px" : "18px 18px 18px 0",
-                maxWidth: "60%",
-                wordBreak: "break-word",
-                fontSize: "16px",
-                marginBottom: "8px",
-                boxShadow: "0px 2px 6px rgba(0,0,0,0.3)",
-                animation: "fadeIn 0.3s ease"
-              }}
-            >
-              <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
-            </div>
-          );
-        })}
+       {messages.map((msg, index) => {
+  const isMine = msg.senderId === currentUserId;
+  return (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        justifyContent: isMine ? "flex-end" : "flex-start",
+        marginBottom: "10px",
+      }}
+    >
+      {!isMine && (
+        <img
+          src={`http://localhost:5002/api/profile-photo/${chattingWith.uid}`}
+          alt="avatar"
+          onError={(e) => (e.target.src = require('./images/default_avatar.png'))}
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            marginRight: "10px",
+            alignSelf: "flex-end",
+          }}
+        />
+      )}
+
+      <div
+        style={{
+          backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
+          color: "white",
+          padding: "10px 14px",
+          borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
+          maxWidth: "60%",
+          wordBreak: "break-word",
+          fontSize: "15px",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
+        }}
+      >
+        {msg.message}
+        <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
+  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+</div>
+
+      </div>
+    </div>
+  );
+})}
+
 
         {isTyping && (
           <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
@@ -212,57 +261,65 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       </div>
 
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '10px',
-        backgroundColor: '#202c33',
-        borderTop: '1px solid #333'
-      }}>
-        <input
-          type="text"
-          placeholder="Type a message"
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            handleTyping();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          style={{
-            flex: 1,
-            padding: "10px 15px",
-            backgroundColor: "#2a3942",
-            color: "white",
-            border: "none",
-            borderRadius: "20px",
-            fontSize: "15px",
-            outline: "none",
-            marginRight: "10px",
-            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)"
-          }}
-        />
-        <button
-          onClick={sendMessage}
-          style={{
-            backgroundColor: "#cc0033",
-            color: "white",
-            border: "none",
-            borderRadius: "50%",
-            width: "45px",
-            height: "45px",
-            fontWeight: "bold",
-            fontSize: "16px",
-            cursor: "pointer",
-            boxShadow: "0px 2px 4px rgba(0,0,0,0.4)"
-          }}
-        >
-          ⇨
-        </button>
-      </div>
+  display: 'flex',
+  alignItems: 'center',
+  padding: '12px 16px',
+  backgroundColor: '#1e1e1e',
+  borderTop: '1px solid #333',
+  gap: '10px',
+}}>
+  <input
+    type="text"
+    placeholder="Type a message..."
+    value={newMessage}
+    onChange={(e) => {
+      setNewMessage(e.target.value);
+      handleTyping();
+    }}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+        
+      }
+    }}
+    style={{
+      flex: 1,
+      padding: "12px 16px",
+      backgroundColor: "#2a2f32",
+      color: "white",
+      border: "none",
+      borderRadius: "24px",
+      fontSize: "15px",
+      outline: "none",
+      boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)",
+    }}
+  />
+  <button
+    onClick={sendMessage}
+    style={{
+      backgroundColor: "#cc0033",
+      color: "white",
+      border: "none",
+      borderRadius: "50%",
+      width: "45px",
+      height: "45px",
+      fontWeight: "bold",
+      fontSize: "16px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "background-color 0.3s ease",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+    }}
+    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#a60027"}
+    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#cc0033"}
+  >
+    ➤
+  </button>
+</div>
+
     </div>
   );
 }

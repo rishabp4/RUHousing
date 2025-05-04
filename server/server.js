@@ -751,9 +751,9 @@ io.on("connection", (socket) => {
   console.log("🟢 New client connected:", socket.id);
 
   socket.on("sendMessage", (data) => {
-    console.log("📨 Message received:", data);
-    io.emit("receiveMessage", data);
+    socket.broadcast.emit("receiveMessage", data); // ✅ send to everyone except sender
   });
+  
 
   // ✅ Add these two handlers for typing
   socket.on("typing", ({ to, from }) => {
