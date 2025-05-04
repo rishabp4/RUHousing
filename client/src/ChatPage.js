@@ -9,7 +9,7 @@ function ChatPage() {
   const [allUsers, setAllUsers] = useState([]);
   const [chattingWith, setChattingWith] = useState(null);
 
-  // Fetch logged-in user's UID
+  // Watch auth state for user ID
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -21,13 +21,17 @@ function ChatPage() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch other users
+  // Fetch all users except current
   useEffect(() => {
     if (!currentUserId) return;
     fetch('http://localhost:5002/api/all-users')
       .then((res) => res.json())
       .then((data) => {
-        setAllUsers(data.filter((u) => u.uid !== currentUserId));
+        const others = data.filter((u) => u.uid !== currentUserId);
+        setAllUsers(others);
+        if (!chattingWith && others.length > 0) {
+          setChattingWith(others[0]); // Auto-select first chat
+        }
       });
   }, [currentUserId]);
 
@@ -58,9 +62,9 @@ function ChatPage() {
       <div style={{ flex: 1 }}>
         {chattingWith ? (
           <ChatWindow
+            key={chattingWith.uid} // force remount when switching chats
             currentUserId={currentUserId}
             chattingWith={chattingWith}
-            goBack={() => setChattingWith(null)}
           />
         ) : (
           <div style={{ padding: '2rem' }}>Select a user to start chatting</div>

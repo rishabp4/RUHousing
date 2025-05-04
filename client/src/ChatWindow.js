@@ -61,22 +61,54 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
       <h2>Chat with {chattingWith.firstName}</h2>
 
-      <div style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid gray", padding: "10px", marginBottom: "1rem" }}>
-        {messages.map((msg, index) => (
-          <div key={index} style={{ marginBottom: "10px" }}>
-            <strong>{msg.senderId === currentUserId ? "You" : chattingWith.firstName}:</strong> {msg.message}
-          </div>
-        ))}
+      <div
+  style={{
+    maxHeight: "400px",
+    overflowY: "auto",
+    border: "1px solid gray",
+    padding: "10px",
+    marginBottom: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  }}
+>
+  {messages.map((msg, index) => {
+    const isMine = msg.senderId === currentUserId;
+    return (
+      <div
+        key={index}
+        style={{
+          alignSelf: isMine ? "flex-end" : "flex-start",
+          backgroundColor: isMine ? "#dcf8c6" : "#f1f0f0",
+          padding: "8px 12px",
+          borderRadius: "12px",
+          maxWidth: "60%",
+          wordBreak: "break-word",
+        }}
+      >
+        <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
       </div>
+    );
+  })}
+</div>
+
 
       <div>
-        <input
-          type="text"
-          placeholder="Type your message"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          style={{ padding: "5px", width: "70%" }}
-        />
+      <input
+  type="text"
+  placeholder="Type your message"
+  value={newMessage}
+  onChange={(e) => setNewMessage(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  }}
+  style={{ padding: "5px", width: "70%" }}
+/>
+
         <button onClick={sendMessage} style={{ padding: "5px 10px", marginLeft: "5px" }}>
           Send
         </button>
