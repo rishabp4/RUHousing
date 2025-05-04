@@ -711,30 +711,50 @@ app.get("/user/:userId", async (req, res) => {
 app.get("/api/chat/rooms", async (req, res) => {
   const { userId } = req.query;
 
-  if (!userId) {
-    return res.status(400).json({ error: "Missing userId" });
-  }
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
     const chatsCollection = db.collection("chats");
     const usersCollection = db.collection("users");
 
-    // Find distinct users the current user has chatted with
     const sent = await chatsCollection.distinct("receiverId", { senderId: userId });
     const received = await chatsCollection.distinct("senderId", { receiverId: userId });
-    const uniqueUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
+    const allUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
 
-    const userDetails = await usersCollection
-      .find({ uid: { $in: uniqueUserIds } })
-      .project({ firstName: 1, lastName: 1, uid: 1, email: 1, netID: 1 })
-      .toArray();
+    const chatRooms = [];
 
-    res.status(200).json(userDetails);
+    for (const uid of allUserIds) {
+      const lastMessage = await chatsCollection.findOne(
+        {
+          $or: [
+            { senderId: userId, receiverId: uid },
+            { senderId: uid, receiverId: userId },
+          ]
+        },
+        { sort: { timestamp: -1 }, projection: { message: 1, timestamp: 1 } }
+      );
+      
+
+      const userProfile = await usersCollection.findOne({ uid });
+
+      if (userProfile) {
+        chatRooms.push({
+          ...userProfile,
+          lastMessage: lastMessage?.message || '',
+          lastMessageTime: lastMessage?.timestamp || new Date(0)
+        });
+        
+      }
+    }
+
+    chatRooms.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+    res.json(chatRooms);
   } catch (error) {
-    console.error("Error fetching chat rooms:", error);
+    console.error("Error in chat rooms:", error);
     res.status(500).json({ error: "Failed to fetch chat rooms." });
   }
 });
+
 
 
 
@@ -751,11 +771,13 @@ io.on("connection", (socket) => {
   console.log("🟢 New client connected:", socket.id);
 
   socket.on("sendMessage", (data) => {
-    socket.broadcast.emit("receiveMessage", data); // ✅ send to everyone except sender
+
+    socket.broadcast.emit("receiveMessage", data);
+    io.emit("messageSent", { senderId: data.senderId, receiverId: data.receiverId }); // NEW
   });
   
 
-  // ✅ Add these two handlers for typing
+  // Add these two handlers for typing
   socket.on("typing", ({ to, from }) => {
     io.emit("typing", { to, from });
   });

@@ -14,6 +14,8 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   const typingTimeoutRef = useRef(null);
   const bottomRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);//! julio was here, emojis uu
+  const emojiPickerRef = useRef(null);
+
   const scrollToBottom = () => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "auto" });
@@ -97,20 +99,27 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
   useEffect(() => {
     socket.on('receiveMessage', (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
+      if (
+        (msg.senderId === chattingWith.uid && msg.receiverId === currentUserId) ||
+        (msg.senderId === currentUserId && msg.receiverId === chattingWith.uid)
+      ) {
+        setMessages((prevMessages) => [...prevMessages, msg]);
+      }
     });
+    
 
     socket.on('typing', (data) => {
-      if (data.from === chattingWith.uid) {
+      if (data.from === chattingWith.uid && data.to === currentUserId) {
         setIsTyping(true);
       }
     });
-
+    
     socket.on('stopTyping', (data) => {
-      if (data.from === chattingWith.uid) {
+      if (data.from === chattingWith.uid && data.to === currentUserId) {
         setIsTyping(false);
       }
     });
+    
 
     return () => {
       socket.off('receiveMessage');
@@ -129,6 +138,22 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   useEffect(() => {
     setTimeout(() => scrollToBottom(), 50);
   }, [messages, isTyping]);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    }
+  
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
+  
 
   return (
     
@@ -290,17 +315,20 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 
 {/* Emoji Picker Dropdown */}
 {showEmojiPicker && (
-  <div style={{ position: 'absolute', bottom: '60px', left: '10px', zIndex: 10 }}>
+  <div
+    ref={emojiPickerRef}
+    style={{ position: 'absolute', bottom: '60px', left: '10px', zIndex: 10 }}
+  >
     <EmojiPicker
-  theme="dark"
-  onEmojiClick={(emojiData) => {
-    setNewMessage((prev) => prev + emojiData.emoji);
-    setShowEmojiPicker(false); // Auto close after selecting, NEEDED!! IT BOTHERED ME
-  }}
-/>
-
+      theme="dark"
+      onEmojiClick={(emojiData) => {
+        setNewMessage((prev) => prev + emojiData.emoji);
+        setShowEmojiPicker(false); // Auto close after selecting
+      }}
+    />
   </div>
 )}
+
 
 
   <input
