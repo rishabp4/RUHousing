@@ -3,7 +3,7 @@
 }
 
 .home-button:hover {
-  background-color: #bbdefb !important;
+  background-color: #800000 !important;
 }
 
 .saved-houses-button,
@@ -15,7 +15,7 @@
 .saved-houses-button:hover,
 .roommates-button:hover,
 .profile-button:hover {
-  background-color: #bbdefb !important;
+  background-color: #800000 !important;
 }
 
 .top-search-button,
@@ -25,6 +25,6 @@
 
 .top-search-button:hover,
 .middle-search-button:hover {
-  background-color: #bbdefb !important;
+  background-color: #660000 !important;
   color: #ffffff !important;
 }
