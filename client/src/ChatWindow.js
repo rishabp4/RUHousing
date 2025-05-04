@@ -201,10 +201,33 @@ const handleTyping = () => {
 })}
 
 {isTyping && (
-  <div style={{ fontSize: "13px", color: "#ccc", marginLeft: "10px", marginBottom: "6px" }}>
-    {chattingWith.firstName} is typing...
+  <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
+    {chattingWith.firstName} is typing
+    <span className="dot">.</span>
+    <span className="dot">.</span>
+    <span className="dot">.</span>
+
+    <style>
+      {`
+        .dot {
+          animation: blink 1s infinite;
+        }
+        .dot:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+        @keyframes blink {
+          0% { opacity: 0 }
+          50% { opacity: 1 }
+          100% { opacity: 0 }
+        }
+      `}
+    </style>
   </div>
 )}
+
 
 <div ref={bottomRef}></div>
 
