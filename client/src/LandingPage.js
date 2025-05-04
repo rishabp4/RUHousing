@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "./LandingPage.css";
 import background from "./images/BG.webp";
 import logo from "./images/RuLogo.png";
 
 function LandingPage() {
-  const [index, setIndex] = useState(0);
-
   const panels = [
     <div className="hero-box hero-left" key="panel-1">
       <h2 className="section-title">What is RUHousing?</h2>
@@ -31,34 +28,39 @@ function LandingPage() {
       </div>
     </div>,
     <div className="hero-box hero-right profile-panel" key="panel-3">
-    <h2 className="section-title">Your Personalized Profile</h2>
-    <div className="profile-content">
-      <div className="profile-bubbles">
-        <div className="chat-bubble left">📸 Add a profile picture</div>
-        <div className="chat-bubble left">⚙️ Customize your preferences</div>
-        <div className="chat-bubble left">📄 View saved listings</div>
-        <div className="chat-bubble left">🔥 Match with other users</div>
+      <h2 className="section-title">Your Personalized Profile</h2>
+      <div className="profile-content">
+        <div className="profile-bubbles">
+          <div className="chat-bubble left">📸 Add a profile picture</div>
+          <div className="chat-bubble left">⚙️ Customize your preferences</div>
+          <div className="chat-bubble left">📄 View saved listings</div>
+          <div className="chat-bubble left">🔥 Match with other users</div>
+        </div>
+        <div className="profile-image-preview">
+          <img src={require("./images/default_avatar.png")} alt="Profile Preview" />
+        </div>
       </div>
-      <div className="profile-image-preview">
-        <img src={require("./images/default_avatar.png")} alt="Profile Preview" />
+    </div>,
+    <div className="hero-box hero-left" key="panel-4">
+      <h2 className="section-title">What Students Are Saying</h2>
+      <div className="reviews-group">
+        <div className="review-bubble">
+          <div className="review-rating">4.8/5.0 ⭐</div>
+          <p>“I found my roommate within a day. RUHousing made it so easy!”</p>
+          <span className="review-name">– Priya, Class of 2026</span>
+        </div>
+        <div className="review-bubble">
+          <div className="review-rating">4.6/5.0 ⭐</div>
+          <p>“Was stressing about housing... until I found this site. Total lifesaver.”</p>
+          <span className="review-name">– Jason, Class of 2025</span>
+        </div>
+        <div className="review-bubble">
+          <div className="review-rating">4.9/5.0 ⭐</div>
+          <p>“Loved being able to message people before committing to a lease.”</p>
+          <span className="review-name">– Aisha, Class of 2027</span>
+        </div>
       </div>
     </div>
-  </div>
-  
-  
-  ];
-
-  const handleNext = () => {
-    setIndex((prev) => (prev + 1) % panels.length);
-  };
-
-  const handlePrev = () => {
-    setIndex((prev) => (prev - 1 + panels.length) % panels.length);
-  };
-
-  const visiblePanels = [
-    panels[index],
-    panels[(index + 1) % panels.length]
   ];
 
   return (
@@ -73,22 +75,18 @@ function LandingPage() {
           <img src={logo} alt="RUHousing Logo" className="logo-image" />
         </div>
       </div>
-  
-      <div className="hero-section">
-        {visiblePanels.map((panel) => panel)}
-      </div>
-  
-      <div className="slider-controls">
-        <button className="icon-btn" onClick={handlePrev}>
-          <FaArrowLeft />
-        </button>
-        <button className="icon-btn" onClick={handleNext}>
-          <FaArrowRight />
-        </button>
+
+      <div className="scroll-container">
+        <div className="scroll-panels">
+          {panels.map((panel, i) => (
+            <div className="scroll-panel" key={i}>
+              {panel}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-  
 }
 
 export default LandingPage;
