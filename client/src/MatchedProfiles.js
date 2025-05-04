@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
 import profileRoom from "./images/ProfileRoom.png";
+import building from "./images/Building.png";
+
 
 
 const reportButtonStyle = {
@@ -60,7 +62,7 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#f4f4f4',
+  backgroundColor: '#4682B4',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
@@ -263,7 +265,7 @@ function MatchedProfiles({ photoUrl }) {
 
       <div
         style={{
-          backgroundImage: `url(${profileRoom})`,
+          backgroundImage: `url(${building})`,
           backgroundSize: "100% auto",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
@@ -275,7 +277,7 @@ function MatchedProfiles({ photoUrl }) {
           alignItems: "flex-start",
         }}
       >
-      <div >
+      <div style={matchedProfilesContainerStyle}>
         <h1 style={headingStyle}>Matched Roommate Profiles</h1>
         {matchedProfiles.length > 0 ? (
           matchedProfiles.map((profile) => (

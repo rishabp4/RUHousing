@@ -153,7 +153,7 @@ function SavedHousesPage() {
           padding: "5px 15px",
         }}
       >
-        <span style={{ color: "#DCD0FF", fontWeight: "bold", fontSize: 24 }}>
+        <span style={{ color: "#F5F5F5", fontWeight: "bold", fontSize: 24 }}>
           Saved Houses
         </span>
         <Link to="/login">

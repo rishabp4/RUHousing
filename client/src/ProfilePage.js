@@ -5,7 +5,7 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
-import building from "./images/Building.png";//FOR THE Chat duh, julio here!
+import building from "./images/Building.png";
 import './ProfilePage.css';
 
 //import collegeAveBg from "./images/CollegeAveBlue.png";
@@ -204,7 +204,7 @@ function ProfilePage() {
       justifyContent: "center",
       alignItems: "flex-start",
     }}>
-      <div className="profile-page">
+      <div className="profile-page" style={{backgroundColor:"#4682B4"}}>
   
         {/* Profile Photo */}
         <section className="photo-section">
