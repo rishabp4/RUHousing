@@ -175,7 +175,7 @@ function ProfilePage() {
             cursor: photoFile ? "pointer" : "not-allowed"
           }}
         >
-          Upload
+          Upload Profile Photo
         </button>
       </div>
 
