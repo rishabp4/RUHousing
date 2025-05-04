@@ -49,8 +49,9 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
     }, 1000);
   };
 
-  const sendMessage = async () => {
-    if (newMessage.trim() === "") return;
+  const sendMessage = async (customMessage = null) => {
+    const messageToSend = (customMessage || newMessage).trim();
+    if (messageToSend === "") return;
   
     try {
       const res = await fetch('http://localhost:5002/api/chat', {
@@ -59,7 +60,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         body: JSON.stringify({
           senderId: currentUserId,
           receiverId: chattingWith.uid,
-          message: newMessage.trim(),
+          message: messageToSend,
         }),
       });
   
@@ -67,14 +68,14 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         const newMsgObj = {
           senderId: currentUserId,
           receiverId: chattingWith.uid,
-          message: newMessage.trim(),
+          message: messageToSend,
           timestamp: new Date(),
         };
   
         setNewMessage("");
         setJustSentMessage(true);
-        setMessages((prev) => [...prev, newMsgObj]); // Show message now
-        socket.emit("sendMessage", newMsgObj); 
+        setMessages((prev) => [...prev, newMsgObj]);
+        socket.emit("sendMessage", newMsgObj);
       } else {
         console.error("Failed to send message");
       }
@@ -82,6 +83,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
       console.error("Error sending message:", error);
     }
   };
+  
   
 
   useEffect(() => {
@@ -236,24 +238,36 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         />
       )}
 
-      <div
-        style={{
-          backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
-          color: "white",
-          padding: "10px 14px",
-          borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
-          maxWidth: "60%",
-          wordBreak: "break-word",
-          fontSize: "15px",
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
-        }}
-      >
-        {msg.message}
-        <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
-  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+<div
+  style={{
+    backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
+    color: "white",
+    padding: "10px 14px",
+    borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
+    maxWidth: "60%",
+    wordBreak: "break-word",
+    fontSize: "15px",
+    boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
+  }}
+>
+  {msg.message.startsWith("img:") ? (
+    <img
+      src={msg.message.replace("img:", "")}
+      alt="sent"
+      style={{
+        maxWidth: "200px",
+        borderRadius: "12px",
+        marginTop: "6px"
+      }}
+    />
+  ) : (
+    msg.message
+  )}
+  <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
+    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+  </div>
 </div>
 
-      </div>
     </div>
   );
 })}
@@ -302,6 +316,7 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   {/* 😊 Emoji Button */}
 <button
   onClick={() => setShowEmojiPicker((prev) => !prev)}
+  
   style={{
     background: "none",
     border: "none",
@@ -312,6 +327,40 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
 >
   😊
 </button>
+{/* 📷 Image Upload */}
+<input
+  type="file"
+  accept="image/*"
+  onChange={async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch("http://localhost:5002/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.imageUrl) {
+        const imageMessage = `img:${data.imageUrl}`;
+        setNewMessage(imageMessage); // You can also call sendMessage directly
+        sendMessage(imageMessage); // Send it immediately
+      }
+    } catch (err) {
+      console.error("Image upload failed:", err);
+    }
+  }}
+  style={{ display: "none" }}
+  id="upload-image"
+/>
+<label htmlFor="upload-image" style={{ cursor: "pointer", fontSize: "24px", color: "white" }}>
+  📷
+</label>
+
 
 {/* Emoji Picker Dropdown */}
 {showEmojiPicker && (
