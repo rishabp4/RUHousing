@@ -173,29 +173,50 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
           flexDirection: "column",
         }}
       >
-        {messages.map((msg, index) => {
-          const isMine = msg.senderId === currentUserId;
-          return (
-            <div
-              key={index}
-              style={{
-                alignSelf: isMine ? "flex-end" : "flex-start",
-                backgroundColor: isMine ? "#005c4b" : "#3a3a3a",
-                color: "white",
-                padding: "10px 14px",
-                borderRadius: isMine ? "18px 18px 0 18px" : "18px 18px 18px 0",
-                maxWidth: "60%",
-                wordBreak: "break-word",
-                fontSize: "16px",
-                marginBottom: "8px",
-                boxShadow: "0px 2px 6px rgba(0,0,0,0.3)",
-                animation: "fadeIn 0.3s ease"
-              }}
-            >
-              <strong>{isMine ? "You" : chattingWith.firstName}:</strong> {msg.message}
-            </div>
-          );
-        })}
+       {messages.map((msg, index) => {
+  const isMine = msg.senderId === currentUserId;
+  return (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        justifyContent: isMine ? "flex-end" : "flex-start",
+        marginBottom: "10px",
+      }}
+    >
+      {!isMine && (
+        <img
+          src={`http://localhost:5002/api/profile-photo/${chattingWith.uid}`}
+          alt="avatar"
+          onError={(e) => (e.target.src = require('./images/default_avatar.png'))}
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            marginRight: "10px",
+            alignSelf: "flex-end",
+          }}
+        />
+      )}
+
+      <div
+        style={{
+          backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
+          color: "white",
+          padding: "10px 14px",
+          borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
+          maxWidth: "60%",
+          wordBreak: "break-word",
+          fontSize: "15px",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
+        }}
+      >
+        {msg.message}
+      </div>
+    </div>
+  );
+})}
+
 
         {isTyping && (
           <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
