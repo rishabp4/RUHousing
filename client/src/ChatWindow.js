@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import bgpattern from './images/backchat.jpg'; // Use .jpg — change to .png if that's the correct version
 import { io } from 'socket.io-client';
 import EmojiPicker from 'emoji-picker-react';
+import { motion } from "framer-motion";
+
 
 
 const socket = io("http://localhost:5002");
@@ -212,11 +214,14 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
           flexDirection: "column",
         }}
       >
-       {messages.map((msg, index) => {
+    {messages.map((msg, index) => {
   const isMine = msg.senderId === currentUserId;
   return (
-    <div
+    <motion.div
       key={index}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       style={{
         display: "flex",
         justifyContent: isMine ? "flex-end" : "flex-start",
@@ -238,39 +243,42 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
         />
       )}
 
-<div
-  style={{
-    backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
-    color: "white",
-    padding: "10px 14px",
-    borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
-    maxWidth: "60%",
-    wordBreak: "break-word",
-    fontSize: "15px",
-    boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
-  }}
->
-  {msg.message.startsWith("img:") ? (
-    <img
-      src={msg.message.replace("img:", "")}
-      alt="sent"
-      style={{
-        maxWidth: "200px",
-        borderRadius: "12px",
-        marginTop: "6px"
-      }}
-    />
-  ) : (
-    msg.message
-  )}
-  <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
-    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-  </div>
-</div>
-
-    </div>
+      <motion.div
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.2 }}
+        style={{
+          backgroundColor: isMine ? "#005c4b" : "#2c2c2c",
+          color: "white",
+          padding: "10px 14px",
+          borderRadius: isMine ? "16px 16px 0 16px" : "16px 16px 16px 0",
+          maxWidth: "60%",
+          wordBreak: "break-word",
+          fontSize: "15px",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
+        }}
+      >
+        {msg.message.startsWith("img:") ? (
+          <img
+            src={msg.message.replace("img:", "")}
+            alt="sent"
+            style={{
+              maxWidth: "200px",
+              borderRadius: "12px",
+              marginTop: "6px"
+            }}
+          />
+        ) : (
+          msg.message
+        )}
+        <div style={{ fontSize: "11px", color: "#ccc", marginTop: "4px", textAlign: isMine ? "right" : "left" }}>
+          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 })}
+
 
 
         {isTyping && (
