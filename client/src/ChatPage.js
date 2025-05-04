@@ -14,6 +14,8 @@ function ChatPage() {
   const [chattingWith, setChattingWith] = useState(null);
   const [sidebarWidth, setSidebarWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
+  const [typingUsers, setTypingUsers] = useState({});
+  const [unreadCounts, setUnreadCounts] = useState({});
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -72,12 +74,34 @@ function ChatPage() {
         const rest = prevUsers.filter((u) => u.uid !== idToMove);
         return [movedUser, ...rest];
       });
+      if (receiverId === currentUserId && chattingWith?.uid !== senderId) {
+        setUnreadCounts((prev) => ({ ...prev, [senderId]: (prev[senderId] || 0) + 1 }));
+      }
       fetchChats();
     });
+
+    socket.on("typing", ({ from, to }) => {
+      if (to === currentUserId) {
+        setTypingUsers((prev) => ({ ...prev, [from]: true }));
+      }
+    });
+
+    socket.on("stopTyping", ({ from, to }) => {
+      if (to === currentUserId) {
+        setTypingUsers((prev) => {
+          const updated = { ...prev };
+          delete updated[from];
+          return updated;
+        });
+      }
+    });
+
     return () => {
       socket.off("messageSent");
+      socket.off("typing");
+      socket.off("stopTyping");
     };
-  }, [currentUserId]);
+  }, [currentUserId, chattingWith]);
 
   if (!currentUserId) return <p>Loading chat...</p>;
 
@@ -118,26 +142,33 @@ function ChatPage() {
         <div style={{ transition: 'all 0.3s ease-in-out' }}>
           {allUsers.map((user) => {
             const isActive = chattingWith?.uid === user.uid;
+            const isTyping = typingUsers[user.uid];
+            const unread = unreadCounts[user.uid] || 0;
             return (
               <div
                 key={user.uid}
-                onClick={() => setChattingWith(user)}
+                onClick={() => {
+                  setChattingWith(user);
+                  setUnreadCounts((prev) => ({ ...prev, [user.uid]: 0 }));
+                }}
                 style={{
-                  padding: '10px',
-                  cursor: 'pointer',
-                  backgroundColor: isActive ? '#cc0033' : '#1c1c1c',
+                  margin: '10px',
+                  padding: '12px',
+                  borderRadius: '20px',
+                  backgroundColor: isActive ? '#cc0033' : '#1e1e1e',
                   color: isActive ? 'white' : '#f0f0f0',
-                  borderBottom: '1px solid #333',
-                  transition: 'background-color 0.2s',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  boxShadow: isActive ? '0 0 10px rgba(204, 0, 51, 0.8)' : '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  transition: 'all 0.2s ease-in-out',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) e.currentTarget.style.backgroundColor = '#2a2a2a';
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = '#1c1c1c';
+                  if (!isActive) e.currentTarget.style.backgroundColor = '#1e1e1e';
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -150,16 +181,34 @@ function ChatPage() {
                       height: 48,
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      marginRight: 10,
+                      marginRight: 12,
+                      border: '2px solid white'
                     }}
                   />
                   <div>
-                    <div>{user.firstName} {user.lastName}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#ccc', marginTop: '2px' }}>
-                      {user.lastMessage ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '') : 'No messages yet'}
+                    <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
+                      {isTyping
+                        ? <span style={{ color: '#0f0' }}>Typing...</span>
+                        : user.lastMessage
+                          ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
+                          : 'No messages yet'}
                     </div>
                   </div>
                 </div>
+                {unread > 0 && (
+                  <div style={{
+                    backgroundColor: '#00ff00',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    borderRadius: '12px',
+                    padding: '2px 8px',
+                    fontSize: '0.75rem',
+                    marginLeft: '10px'
+                  }}>
+                    {unread}
+                  </div>
+                )}
               </div>
             );
           })}
