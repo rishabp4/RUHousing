@@ -123,41 +123,41 @@ function ChatPage() {
                 key={user.uid}
                 onClick={() => setChattingWith(user)}
                 style={{
-                  padding: '10px',
-                  cursor: 'pointer',
-                  backgroundColor: isActive ? '#cc0033' : '#1c1c1c',
+                  margin: '10px',
+                  padding: '12px',
+                  borderRadius: '20px',
+                  backgroundColor: isActive ? '#cc0033' : '#1e1e1e',
                   color: isActive ? 'white' : '#f0f0f0',
-                  borderBottom: '1px solid #333',
-                  transition: 'background-color 0.2s',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  boxShadow: isActive ? '0 0 10px rgba(204, 0, 51, 0.8)' : '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  transition: 'all 0.2s ease-in-out',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) e.currentTarget.style.backgroundColor = '#2a2a2a';
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = '#1c1c1c';
+                  if (!isActive) e.currentTarget.style.backgroundColor = '#1e1e1e';
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img
-                    src={`http://localhost:5002/api/profile-photo/${user.uid}`}
-                    alt="profile"
-                    onError={(e) => (e.target.src = avatar)}
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      marginRight: 10,
-                    }}
-                  />
-                  <div>
-                    <div>{user.firstName} {user.lastName}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#ccc', marginTop: '2px' }}>
-                      {user.lastMessage ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '') : 'No messages yet'}
-                    </div>
+                <img
+                  src={`http://localhost:5002/api/profile-photo/${user.uid}`}
+                  alt="profile"
+                  onError={(e) => (e.target.src = avatar)}
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    marginRight: 12,
+                    border: '2px solid white'
+                  }}
+                />
+                <div>
+                  <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
+                  <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
+                    {user.lastMessage ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '') : 'No messages yet'}
                   </div>
                 </div>
               </div>
