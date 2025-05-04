@@ -1,25 +1,20 @@
-// src/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
-import bgpattern from './images/backchat.jpg'; // Adjust the path if necessary
+import bgpattern from './images/backchat.jpg'; // Use .jpg — change to .png if that's the correct version
 import { io } from 'socket.io-client';
 
+const socket = io("http://localhost:5002");
 
-const socket = io('http://localhost:5002');
 function ChatWindow({ currentUserId, chattingWith, goBack }) {
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [justSentMessage, setJustSentMessage] = useState(false);
-  const bottomRef = useRef(null);
-// !! Socket.io, real time updates, typing indicator, etc.
   const [isTyping, setIsTyping] = useState(false);
-const typingTimeoutRef = useRef(null);
-  
-
+  const typingTimeoutRef = useRef(null);
+  const bottomRef = useRef(null);
 
   const scrollToBottom = () => {
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current.scrollIntoView({ behavior: "auto" });
     }
   };
 
@@ -29,12 +24,9 @@ const typingTimeoutRef = useRef(null);
       if (res.ok) {
         const chatHistory = await res.json();
         setMessages(chatHistory);
-  
-        // Wait for DOM to update, then scroll
         if (scroll) {
           setTimeout(() => scrollToBottom(), 0);
         }
-  
       } else {
         console.error("Failed to fetch chat history");
       }
@@ -42,18 +34,16 @@ const typingTimeoutRef = useRef(null);
       console.error("Error fetching chat:", error);
     }
   };
-  
-//! typing indicator logic
-const handleTyping = () => {
-  socket.emit("typing", { to: chattingWith.uid, from: currentUserId });
 
-  if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+  const handleTyping = () => {
+    socket.emit("typing", { to: chattingWith.uid, from: currentUserId });
 
-  typingTimeoutRef.current = setTimeout(() => {
-    socket.emit("stopTyping", { to: chattingWith.uid, from: currentUserId });
-  }, 1000);
-};
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stopTyping", { to: chattingWith.uid, from: currentUserId });
+    }, 1000);
+  };
 
   const sendMessage = async () => {
     if (newMessage.trim() === "") return;
@@ -71,17 +61,8 @@ const handleTyping = () => {
 
       if (res.ok) {
         setNewMessage("");
-        setJustSentMessage(true); // trigger scroll on next message update
-        socket.emit('sendMessage', {
-          senderId: currentUserId,
-          receiverId: chattingWith.uid,
-          message: newMessage.trim(),
-        });
-        
-        setNewMessage("");
         setJustSentMessage(true);
-        
-        
+        await fetchMessages();
       } else {
         console.error("Failed to send message");
       }
@@ -92,66 +73,66 @@ const handleTyping = () => {
 
   useEffect(() => {
     if (chattingWith?.uid) {
-      fetchMessages(true); // scroll on chat switch or initial load
+      fetchMessages(true);
     }
   }, [chattingWith?.uid]);
-  //
+
   useEffect(() => {
-    socket.connect(); //  Establish the socket connection
+    socket.connect();
     return () => {
-      socket.disconnect(); //  Clean up when ChatWindow unmounts
+      socket.disconnect();
     };
   }, []);
-  
-  //!! Socket.io logic
+
   useEffect(() => {
     socket.on('receiveMessage', (msg) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
-  
+
     socket.on('typing', (data) => {
       if (data.from === chattingWith.uid) {
         setIsTyping(true);
       }
     });
-  
+
     socket.on('stopTyping', (data) => {
       if (data.from === chattingWith.uid) {
         setIsTyping(false);
       }
     });
-  
+
     return () => {
       socket.off('receiveMessage');
       socket.off('typing');
       socket.off('stopTyping');
     };
   }, [chattingWith.uid]);
-  
-  
-  //!! Socket.io logic ends
-  
+
+  useEffect(() => {
+    if (justSentMessage) {
+      scrollToBottom();
+      setJustSentMessage(false);
+    }
+  }, [messages]);
+
   useEffect(() => {
     setTimeout(() => scrollToBottom(), 50);
   }, [messages, isTyping]);
-  
-  
 
   return (
-    <div style={{ 
+    <div style={{
       backgroundColor: "#121212",
       height: "100vh",
       color: "white",
       display: "flex",
       flexDirection: "column"
     }}>
-    
-      {/* Header */}
       {goBack && (
         <button onClick={goBack} style={{ margin: "1rem", padding: "8px" }}>
           ← Back
         </button>
       )}
+
       <div style={{
         padding: "1rem",
         backgroundColor: "#202c33",
@@ -162,8 +143,7 @@ const handleTyping = () => {
         <h2 style={{ margin: 0 }}>Chat with {chattingWith.firstName}</h2>
         <p style={{ margin: 0, fontSize: '14px', color: '#aaa' }}>Online</p>
       </div>
-  
-      {/* Chat Messages */}
+
       <div
         style={{
           flex: 1,
@@ -199,7 +179,7 @@ const handleTyping = () => {
             </div>
           );
         })}
-  
+
         {isTyping && (
           <div style={{ fontSize: "16px", color: "#ccc", fontWeight: "bold", margin: "8px 12px" }}>
             {chattingWith.firstName} is typing
@@ -226,11 +206,9 @@ const handleTyping = () => {
             </style>
           </div>
         )}
-  
         <div ref={bottomRef}></div>
       </div>
-  
-      {/* Input Bar */}
+
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -285,7 +263,6 @@ const handleTyping = () => {
       </div>
     </div>
   );
-  
 }
 
 export default ChatWindow;
