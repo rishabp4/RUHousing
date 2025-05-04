@@ -731,16 +731,19 @@ app.get("/api/chat/rooms", async (req, res) => {
             { senderId: uid, receiverId: userId },
           ]
         },
-        { sort: { timestamp: -1 } }
+        { sort: { timestamp: -1 }, projection: { message: 1, timestamp: 1 } }
       );
+      
 
       const userProfile = await usersCollection.findOne({ uid });
 
       if (userProfile) {
         chatRooms.push({
           ...userProfile,
+          lastMessage: lastMessage?.message || '',
           lastMessageTime: lastMessage?.timestamp || new Date(0)
         });
+        
       }
     }
 

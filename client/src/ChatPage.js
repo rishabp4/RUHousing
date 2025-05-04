@@ -47,8 +47,7 @@ function ChatPage() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!currentUserId) return;
+  const fetchChats = () => {
     fetch(`http://localhost:5002/api/chat/rooms?userId=${currentUserId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -57,6 +56,11 @@ function ChatPage() {
           setChattingWith(data[0]);
         }
       });
+  };
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetchChats();
   }, [currentUserId, chattingWith]);
 
   useEffect(() => {
@@ -68,6 +72,7 @@ function ChatPage() {
         const rest = prevUsers.filter((u) => u.uid !== idToMove);
         return [movedUser, ...rest];
       });
+      fetchChats();
     });
     return () => {
       socket.off("messageSent");
