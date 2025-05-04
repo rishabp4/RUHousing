@@ -8,6 +8,10 @@ const path = require("path");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const http = require("http"); //!julio was here 
+const { Server } = require("socket.io");// real time updates, chat, etc.
+
+
 
 const app = express();
 app.use(cors());
@@ -508,7 +512,7 @@ app.post("/api/matched-profiles", async (req, res) => {
       } else if (matchScore >= goodMatchThreshold) {
         matchLevel = "Good Match";
       }
-      const matchedUser = await usersCollection.findOne({ uid: profile.userId }); 
+      const matchedUser = await usersCollection.findOne({ userId: profile.userId }); 
       const photoId = matchedUser ? matchedUser.photoId : null;
 
       matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore, photoId }); // Include score for potential debugging or more info
@@ -734,7 +738,6 @@ app.get("/api/chat/rooms", async (req, res) => {
 
 
 
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -767,16 +770,8 @@ io.on("connection", (socket) => {
 });
 
 
-
 const PORT = process.env.PORT || 5002;
-app
-  .listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  })
-  .on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Try a different one.`);
-    } else {
-      console.error("Server error:", err);
-    }
-  });
+server.listen(PORT, () => {
+  console.log(`🚀 WebSocket + Express server running at http://localhost:${PORT}`);
+});
+
