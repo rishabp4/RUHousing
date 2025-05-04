@@ -734,6 +734,40 @@ app.get("/api/chat/rooms", async (req, res) => {
 
 
 
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  socket.on("sendMessage", (data) => {
+    console.log("📨 Message received:", data);
+    io.emit("receiveMessage", data);
+  });
+
+  // ✅ Add these two handlers for typing
+  socket.on("typing", ({ to, from }) => {
+    io.emit("typing", { to, from });
+  });
+
+  socket.on("stopTyping", ({ to, from }) => {
+    io.emit("stopTyping", { to, from });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
+
+
 const PORT = process.env.PORT || 5002;
 app
   .listen(PORT, () => {
