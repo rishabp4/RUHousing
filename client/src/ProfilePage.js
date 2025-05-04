@@ -5,7 +5,7 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
-
+import building from "./images/Building.png";//FOR THE Chat duh, julio here!
 import './ProfilePage.css';
 
 //import collegeAveBg from "./images/CollegeAveBlue.png";
@@ -149,10 +149,62 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
+<>
+      <HeaderBar photoUrl={photoUrl} />
 
-    <div className="profile-bg-wrapper">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+        }}
+      >
+        <div></div> {/* Left side blank to balance the center */}
+
+        <h2 style={{
+          color: "#F5F5F5",
+          fontWeight: "bold",
+          fontSize: "24px",
+          margin: 0,
+          flexGrow: 1
+        }}>
+          Welcome, {firebaseUser.email}!
+        </h2>
+
+        <div>
+          <Link to="/login">
+            <button
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#800000",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
+      </div>
+
+    <div style={{
+      backgroundImage: `url(${building})`,
+      backgroundSize: "100% auto",
+      backgroundPosition: "top center",
+      backgroundRepeat: "no-repeat",
+      backgroundAttachment: "fixed",
+      minHeight: "calc(100vh - 130px)",
+      padding: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "flex-start",
+    }}>
       <div className="profile-page">
-        <h2 className="welcome-title">Welcome, {firebaseUser.email}</h2>
   
         {/* Profile Photo */}
         <section className="photo-section">
@@ -215,6 +267,7 @@ function ProfilePage() {
         </section>
       </div>
     </div>
+    </>
 
    
   );

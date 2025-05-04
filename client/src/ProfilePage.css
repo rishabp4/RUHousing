@@ -19,8 +19,8 @@
     transition: all 0.2s ease-in-out; /* soft animation */
   }
 
-  .profile-bg-wrapper {
-    background-image: url('C:\SWE\RUHousing\client\public\building.png');
+  /*.profile-bg-wrapper {
+    background-image: url('/Building.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -30,7 +30,7 @@
     justify-content: center;
     align-items: flex-start;
     padding: 40px 0;
-  }
+  }*/
   
   
   
