@@ -14,6 +14,7 @@ function ChatPage() {
   const [chattingWith, setChattingWith] = useState(null);
   const [sidebarWidth, setSidebarWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
+  const [typingUsers, setTypingUsers] = useState({});
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -74,8 +75,27 @@ function ChatPage() {
       });
       fetchChats();
     });
+
+    socket.on("typing", ({ from, to }) => {
+      if (to === currentUserId) {
+        setTypingUsers((prev) => ({ ...prev, [from]: true }));
+      }
+    });
+
+    socket.on("stopTyping", ({ from, to }) => {
+      if (to === currentUserId) {
+        setTypingUsers((prev) => {
+          const updated = { ...prev };
+          delete updated[from];
+          return updated;
+        });
+      }
+    });
+
     return () => {
       socket.off("messageSent");
+      socket.off("typing");
+      socket.off("stopTyping");
     };
   }, [currentUserId]);
 
@@ -118,6 +138,7 @@ function ChatPage() {
         <div style={{ transition: 'all 0.3s ease-in-out' }}>
           {allUsers.map((user) => {
             const isActive = chattingWith?.uid === user.uid;
+            const isTyping = typingUsers[user.uid];
             return (
               <div
                 key={user.uid}
@@ -157,7 +178,11 @@ function ChatPage() {
                 <div>
                   <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
                   <div style={{ fontSize: '0.8rem', color: '#bbb', marginTop: 2 }}>
-                    {user.lastMessage ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '') : 'No messages yet'}
+                    {isTyping
+                      ? <span style={{ color: '#0f0' }}>Typing...</span>
+                      : user.lastMessage
+                        ? user.lastMessage.slice(0, 40) + (user.lastMessage.length > 40 ? '...' : '')
+                        : 'No messages yet'}
                   </div>
                 </div>
               </div>
