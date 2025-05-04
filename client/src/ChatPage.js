@@ -72,9 +72,10 @@ function ChatPage() {
           overflowY: 'auto',
         }}
       >
-        <h3 style={{ padding: '1rem', backgroundColor: '#990000', color: 'white' }}>
-          Your Chats
-        </h3>
+        <h3 style={{ padding: '1rem', backgroundColor: '#cc0033', color: 'white' }}>
+  Your Chats
+</h3>
+
         {allUsers.map((user) => {
           const isActive = chattingWith?.uid === user.uid;
           return (
@@ -84,7 +85,9 @@ function ChatPage() {
   style={{
     padding: '10px',
     cursor: 'pointer',
-    backgroundColor: isActive ? '#e6e6e6' : 'white',
+    backgroundColor: isActive ? '#cc0033' : '#1c1c1c', // Scarlet red highlight, dark background
+color: isActive ? 'white' : '#f0f0f0',
+
     borderBottom: '1px solid #ddd',
     transition: 'background-color 0.2s',
     display: 'flex',

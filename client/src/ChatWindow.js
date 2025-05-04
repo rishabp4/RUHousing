@@ -78,7 +78,15 @@ function ChatWindow({ currentUserId, chattingWith, goBack }) {
   }, [messages]);
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ 
+      padding: "2rem", 
+      backgroundColor: "#121212",  // dark background
+      height: "100vh",             // make it full height
+      color: "white",              // text will now be white
+      display: "flex",
+      flexDirection: "column"
+    }}>
+  
       {goBack && (
         <button onClick={goBack} style={{ marginBottom: "1rem", padding: "8px" }}>
           Back to Find Users
