@@ -63,14 +63,14 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#2F5E87',
+  backgroundColor: '#566978',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
 };
 
 const headingStyle = {
-  color: '#F8F8FF',
+  color: '#F5F5F5',
   marginBottom: '20px',
 };
 

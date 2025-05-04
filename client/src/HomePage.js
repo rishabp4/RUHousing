@@ -12,6 +12,8 @@ import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
+import './HeaderBar.css';
+
 
 function HomePage() {
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -393,7 +395,7 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit">Search</button>
+              <button type="submit" style={{ padding: "1px"}}>Search</button>
             </form>
             <div style={{ position: "relative" }}>
               <button

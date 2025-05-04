@@ -30,10 +30,10 @@ function HeaderBar({ photoUrl = avatar }) {
       <div style={{ display: "flex", alignItems: "center" }}>
         <img src={logo} alt="RU Housing Logo" style={{ height: "80px", marginRight: "20px" }} />
         <div style={{ display: "flex", gap: "25px" }}>
-          <button onClick={handleHomeClick} style={navBtnStyle}>Home</button>
-          <button onClick={handleSavedClick} style={navBtnStyle}>Saved Houses</button>
-          <Link to="/matched-profiles"><button style={navBtnStyle}>My Roommates</button></Link>
-          <Link to="/profile"><button style={navBtnStyle}>Profile</button></Link>
+          <button onClick={handleHomeClick} className="nav-button">Home</button>
+          <button onClick={handleSavedClick} className="nav-button">Saved Houses</button>
+          <Link to="/matched-profiles"><button className="nav-button">My Roommates</button></Link>
+          <Link to="/profile"><button className="nav-button">Profile</button></Link>
         </div>
       </div>
       <Link to="/profile">
@@ -52,15 +52,5 @@ function HeaderBar({ photoUrl = avatar }) {
     </div>
   );
 }
-
-const navBtnStyle = {
-  backgroundColor: "#A52A2A",
-  color: "white",
-  padding: "8px 16px",
-  borderRadius: "5px",
-  cursor: "pointer",
-  border: "none",
-  fontWeight: "bold",
-};
 
 export default HeaderBar;

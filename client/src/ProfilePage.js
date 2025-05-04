@@ -16,7 +16,7 @@ const profilesContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
   padding: '80px',
-  backgroundColor: '#F8F8FF',
+  backgroundColor: '#f6f6f6',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
@@ -33,6 +33,8 @@ function ProfilePage() {
   // -- photo upload states --
   const [photoFile, setPhotoFile] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(avatar);
+  const savedPhoto = localStorage.getItem('photoUrl');
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -54,7 +56,7 @@ function ProfilePage() {
         }
 
         // fetch photo (AFTER user ID is known, so the photo API works)
-        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?${Date.now()}`);
+        setPhotoUrl(savedPhoto || `http://localhost:5002/api/profile-photo/${user.uid}?${Date.now()}`);
       } else {
         setFirebaseUser(null);
         setUserId(null);
@@ -87,7 +89,9 @@ function ProfilePage() {
       body: formData,
     });
     if (res.ok) {
-      setPhotoUrl(`http://localhost:5002/api/profile-photo/${userId}?${Date.now()}`); // update and bust cache
+      const newUrl = `http://localhost:5002/api/profile-photo/${userId}?${Date.now()}`;
+      setPhotoUrl(newUrl);
+      localStorage.setItem('photoUrl', newUrl); // ✅ SAVE for other components
       setPhotoFile(null);
       alert("Photo uploaded!");
     } else {
@@ -212,7 +216,7 @@ function ProfilePage() {
         justifyContent: "center",
         alignItems: "flex-start",
       }}>
-        <div className="profile-page" style={{ backgroundColor: "#2F5E87" }}>
+        <div className="profile-page" style={{ backgroundColor: "#566978" }}>
           <div style={profilesContainerStyle}>
             {/* Profile Photo */}
             <section className="photo-section">
