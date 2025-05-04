@@ -42,20 +42,32 @@ function ChatPage() {
       {/* Sidebar */}
       <div style={{ width: '30%', borderRight: '1px solid #ccc', overflowY: 'auto' }}>
         <h3 style={{ padding: '1rem', backgroundColor: '#990000', color: 'white' }}>Your Chats</h3>
-        {allUsers.map((user) => (
-          <div
-            key={user.uid}
-            onClick={() => setChattingWith(user)}
-            style={{
-              padding: '10px',
-              cursor: 'pointer',
-              backgroundColor: chattingWith?.uid === user.uid ? '#f0f0f0' : 'white',
-              borderBottom: '1px solid #ddd'
-            }}
-          >
-            {user.firstName} {user.lastName}
-          </div>
-        ))}
+        {allUsers.map((user) => {
+  const isActive = chattingWith?.uid === user.uid;
+
+  return (
+    <div
+      key={user.uid}
+      onClick={() => setChattingWith(user)}
+      style={{
+        padding: '10px',
+        cursor: 'pointer',
+        backgroundColor: isActive ? '#e6e6e6' : 'white',
+        borderBottom: '1px solid #ddd',
+        transition: 'background-color 0.2s',
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) e.currentTarget.style.backgroundColor = '#f5f5f5';
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) e.currentTarget.style.backgroundColor = 'white';
+      }}
+    >
+      {user.firstName} {user.lastName}
+    </div>
+  );
+})}
+
       </div>
 
       {/* Chat Window */}
