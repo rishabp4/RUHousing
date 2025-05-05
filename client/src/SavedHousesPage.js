@@ -6,10 +6,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
 import logo from "./images/RuLogo.png";
-import rutgersR from "./images/Rutgers-R.png";
 import headerImg from "./images/Header.png";
 import avatar from "./images/default_avatar.png";
 import collegeAveBg from "./images/CollegeAveBlue.png";
+import building from "./images/Building.png";
 
 import SavedHousesDetailModel from "./SavedHousesDetailModel";
 import "./HomePage.css"; // re-use hover colours, buttons, etc.
@@ -150,10 +150,10 @@ function SavedHousesPage() {
           justifyContent: "space-between",
           alignItems: "center",
           backgroundColor: "#A52A2A",
-          padding: "10px 30px",
+          padding: "5px 15px",
         }}
       >
-        <span style={{ color: "#DCD0FF", fontWeight: "bold", fontSize: 24 }}>
+        <span style={{ color: "#F5F5F5", fontWeight: "bold", fontSize: 24 }}>
           Saved Houses
         </span>
         <Link to="/login">
@@ -164,7 +164,7 @@ function SavedHousesPage() {
       {/* ███  blue skyline background  ███ */}
       <div
         style={{
-          backgroundImage: `url(${collegeAveBg})`,
+          backgroundImage: `url(${building})`,
           backgroundSize: "100% auto",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
@@ -218,7 +218,7 @@ function SavedHousesPage() {
                 </div>
               ))
             ) : (
-              <p style={{ textAlign: "center", margin: 0 }}>
+              <p style={{ textAlign: "center", margin: 0, color: "white" }}>
                 You haven’t saved any houses yet.
               </p>
             )}

@@ -10,6 +10,8 @@ const upload = multer({ storage: storage });
 
 const http = require("http"); //!julio was here 
 const { Server } = require("socket.io");// real time updates, chat, etc.
+// const Message = require('./models/Message'); 
+
 
 
 
@@ -711,34 +713,103 @@ app.get("/user/:userId", async (req, res) => {
 app.get("/api/chat/rooms", async (req, res) => {
   const { userId } = req.query;
 
-  if (!userId) {
-    return res.status(400).json({ error: "Missing userId" });
-  }
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
     const chatsCollection = db.collection("chats");
     const usersCollection = db.collection("users");
 
-    // Find distinct users the current user has chatted with
     const sent = await chatsCollection.distinct("receiverId", { senderId: userId });
     const received = await chatsCollection.distinct("senderId", { receiverId: userId });
-    const uniqueUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
+    const allUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
 
-    const userDetails = await usersCollection
-      .find({ uid: { $in: uniqueUserIds } })
-      .project({ firstName: 1, lastName: 1, uid: 1, email: 1, netID: 1 })
-      .toArray();
+    const chatRooms = [];
 
-    res.status(200).json(userDetails);
+    for (const uid of allUserIds) {
+      const lastMessage = await chatsCollection.findOne(
+        {
+          $or: [
+            { senderId: userId, receiverId: uid },
+            { senderId: uid, receiverId: userId },
+          ]
+        },
+        { sort: { timestamp: -1 }, projection: { message: 1, timestamp: 1 } }
+      );
+      
+
+      const userProfile = await usersCollection.findOne({ uid });
+
+      if (userProfile) {
+        chatRooms.push({
+          ...userProfile,
+          lastMessage: lastMessage?.message || '',
+          lastMessageTime: lastMessage?.timestamp || new Date(0)
+        });
+        
+      }
+    }
+
+    chatRooms.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+    res.json(chatRooms);
   } catch (error) {
-    console.error("Error fetching chat rooms:", error);
+    console.error("Error in chat rooms:", error);
     res.status(500).json({ error: "Failed to fetch chat rooms." });
   }
 });
 
 
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.post("/api/upload-image", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+
+    const fileName = uuidv4() + path.extname(req.file.originalname);
+    const filePath = path.join(__dirname, "uploads", fileName);
+
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    const imageUrl = `http://localhost:5002/uploads/${fileName}`;
+    res.json({ imageUrl });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Server error uploading image" });
+  }
+});
+// post say hello!
+app.post('/api/send-message', async (req, res) => {
+  const { senderId, recipientId, content } = req.body;
+
+  if (!senderId || !recipientId || !content) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const chatsCollection = db.collection("chats"); // ✅ important
+    const newMessage = {
+      senderId,
+      receiverId: recipientId,
+      message: content,
+      timestamp: new Date(),
+    };
+
+    await chatsCollection.insertOne(newMessage); // ✅ stored in chats, like your other messages
+    res.status(200).json({ message: 'Message sent successfully' });
+  } catch (err) {
+    console.error('Error saving message:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 
 const server = http.createServer(app);
+
 
 const io = new Server(server, {
   cors: {
@@ -751,11 +822,13 @@ io.on("connection", (socket) => {
   console.log("🟢 New client connected:", socket.id);
 
   socket.on("sendMessage", (data) => {
-    console.log("📨 Message received:", data);
-    io.emit("receiveMessage", data);
-  });
 
-  // ✅ Add these two handlers for typing
+    socket.broadcast.emit("receiveMessage", data);
+    io.emit("messageSent", { senderId: data.senderId, receiverId: data.receiverId }); // NEW
+  });
+  
+
+  // Add these two handlers for typing
   socket.on("typing", ({ to, from }) => {
     io.emit("typing", { to, from });
   });

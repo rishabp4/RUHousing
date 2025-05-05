@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
+import building from "./images/Building.png";
+import avatar from "./images/default_avatar.png";
+import ChatPage from './ChatPage';
 
 const reportButtonStyle = {
   position: 'fixed',
@@ -56,14 +61,15 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: '#f4f4f4',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
   borderRadius: '8px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
+  width: '800px'
 };
 
 const headingStyle = {
-  color: '#333',
+  color: '#F5F5F5',
   marginBottom: '20px',
 };
 
@@ -76,26 +82,47 @@ const profileCardStyle = {
   width: '80%',
   maxWidth: '600px',
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-  display: 'flex', // Enable flex layout for image and info
-  justifyContent: 'space-between', // Space out image and info
-  alignItems: 'center', // Vertically align items in the center
+  display: 'grid',
+  gridTemplateColumns: '1fr 100px',
+  gridTemplateRows: 'auto auto auto', // Adjusted for button placement
+  alignItems: 'start',
+  gap: '10px',
 };
+
+const profilePreviewInfoStyle = {
+  textAlign: 'left',
+  gridColumn: '1 / 2',
+};
+
 const profileImageContainerStyle = {
-  width: '80px',
-  height: '80px',
+  width: '100px',
+  height: '100px',
   borderRadius: '50%',
   overflow: 'hidden',
-  marginLeft: '15px', // Move image to the right
   backgroundColor: '#ccc',
+  gridColumn: '2 / 3',
+  gridRow: '1 / 3',
+  justifySelf: 'center', // Center the image container in its grid cell
 };
+
 const profileImageStyle = {
   width: '100%',
   height: '100%',
   objectFit: 'cover',
 };
+
 const profileInfoStyle = {
-  flexGrow: 1,
-  textAlign: 'left', // Align text to the left
+  textAlign: 'left',
+  marginTop: '10px',
+  gridColumn: '1 / 2',
+  maxHeight: '0',
+  overflow: 'hidden',
+  transition: 'max-height 0.3s ease-in-out',
+};
+
+const expandedProfileInfoStyle = {
+  ...profileInfoStyle,
+  maxHeight: '500px', // Adjust as needed
 };
 
 const attributeStyle = {
@@ -105,28 +132,56 @@ const attributeStyle = {
 
 const matchLevelStyle = {
   fontWeight: 'bold',
-  marginTop: '10px',
+  marginTop: '5px',
 };
 
 const matchScoreStyle = {
   fontSize: '0.9em',
   color: '#777',
-  marginTop: '5px',
+  marginTop: '2px',
+};
+
+const buttonsContainerStyle = {
+  gridColumn: '1 / 3', // Span both columns
+  display: 'flex',
+  justifyContent: 'center', // Center the buttons horizontally
+  alignItems: 'center',
+  marginTop: '10px',
+};
+
+const knowMoreButtonStyle = {
+  backgroundColor: '#007bff',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  padding: '8px 12px',
+  cursor: 'pointer',
+  fontSize: '0.9em',
+  marginRight: '10px', // Add some space between the buttons
+};
+
+const sayHelloButtonStyle = {
+  backgroundColor: '#28a745',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  padding: '8px 12px',
+  cursor: 'pointer',
+  fontSize: '0.9em',
+  marginLeft: '10px', // Add some space between the buttons
 };
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles() {
+function MatchedProfiles({ photoUrl = avatar }) {
+  const [helloStatus, setHelloStatus] = useState({});
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedProfiles, setExpandedProfiles] = useState({});
   const navigate = useNavigate();
   const [showReportForm, setShowReportForm] = useState(false);
-  const [reportData, setReportData] = useState({
-    name: '',
-    ruid: '',
-    issue: '',
-  });
+  const [reportData, setReportData] = useState({ name: '', ruid: '', issue: '' });
   const [reportStatus, setReportStatus] = useState(null);
 
   useEffect(() => {
@@ -144,15 +199,12 @@ function MatchedProfiles() {
 
         const response = await fetch('http://localhost:5002/api/matched-profiles', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...userPreferences, userId }),
         });
 
         if (!response.ok) {
-          const message = `An error occurred: ${response.status}`;
-          throw new Error(message);
+          throw new Error(`An error occurred: ${response.status}`);
         }
 
         const data = await response.json();
@@ -195,9 +247,7 @@ function MatchedProfiles() {
     try {
       const response = await fetch('http://localhost:5002/api/report-issue', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportData),
       });
 
@@ -212,98 +262,182 @@ function MatchedProfiles() {
       setReportStatus(`Reporting failed: ${error.message}`);
     }
   };
-// How matched profiles should appear
-return ( <div style={matchedProfilesContainerStyle}>
-<h1 style={headingStyle}>Matched Roommate Profiles</h1>
-{matchedProfiles.length > 0 ? (
-  matchedProfiles.map((profile) => (
-    <div key={profile._id} style={profileCardStyle}>
-      <div style={profileInfoStyle}>
-        <p style={attributeStyle}><strong>First Name:</strong> {profile.first_name}</p>
-        <p style={attributeStyle}><strong>Last Name:</strong> {profile.last_name}</p>
-        <p style={attributeStyle}><strong>Graduation Year:</strong> {profile.graduation_year}</p>
-        <p style={attributeStyle}><strong>Major:</strong> {profile.major}</p>
-        <p style={attributeStyle}><strong>Preferred Location:</strong> {profile.preferred_location}</p>
-        <p style={attributeStyle}><strong>Duration of Stay:</strong> {profile.duration_of_stay}</p>
-        <p style={attributeStyle}><strong>Allergies:</strong> {profile.allergies}</p>
-        <p style={attributeStyle}><strong>Has Pets:</strong> {profile.has_pets}</p>
-        <p style={attributeStyle}><strong>Cooking Frequency:</strong> {profile.cooking_frequency}</p>
-        <p style={attributeStyle}><strong>Sleep Schedule:</strong> {profile.sleep_schedule}</p>
-        <p style={attributeStyle}><strong>Study Habits:</strong> {profile.study_habits}</p>
-        <p style={attributeStyle}><strong>Cleanliness:</strong> {profile.cleanliness}</p>
-        <p style={attributeStyle}><strong>Gender:</strong> {profile.gender}</p>
-        <p style={attributeStyle}><strong>Self Description:</strong> {profile.self_description}</p>
-        <p style={matchLevelStyle}>{profile.matchLevel}</p>
-        {profile.matchScore !== undefined && <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>}
+
+  const handleSayHello = async (recipientId) => {
+    const senderId = localStorage.getItem("userId");
+    try {
+      const response = await fetch("http://localhost:5002/api/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senderId, recipientId, content: "Hello!" }),
+      });
+
+      if (response.ok) {
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Sent!" }));
+        setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
+      } else {
+        throw new Error("Failed to send");
+      }
+    } catch (error) {
+      setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" }));
+      setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
+    }
+  };
+
+  const handleKnowMoreClick = (profileId) => {
+    setExpandedProfiles((prevState) => ({
+      ...prevState,
+      [profileId]: !prevState[profileId],
+    }));
+  };
+
+  return (
+    <>
+      <HeaderBar photoUrl={photoUrl} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+        }}
+      >
+        <div></div>
+        <h2 style={{ color: "#F5F5F5", fontWeight: "bold", fontSize: "24px", margin: 0, flexGrow: 1 }}>
+          Top Picks for Your Living Style 🏠
+        </h2>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Link to="/chat">
+            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+              Chats
+            </button>
+          </Link>
+          <Link to="/login">
+            <button style={{ padding: "6px 14px", backgroundColor: "#800000", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+              Logout
+            </button>
+          </Link>
+        </div>
       </div>
-      <div style={profileImageContainerStyle}>
-        {profile.photoId ? (
-          <img
-          src={`http://localhost:5002/api/profile-photo/${profile.userId}?${Date.now()}`}
-            alt="Profile" style={profileImageStyle}
-            onError={(e) => (e.target.src = defaultAvatar)} />
-        ) : (
-          <img src={defaultAvatar} alt="Default Profile" style={profileImageStyle} />
-        )}
+      <div
+        style={{
+          backgroundImage: `url(${building})`,
+          backgroundSize: "100% auto",
+          backgroundPosition: "top center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+          minHeight: "calc(100vh - 130px)",
+          padding: "40px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+        }}
+      >
+        <div style={matchedProfilesContainerStyle}>
+          <h1 style={headingStyle}>Matched Roommate Profiles</h1>
+          {matchedProfiles.length > 0 ? (
+            matchedProfiles.map((profile) => (
+              <div key={profile._id} style={profileCardStyle}>
+                <div style={profilePreviewInfoStyle}>
+                  <p style={attributeStyle}>
+                    <strong>First Name:</strong> {profile.first_name}
+                  </p>
+                  <p style={attributeStyle}>
+                    <strong>Last Name:</strong> {profile.last_name}
+                  </p>
+                  <p style={matchLevelStyle}>{profile.matchLevel}</p>
+                  {profile.matchScore !== undefined && (
+                    <p style={matchScoreStyle}>Match Score: {profile.matchScore.toFixed(2)}</p>
+                  )}
+                  {expandedProfiles[profile._id] && (
+                    <div style={expandedProfiles[profile._id] ? expandedProfileInfoStyle : profileInfoStyle}>
+                      <p style={attributeStyle}>
+                        <strong>Graduation Year:</strong> {profile.graduation_year}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Major:</strong> {profile.major}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Preferred Location:</strong> {profile.preferred_location}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Duration of Stay:</strong> {profile.duration_of_stay}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Allergies:</strong> {profile.allergies}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Has Pets:</strong> {profile.has_pets}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Cooking Frequency:</strong> {profile.cooking_frequency}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Sleep Schedule:</strong> {profile.sleep_schedule}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Study Habits:</strong> {profile.study_habits}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Cleanliness:</strong> {profile.cleanliness}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Gender:</strong> {profile.gender}
+                      </p>
+                      <p style={attributeStyle}>
+                        <strong>Self Description:</strong> {profile.self_description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div style={profileImageContainerStyle}>
+                  <img
+                    src={`http://localhost:5002/api/profile-photo/${profile.userId}`}
+                    alt="profile"
+                    style={profileImageStyle}
+                    onError={(e) => (e.target.src = avatar)}
+                  />
+                </div>
+                <div style={buttonsContainerStyle}>
+                  <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
+                    {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
+                  </button>
+                  <button
+                    onClick={() => handleSayHello(profile.userId)}
+                    style={sayHelloButtonStyle}
+                  >
+                    Say Hello
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No matching profiles found.</p>
+          )}
+          <div style={reportButtonStyle} onClick={handleReportIconClick}>
+            Report an Issue with a Roommate
+          </div>
+          {showReportForm && (
+            <div style={reportFormContainerStyle}>
+              <h2>Report an Issue with a Roommate</h2>
+              <form style={reportFormStyle} onSubmit={handleReportSubmit}>
+                <label htmlFor="name">Name:</label>
+                <input type="text" id="name" name="name" value={reportData.name} onChange={handleReportInputChange} style={reportInputStyle} required />
+                <label htmlFor="ruid">RUID:</label>
+                <input type="text" id="ruid" name="ruid" value={reportData.ruid} onChange={handleReportInputChange} style={reportInputStyle} required />
+                <label htmlFor="issue">Issue:</label>
+                <textarea id="issue" name="issue" value={reportData.issue} onChange={handleReportInputChange} style={{ ...reportInputStyle, height: '200px', width: '750px' }} required />
+                <button type="submit" style={reportSubmitButtonStyle}>Submit</button>
+                {reportStatus && <p>{reportStatus}</p>}
+                <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>Close</button>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  ))
-) : (
-  <p>No matching profiles found.</p>
-)}
-
-    <div style={reportButtonStyle} onClick={handleReportIconClick}>
-      Report an Issue with a Roommate
-    </div>
-
-    {showReportForm && (
-      <div style={reportFormContainerStyle}>
-        <h2>Report an Issue with a Roommate</h2>
-        <form style={reportFormStyle} onSubmit={handleReportSubmit}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={reportData.name}
-            onChange={handleReportInputChange}
-            style={reportInputStyle}
-            required
-          />
-
-          <label htmlFor="ruid">RUID:</label>
-          <input
-            type="text"
-            id="ruid"
-            name="ruid"
-            value={reportData.ruid}
-            onChange={handleReportInputChange}
-            style={reportInputStyle}
-            required
-          />
-
-          <label htmlFor="issue">Issue:</label>
-          <textarea
-            id="issue"
-            name="issue"
-            value={reportData.issue}
-            onChange={handleReportInputChange}
-            style={{ ...reportInputStyle, height: '200px', width: '750px' }}
-            required
-          />
-
-          <button type="submit" style={reportSubmitButtonStyle}>
-            Submit
-          </button>
-          {reportStatus && <p>{reportStatus}</p>}
-          <button type="button" onClick={handleReportFormClose} style={{ marginTop: '10px', ...reportSubmitButtonStyle, backgroundColor: '#ccc', color: 'black' }}>
-            Close
-          </button>
-        </form>
-      </div>
-    )}
-  </div>
-);
+    </>
+  );
 }
 
 export default MatchedProfiles;

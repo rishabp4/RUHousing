@@ -20,7 +20,7 @@
 
 /* ─────────────────────────── CENTRE WINDOW */
 .saved-window {
-  background: #d3d3d3; /* light grey like HomePage */
+  background-Color: rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   padding: 30px;
   width: 90%;

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { houseData } from "./HouseDetail";
+//import { houseData } from "./HouseDetail";
 import logo from "./images/RuLogo.png";
-import rutgersR from "./images/Rutgers-R.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
@@ -12,6 +11,14 @@ import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
+import "./HeaderBar.css";
+import building from "./images/Building.png";
+
+const getSyntheticPrice = (zpid) => {
+  const seed = parseInt(String(zpid).slice(-5), 10);
+  const step = seed % 46;
+  return 1000 + step * 100;
+};
 
 function HomePage() {
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -124,7 +131,15 @@ function HomePage() {
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
-      setProperties(res.data.props || []);
+      const patched = (res.data.props || []).map((home) => {
+        if (!home.price) {
+          const synthetic = getSyntheticPrice(home.zpid);
+          return { ...home, price: `$${synthetic}/mo`, _synthetic: true };
+        }
+        return home;
+      });
+      setProperties(patched);
+
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       console.error(err);
@@ -152,12 +167,10 @@ function HomePage() {
   }, []);
   // Function to determine if a house is available or not
   const isHouseAvailable = (house) => {
-    if (!house.price) {
-      return false; // Automatically unavailable if no price listed
-    }
-    // Consistent random assignment using Zillow's unique ID (zpid)
-    const randomSeed = parseInt(house.zpid.slice(-3), 10);
-    return randomSeed % 10 !== 0; // 90% available, 10% unavailable
+    if (house._synthetic) return true; // always green for synthetic
+    // original 90 % logic for “real” Zillow prices
+    const seed = parseInt(house.zpid.slice(-3), 10);
+    return seed % 10 !== 0;
   };
 
   // Helper function to generate consistent star ratings
@@ -258,6 +271,23 @@ function HomePage() {
                 My Roommates
               </button>
             </Link>
+            <Link to="/chat">
+              <button
+                className="chat-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Chats
+              </button>
+            </Link>
+
             <Link to="/profile">
               <button
                 className="profile-button"
@@ -300,7 +330,7 @@ function HomePage() {
         style={{
           display: "flex",
           backgroundColor: "#A52A2A",
-          padding: "10px 30px",
+          padding: "5px 15px",
           alignItems: "center",
           justifyContent: "center",
           justifyContent: "space-between",
@@ -310,7 +340,7 @@ function HomePage() {
           style={{
             fontWeight: "bold",
             fontSize: "24px",
-            color: "#DCD0FF",
+            color: "#F5F5F5",
           }}
         >
           Welcome home, Scarlet Knight! Your search for off-campus living starts
@@ -342,7 +372,7 @@ function HomePage() {
       {/* Background and Grid */}
       <div
         style={{
-          backgroundImage: `url(${collegeAveBg})`,
+          backgroundImage: `url(${building})`,
           backgroundSize: "100% auto",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
@@ -357,7 +387,7 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: "#d3d3d3",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
@@ -371,7 +401,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#737CA1", //light blue
+              backgroundColor: "#F5F5F5",
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
@@ -394,7 +424,9 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit">Search</button>
+              <button type="submit" style={{ padding: "1px" }}>
+                Search
+              </button>
             </form>
             <div style={{ position: "relative" }}>
               <button

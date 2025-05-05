@@ -14,10 +14,10 @@ import SavedHousesPage from "./SavedHousesPage";
 import HouseDetail from "./HouseDetail";
 import ChatPage from './ChatPage';
 function App() {
-  const handleFormSubmit = (formData) => {
+  /*const handleFormSubmit = (formData) => {
     console.log('Form Data Submitted:', formData);
     alert('Preferences submitted!');
-  };
+  };*/
 
   return (
     <Router>
