@@ -89,7 +89,7 @@ const profileCardStyle = {
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
   display: 'grid',
   gridTemplateColumns: '1fr 100px',
-  gridTemplateRows: 'auto auto auto', // Adjusted for button placement
+  gridTemplateRows: 'auto auto auto', 
   alignItems: 'start',
   gap: '10px',
 };
@@ -107,7 +107,7 @@ const profileImageContainerStyle = {
   backgroundColor: '#ccc',
   gridColumn: '2 / 3',
   gridRow: '1 / 2',
-  justifySelf: 'start', // Center the image container in its grid cell
+  justifySelf: 'start', 
   marginLeft: '-100px',
 };
 
@@ -128,7 +128,7 @@ const profileInfoStyle = {
 
 const expandedProfileInfoStyle = {
   ...profileInfoStyle,
-  maxHeight: '500px', // Adjust as needed
+  maxHeight: '500px', 
 };
 
 const attributeStyle = {
@@ -148,9 +148,9 @@ const matchScoreStyle = {
 };
 
 const buttonsContainerStyle = {
-  gridColumn: '1 / 3', // Span both columns
+  gridColumn: '1 / 3', 
   display: 'flex',
-  justifyContent: 'center', // Center the buttons horizontally
+  justifyContent: 'center', 
   alignItems: 'center',
   marginTop: '10px',
 };
@@ -163,7 +163,7 @@ const knowMoreButtonStyle = {
   padding: '8px 12px',
   cursor: 'pointer',
   fontSize: '0.9em',
-  marginRight: '10px', // Add some space between the buttons
+  marginRight: '10px', 
 };
 
 const sayHelloButtonStyle = {
@@ -174,10 +174,10 @@ const sayHelloButtonStyle = {
   padding: '8px 12px',
   cursor: 'pointer',
   fontSize: '0.9em',
-  marginLeft: '10px', // Add some space between the buttons
+  marginLeft: '10px', 
 };
 
-const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
+const defaultAvatar = require('./images/default_avatar.png'); 
 
 function MatchedProfiles() {
   const [helloStatus, setHelloStatus] = useState({});
@@ -411,7 +411,7 @@ function MatchedProfiles() {
   <button
     onClick={() => handleSayHello(profile.userId)}
     style={sayHelloButtonStyle}
-    disabled={helloStatus[profile.userId] !== undefined} // Added disabled state
+    disabled={helloStatus[profile.userId] !== undefined} 
   >
     {helloStatus[profile.userId] === "Message sent!" ?
       "Message Sent!" :

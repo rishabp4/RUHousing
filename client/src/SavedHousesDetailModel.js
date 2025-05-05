@@ -20,20 +20,13 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
     thumbnail: pic.url,
   }));
 
-  // Remove the old fixed preference list completely
-  // const preferenceList = [ ... ] <-- REMOVE THIS
-
-  // Replace with this clearly:
   const preferences = house.preferences;
   const leaseTerm = house.leaseTerm;
 
-  // save house when clicking button
   const handleUnSavedClick = async (e) => {
     e.preventDefault();
-    // 1. get the userId from local storage
     const userId = localStorage.getItem("userId");
 
-    // 2.) delete the house
     try {
       const response = await axios.delete(
         `http://localhost:5002/api/house/${house._id}`
@@ -102,7 +95,7 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
             target="_blank"
             rel="noopener noreferrer"
             className="address-link"
-            onClick={(e) => e.stopPropagation()} // keeps parent card from closing
+            onClick={(e) => e.stopPropagation()} 
           >
             {house.address}
           </a>
@@ -163,10 +156,10 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
             <h3 style={{ marginBottom: "10px" }}>Preferences:</h3>
             <ul>
               <li>
-                ✅ <strong>Minimum lease term:</strong> {leaseTerm}
+                 <strong>Minimum lease term:</strong> {leaseTerm}
               </li>
               {house.preferences.map((pref, idx) => (
-                <li key={idx}>✅ {pref}</li>
+                <li key={idx}> {pref}</li>
               ))}
             </ul>
           </div>

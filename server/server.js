@@ -84,7 +84,7 @@ app.post("/api/house", async (req, res) => {
     const saveHouse = await savedHousesDb.insertOne(req.body);
     if (saveHouse) return res.status(200).json({ message: "House is saved" });
   } catch (error) {
-    console.error("❌ Error saving house:", error.message);
+    console.error(" Error saving house:", error.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -167,7 +167,7 @@ app.get("/api/house/:userId", async (req, res) => {
       return res.status(404).json({ message: "No houses found for this user" });
     }
   } catch (error) {
-    console.error("❌ Error Getting saved houses:", error.message);
+    console.error("Error Getting saved houses:", error.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -194,7 +194,7 @@ app.delete("/api/house/:id", async (req, res) => {
       return res.status(404).json({ message: "Saved house not found" });
     }
   } catch (error) {
-    console.error("❌ Error Deleting saved house:", error.message);
+    console.error("Error Deleting saved house:", error.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -263,7 +263,7 @@ app.get("/api/profile-photo/:uid", async (req, res) => {
 
 //! post save or update profile
 app.post("/api/profile", async (req, res) => {
-  console.log("🔥 POST /api/profile hit:", req.body);
+  console.log("POST /api/profile hit:", req.body);
 
   const { uid, email, firstName, lastName, netID } = req.body;
 
@@ -284,13 +284,13 @@ app.post("/api/profile", async (req, res) => {
         { uid },
         { $set: { firstName, lastName, email, netID } }
       );
-      return res.json({ message: "✅ Profile updated" });
+      return res.json({ message: "Profile updated" });
     }
 
     await usersCollection.insertOne({ uid, email, firstName, lastName });
-    res.json({ message: "✅ Profile created" });
+    res.json({ message: "Profile created" });
   } catch (error) {
-    console.error("❌ Error saving profile:", error);
+    console.error("Error saving profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -314,7 +314,7 @@ app.get("/api/profile", async (req, res) => {
 
     res.json(user);
   } catch (error) {
-    console.error("❌ Error fetching profile:", error);
+    console.error("Error fetching profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -763,7 +763,7 @@ app.post("/user", async (req, res) => {
         { uid },
         { $set: { firstName, lastName, netID, photoURL, email } }
       );
-      return res.json({ message: "✅ Profile updated" });
+      return res.json({ message: "Profile updated" });
     }
 
     await usersCollection.insertOne({
@@ -774,9 +774,9 @@ app.post("/user", async (req, res) => {
       netID,
       photoURL,
     });
-    res.json({ message: "✅ Profile created" });
+    res.json({ message: "Profile created" });
   } catch (err) {
-    console.error("❌ Error saving profile:", err);
+    console.error("Error saving profile:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -795,7 +795,7 @@ app.get("/user/:userId", async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error("❌ Error fetching profile:", err);
+    console.error("Error fetching profile:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -884,7 +884,7 @@ app.post("/api/send-message", async (req, res) => {
   }
 
   try {
-    const chatsCollection = db.collection("chats"); // 
+    const chatsCollection = db.collection("chats"); 
     const newMessage = {
       senderId,
       receiverId: recipientId,
@@ -892,7 +892,7 @@ app.post("/api/send-message", async (req, res) => {
       timestamp: new Date(),
     };
 
-    await chatsCollection.insertOne(newMessage); // 
+    await chatsCollection.insertOne(newMessage); 
     res.status(200).json({ message: "Message sent successfully" });
   } catch (err) {
     console.error("Error saving message:", err);
@@ -910,7 +910,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("🟢 New client connected:", socket.id);
+  console.log("New client connected:", socket.id);
 
   socket.on("sendMessage", (data) => {
     socket.broadcast.emit("receiveMessage", data);
@@ -930,13 +930,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("🔴 Client disconnected:", socket.id);
+    console.log("Client disconnected:", socket.id);
   });
 });
 
 const PORT = process.env.PORT || 5002;
 server.listen(PORT, () => {
   console.log(
-    `🚀 WebSocket + Express server running at http://localhost:${PORT}`
+    `WebSocket + Express server running at http://localhost:${PORT}`
   );
 });

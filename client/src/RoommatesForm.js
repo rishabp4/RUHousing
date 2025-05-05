@@ -29,7 +29,7 @@ const formGroupStyle = {
 const labelStyle = {
   display: 'block',
   marginBottom: '5px',
-  color: '#555',          // changed from #555 to pure black
+  color: '#555',         
   fontWeight: 'bold',
 };
 

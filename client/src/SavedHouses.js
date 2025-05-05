@@ -23,19 +23,17 @@ function SavedHouses() {
   useEffect(() => {
     fetchSavedHouses();
   }, []);
-  // Home‑button behaviour: go to /home or refresh if already there
   const handleHomeClick = () => {
     if (location.pathname === "/home") {
-      navigate(0); // full reload of /home
+      navigate(0); 
     } else {
       navigate("/home");
     }
   };
 
-  // Saved-Houses button behaviour (refresh if already here)
   const handleSavedClick = () => {
     if (location.pathname === "/saved-houses") {
-      navigate(0); // reload page
+      navigate(0); 
     } else {
       navigate("/saved-houses");
     }
