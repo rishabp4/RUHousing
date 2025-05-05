@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 import avatar from "./images/default_avatar.png";
 import ChatPage from './ChatPage';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 
 const reportButtonStyle = {
   position: 'fixed',
   bottom: '20px',
   right: '20px',
-  backgroundColor: '#f44336',
+  backgroundColor: '#A52A2A',
   color: 'white',
   borderRadius: '4px',
   padding: '12px 20px',
@@ -173,7 +175,7 @@ const sayHelloButtonStyle = {
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles({ photoUrl = avatar }) {
+function MatchedProfiles() {
   const [helloStatus, setHelloStatus] = useState({});
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -183,6 +185,23 @@ function MatchedProfiles({ photoUrl = avatar }) {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportData, setReportData] = useState({ name: '', ruid: '', issue: '' });
   const [reportStatus, setReportStatus] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(avatar);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+        setPhotoUrl(
+          `http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`
+        );
+      } else {
+        setUserId(null);
+        setPhotoUrl(avatar);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchMatchedProfiles = async () => {
@@ -312,7 +331,7 @@ function MatchedProfiles({ photoUrl = avatar }) {
             </button>
           </Link>
           <Link to="/login">
-            <button style={{ padding: "6px 14px", backgroundColor: "#800000", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
               Logout
             </button>
           </Link>

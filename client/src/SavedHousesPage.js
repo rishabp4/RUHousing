@@ -8,8 +8,7 @@ import { auth } from "./firebase";
 import logo from "./images/RuLogo.png";
 import headerImg from "./images/Header.png";
 import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/CollegeAveBlue.png";
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 
 import SavedHousesDetailModel from "./SavedHousesDetailModel";
 import "./HomePage.css"; // re-use hover colours, buttons, etc.
@@ -157,7 +156,9 @@ function SavedHousesPage() {
           Saved Houses
         </span>
         <Link to="/login">
-          <button className="top-search-button">Logout</button>
+          <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+            Logout
+          </button>
         </Link>
       </div>
 

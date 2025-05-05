@@ -5,7 +5,6 @@ import logo from "./images/RuLogo.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/CollegeAveBlue.png";
 import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
@@ -352,10 +351,9 @@ function HomePage() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Link to="/login">
             <button
-              className="top-search-button"
               style={{
                 padding: "6px 14px",
-                backgroundColor: "#800000",
+                backgroundColor: "#A52A2A",
                 color: "white",
                 borderRadius: "4px",
                 cursor: "pointer",
@@ -378,7 +376,7 @@ function HomePage() {
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
-          minHeight: "calc(100vh - 130px)",
+          minHeight: "100vh",
           padding: "40px",
           display: "flex",
           justifyContent: "center",
