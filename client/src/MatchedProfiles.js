@@ -97,14 +97,15 @@ const profilePreviewInfoStyle = {
 };
 
 const profileImageContainerStyle = {
-  width: '100px',
-  height: '100px',
+  width: '150px',
+  height: '150px',
   borderRadius: '50%',
   overflow: 'hidden',
   backgroundColor: '#ccc',
   gridColumn: '2 / 3',
-  gridRow: '1 / 3',
-  justifySelf: 'center', // Center the image container in its grid cell
+  gridRow: '1 / 2',
+  justifySelf: 'start', // Center the image container in its grid cell
+  marginLeft: '-100px',
 };
 
 const profileImageStyle = {
@@ -116,7 +117,7 @@ const profileImageStyle = {
 const profileInfoStyle = {
   textAlign: 'left',
   marginTop: '10px',
-  gridColumn: '1 / 2',
+  gridColumn: '1 / 3',
   maxHeight: '0',
   overflow: 'hidden',
   transition: 'max-height 0.3s ease-in-out',

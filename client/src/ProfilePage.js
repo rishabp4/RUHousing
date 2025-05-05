@@ -10,16 +10,6 @@ import './ProfilePage.css';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
 
-/*const profilesContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '80px',
-  backgroundColor: '#f6f6f6',
-  borderRadius: '8px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  margin: '20px',
-};*/
-
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [firstName, setFirstName] = useState("");

@@ -9,8 +9,8 @@
   
   /* Container */
   .profile-page {
-    max-width: 600px;
-    margin: 40px auto;
+    max-width: 1000px;
+    margin: 10px auto;
     padding: 20px;
     font-family: 'Segoe UI', sans-serif;
     background: #fafafa; /* soft off-white background */
