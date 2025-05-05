@@ -1,0 +1,124 @@
+/*  SavedHousesPage.css – final version  */
+
+/* Re-use all the shared button & hover colours that already live in HomePage.css */
+@import "./HomePage.css";
+
+/* ─────────────────────────── GENERAL NAV BUTTON (copied so it exists even if HomePage.css changes) */
+.nav-btn {
+  background: #a52a2a;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.nav-btn:hover {
+  background: #7a1f1f;
+}
+
+/* ─────────────────────────── CENTRE WINDOW */
+.saved-window {
+  background-Color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+/* ─────────────────────────── GRID */
+.house-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px); /* fixed 200-px columns */
+  gap: 20px;
+  justify-content: center; /* centre when 1-2 cards only */
+}
+
+/* ─────────────────────────── CARD */
+.house-card {
+  width: 200px; /* identical footprint to HomePage */
+  background: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+.house-card:hover {
+  transform: scale(1.03);
+}
+
+.house-card img {
+  width: 100%;
+  height: 150px; /* same image height */
+  object-fit: cover;
+}
+
+/* ─────────────────────────── CARD BODY */
+.card-body {
+  padding: 10px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1; /* makes save-btn stick to bottom */
+}
+
+/* price & status */
+.price {
+  font-weight: 700;
+  font-size: 17px;
+  margin: 0;
+}
+.avail {
+  font-weight: 700;
+  margin: 0;
+}
+.avail.ok {
+  color: green;
+}
+.avail.no {
+  color: red;
+}
+
+/* rating badge */
+.rating {
+  background: #909090;
+  color: #fff;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 13px;
+  align-self: center;
+}
+
+/* save / unsave button */
+.save-btn {
+  padding: 4px 0;
+  width: 90%;
+  margin: 8px auto 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  color: #e91e63;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+}
+.save-btn:hover {
+  background: #f7f7f7;
+}
+
+/* boxed scarlet logout like HomePage */
+.top-search-button {
+  padding: 6px 14px;
+  background: #800000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}

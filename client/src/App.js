@@ -12,27 +12,28 @@ import RoommatesForm from './RoommatesForm';
 import MatchedProfiles from './MatchedProfiles';
 import SavedHousesPage from "./SavedHousesPage";
 import HouseDetail from "./HouseDetail";
-
+import ChatPage from './ChatPage';
 function App() {
-  const handleFormSubmit = (formData) => {
+  /*const handleFormSubmit = (formData) => {
     console.log('Form Data Submitted:', formData);
     alert('Preferences submitted!');
-  };
+  };*/
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} /> {/* ✅ updated route */}
-        <Route path="/new-user" element={<NewUser />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/student" element={<Student />} />
-        <Route path="/landlord" element={<Landlord />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/find-roommates" element={<RoommatesForm />} />
-        <Route path="/matched-profiles" element={<MatchedProfiles />} /> 
-        <Route path="/saved-houses" element={<SavedHousesPage />} />
-        <Route path="/house/:id" element={<HouseDetail />} />
+      <Route path="/" element={<LandingPage />} />
+  <Route path="/new-user" element={<NewUser />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/student" element={<Student />} />
+  <Route path="/landlord" element={<Landlord />} />
+  <Route path="/home" element={<HomePage />} />
+  <Route path="/profile" element={<ProfilePage />} />
+  <Route path="/find-roommates" element={<RoommatesForm />} />
+  <Route path="/matched-profiles" element={<MatchedProfiles />} />
+  <Route path="/saved-houses" element={<SavedHousesPage />} />
+  <Route path="/house/:id" element={<HouseDetail />} />
+  <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </Router>
   );

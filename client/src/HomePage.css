@@ -2,8 +2,10 @@
   transition: background-color 0.3s ease;
 }
 
-.home-button:hover {
-  background-color: #bbdefb !important;
+.home-button:hover, 
+.report-button-style:hover ,
+.find-Users-button:hover{
+  background-color: #800000 !important;
 }
 
 .saved-houses-button,
@@ -15,7 +17,7 @@
 .saved-houses-button:hover,
 .roommates-button:hover,
 .profile-button:hover {
-  background-color: #bbdefb !important;
+  background-color: #800000 !important;
 }
 
 .top-search-button,
@@ -25,6 +27,6 @@
 
 .top-search-button:hover,
 .middle-search-button:hover {
-  background-color: #bbdefb !important;
+  background-color: #660000 !important;
   color: #ffffff !important;
 }

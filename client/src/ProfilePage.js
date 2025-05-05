@@ -5,6 +5,10 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
+import building from "./images/clearBuilding.png";
+import './ProfilePage.css';
+import HeaderBar from "./HeaderBar";
+import { Link } from "react-router-dom";
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -17,6 +21,8 @@ function ProfilePage() {
   // -- photo upload states --
   const [photoFile, setPhotoFile] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(avatar);
+  const savedPhoto = localStorage.getItem('photoUrl');
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -38,7 +44,7 @@ function ProfilePage() {
         }
 
         // fetch photo (AFTER user ID is known, so the photo API works)
-        setPhotoUrl(`http://localhost:5002/api/profile-photo/${user.uid}?${Date.now()}`);
+        setPhotoUrl(savedPhoto || `http://localhost:5002/api/profile-photo/${user.uid}?${Date.now()}`);
       } else {
         setFirebaseUser(null);
         setUserId(null);
@@ -71,7 +77,9 @@ function ProfilePage() {
       body: formData,
     });
     if (res.ok) {
-      setPhotoUrl(`http://localhost:5002/api/profile-photo/${userId}?${Date.now()}`); // update and bust cache
+      const newUrl = `http://localhost:5002/api/profile-photo/${userId}?${Date.now()}`;
+      setPhotoUrl(newUrl);
+      localStorage.setItem('photoUrl', newUrl); // ✅ SAVE for other components
       setPhotoFile(null);
       alert("Photo uploaded!");
     } else {
@@ -117,7 +125,7 @@ function ProfilePage() {
   if (!firebaseUser) return <p>Please log in to see your profile.</p>;
 
 
-//! CHATTTING WITH JULIO
+  //! CHATTTING WITH JULIO
   if (chattingWith) {
     return (
       <ChatWindow
@@ -127,12 +135,23 @@ function ProfilePage() {
       />
     );
   }
-// FPR THE USERS, JULIO BACK HERE
+  // FPR THE USERS, JULIO BACK HERE
   if (showFindUsers) {
     return (
-      <div style={{ padding: "2rem" }}>
-        <button onClick={() => setShowFindUsers(false)} style={{ marginBottom: "1rem", padding: "8px" }}>
-          Back to Profile
+      <div >
+        <button className="find-Users-button" onClick={() => setShowFindUsers(false)} style={{
+          margin: "20px",
+          position: 'absolute',
+          background: 'transparent',
+          border: '2px solid white',
+          color: 'white',
+          padding: '8px 16px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          zIndex: 1000
+        }}>
+        Back to Profile
         </button>
         <FindUsers currentUserId={userId} startChat={setChattingWith} />
       </div>
@@ -141,80 +160,157 @@ function ProfilePage() {
   //  If not showing FindUsers, show normal profile, JULIO WAS HERE
   // main profile page user interface
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Welcome, {firebaseUser.email}</h2>
-      <div style={{ margin: "22px 0", textAlign: "center" }}>
-        {/* Profile Photo */}
-        <img
-          src={photoUrl}
-          alt="Profile"
-          width={120}
-          height={120}
-          style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc", background: "#fafafa" }}
-          onError={e => (e.target.src = avatar)}
-        />
-        <br />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => setPhotoFile(e.target.files[0])}
-          style={{ marginTop: 8 }}
-        />
-        <button
-          onClick={handlePhotoUpload}
-          disabled={!photoFile}
-          style={{
-            marginLeft: 8,
-            padding: "6px 16px",
-            borderRadius: 4,
-            background: "#ffffe0",
-            color: "black",
-            border: "1px solid #ccc",
-            cursor: photoFile ? "pointer" : "not-allowed"
-          }}
-        >
-          Upload
-        </button>
+    <>
+      <HeaderBar photoUrl={photoUrl} />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#A52A2A",
+          padding: "5px 15px",
+        }}
+      >
       </div>
 
-      <br /><br />
+      <div style={{
+        backgroundImage: `url(${building})`,
+        backgroundSize: "100% auto",
+        backgroundPosition: "top center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        minHeight: "calc(100vh - 130px)",
+        padding: "40px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}>
+        <div className="profile-page" 
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.7)",
+            boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)', margin: "5px"}}>
+          <div>
+          <h2 style={{
+          color: "#F5F5F5",
+          fontWeight: "bold",
+          fontSize: "30px",
+          marginBottom: "20px",
+          flexGrow: 1,
+          textAlign: "center",
+        }}>
+          Welcome,  <strong>{firstName || firebaseUser.email}</strong>!
+        </h2>
+            {/* Profile Photo */}
+            <section className="photo-section">
+              <img
+                src={photoUrl}
+                alt="Profile"
+                className="profile-avatar"
+                onError={(e) => (e.target.src = avatar)}
+              />
 
-      <button onClick={() => setShowFindUsers(true)} style={{ marginBottom: "1rem", padding: "8px" }}>
-        Find Roommates
-      </button>
+              <div className="upload-controls">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhotoFile(e.target.files[0])}
+                />
+                <button onClick={handlePhotoUpload} disabled={!photoFile} style={{ width: "160px", margin: "20px",
+                  background: 'transparent',
+                  border: '2px solid white',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',}}>
+                  Upload
+                </button>
+              </div>
+            </section>
 
-      <div>
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={handleFirstNameChange}
-          placeholder="First Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={handleLastNameChange}
-          placeholder="Last Name"
-          style={{ margin: "10px", padding: "5px" }}
-        />
-        <input
-          type="text"
-          name="netID"
-          value={netID}
-          onChange={(e) => setNetID(e.target.value)}
-          placeholder="NetID"
-          style={{ margin: "10px", padding: "5px" }}
-        />
+            <section className="profile-form">
+              <div className="form-group" style={{ display: "flex", flexDirection: "column" }}>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  placeholder="First Name"
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  placeholder="Last Name"
+                />
+                <input
+                  type="text"
+                  name="netID"
+                  value={netID}
+                  onChange={(e) => setNetID(e.target.value)}
+                  placeholder="NetID"
+                />
+              </div>
+
+              <div className="others-controls" style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "10px" }}>
+                <button className="save-profile-button" onClick={handleSave} style={{ margin: "5px",
+                  background: 'transparent',
+                  border: '2px solid white',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',}}>
+                  Save Profile
+                </button>
+              </div>
+            </section>
+
+            <hr style={{ border: "none", height: "4px", backgroundColor: "white", margin: "30px 0", borderRadius: "2px" }} />
+
+            <div className="others-controls" style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "5px" }}>
+              <button className="find-roommates-button" onClick={() => setShowFindUsers(true)} style={{ margin: "20px",
+                  background: 'transparent',
+                  border: '2px solid white',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',}}>
+                Find Roommates
+              </button>
+
+              <Link to="/chat">
+                <button
+                  className="find-roommates-button" style={{ width: "160px", margin: "20px",
+                  background: 'transparent',
+                  border: '2px solid white',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',}}>
+                  Go to Chats
+                </button>
+              </Link>
+            </div>
+
+            <hr style={{ border: "none", height: "4px", backgroundColor: "white", margin: "30px 0", borderRadius: "2px" }} />
+
+
+          </div>
+          <section className="roommates-form-section">
+            <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
+          </section>
+        </div>
       </div>
+    </>
 
-      <button onClick={handleSave}>Save Profile</button>
-      {/* Pass the lifted state and userId as props to RoommatesForm */}
-      <RoommatesForm firstName={firstName} lastName={lastName} userId={userId} />
-    </div>
+
   );
+
+
 }
 
 export default ProfilePage;

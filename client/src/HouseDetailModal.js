@@ -28,7 +28,7 @@ const getLeaseTerm = (zpid) => {
   return leaseTerms[seed % leaseTerms.length];
 };
 
-Modal.setAppElement("#root"); 
+Modal.setAppElement("#root");
 
 // Function clearly assigns an owner to a house based on its zpid
 const getOwnerInfo = (zpid) => {
@@ -48,44 +48,48 @@ function HouseDetailModal({
 
   useEffect(() => {
     if (house && house.zpid) {
-
-      axios.get(`http://localhost:5002/api/houses/${house.zpid}/reviews`)
-        .then(res => setReviews(res.data))
-        .catch(err => console.error("Error loading reviews", err));
+      axios
+        .get(`http://localhost:5002/api/houses/${house.zpid}/reviews`)
+        .then((res) => setReviews(res.data))
+        .catch((err) => console.error("Error loading reviews", err));
     }
   }, [house]);
-  
-  const submitReview = () => {
 
+  const submitReview = () => {
     console.error("Submit review function called");
     if (!house || !house.zpid) {
       console.error("Cannot submit review: House ID is undefined");
       return;
     }
-  
+
     if (!newReview.trim()) {
       console.log("Empty review, not submitting");
       return;
     }
-    
+
     console.log("Submitting review:", newReview, "for house:", house.zpid);
-    
-    axios.post(`http://localhost:5002/api/houses/${house.zpid}/reviews`, { text: newReview })
-      .then(res => {
+
+    axios
+      .post(`http://localhost:5002/api/houses/${house.zpid}/reviews`, {
+        text: newReview,
+      })
+      .then((res) => {
         console.log("Review submission response:", res.data);
         // Fetch the updated reviews instead of relying on response
-        return axios.get(`http://localhost:5002/api/houses/${house.zpid}/reviews`);
+        return axios.get(
+          `http://localhost:5002/api/houses/${house.zpid}/reviews`
+        );
       })
-      .then(res => {
+      .then((res) => {
         console.log("Updated reviews:", res.data);
         setReviews(res.data);
         setNewReview("");
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Error submitting review:", err.response || err);
       });
   };
-  
+
   if (!house) return null;
 
   const owner = getOwnerInfo(house.zpid); // get the owner data clearly
@@ -183,7 +187,10 @@ function HouseDetailModal({
             }}
           >
             {house.price
-              ? `$${Number(house.price).toLocaleString()}/month`
+              ? typeof house.price === "string" &&
+                house.price.trim().startsWith("$")
+                ? house.price
+                : `$${Number(house.price).toLocaleString()}/month`
               : "Price Not Listed"}
           </h2>
 
@@ -301,14 +308,29 @@ function HouseDetailModal({
           >
             Close
           </button>
-          
-          <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#f5f5f5", borderRadius: "8px" }}>
+
+          <div
+            style={{
+              marginTop: "30px",
+              padding: "15px",
+              backgroundColor: "#f5f5f5",
+              borderRadius: "8px",
+            }}
+          >
             <h3 style={{ marginBottom: "15px" }}>Reviews</h3>
             <ul style={{ marginBottom: "15px" }}>
               {reviews.length > 0 ? (
                 reviews.map((r, i) => (
-                  <li key={i} style={{ marginBottom: "8px", padding: "5px", borderBottom: "1px solid #ddd" }}>
-                    {r.text} <small>({new Date(r.date).toLocaleDateString()})</small>
+                  <li
+                    key={i}
+                    style={{
+                      marginBottom: "8px",
+                      padding: "5px",
+                      borderBottom: "1px solid #ddd",
+                    }}
+                  >
+                    {r.text}{" "}
+                    <small>({new Date(r.date).toLocaleDateString()})</small>
                   </li>
                 ))
               ) : (
@@ -316,25 +338,27 @@ function HouseDetailModal({
               )}
             </ul>
 
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              console.log("Form submitted");
-              submitReview();
-            }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log("Form submitted");
+                submitReview();
+              }}
+            >
               <textarea
                 value={newReview}
                 onChange={(e) => setNewReview(e.target.value)}
                 placeholder="Write a review..."
-                style={{ 
-                  width: "100%", 
-                  padding: "10px", 
-                  marginBottom: "10px", 
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "10px",
                   minHeight: "80px",
                   borderRadius: "4px",
-                  border: "1px solid #ccc"
+                  border: "1px solid #ccc",
                 }}
               />
-              <button 
+              <button
                 type="submit"
                 style={{
                   padding: "8px 15px",
@@ -343,7 +367,7 @@ function HouseDetailModal({
                   border: "none",
                   borderRadius: "4px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
                 }}
               >
                 Submit Review
