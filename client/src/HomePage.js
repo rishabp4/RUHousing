@@ -11,7 +11,8 @@ import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
 import "./HeaderBar.css";
-import building from "./images/clearBuilding.png";
+import building from "./images/Building.png";
+import axios from "axios";
 
 const getSyntheticPrice = (zpid) => {
   const seed = parseInt(String(zpid).slice(-5), 10);
@@ -114,21 +115,22 @@ function HomePage() {
   // code that call sthe zilow API
   const fetchProperties = async () => {
     try {
-      const res = await throttledAxios({
-        method: "GET",
-        url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
-        params: {
-          location: query,
-          home_type: homeTypeFilter || undefined,
-          status_type: statusTypeFilter || undefined,
-          page: page,
-          sort: sortOrder,
-        },
-        headers: {
-          "X-RapidAPI-Key": "PUT ZILLOW API KEY HERE REPLACE THIS", // Replace with your actual API key in the qoutes on this line
-          "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
-        },
-      });
+      const res = await axios.get(
+        "http://localhost:5002/api/zillow/propertyExtendedSearch",
+        {
+          params: {
+            location: query,
+            home_type: homeTypeFilter || undefined,
+            status_type: statusTypeFilter || undefined,
+            page: page,
+            sort: sortOrder,
+          },
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_ZILLOW_API_KEY}`,
+          },
+        }
+      );
+
       const patched = (res.data.props || []).map((home) => {
         if (!home.price) {
           const synthetic = getSyntheticPrice(home.zpid);
@@ -286,23 +288,22 @@ function HomePage() {
               </button>
             </Link>
 
-<Link to="/profile">
-  <button
-    className="profile-button"
-    style={{
-      backgroundColor: "#A52A2A",
-      color: "white",
-      padding: "8px 16px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      border: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Profile
-  </button>
-</Link>
-
+            <Link to="/profile">
+              <button
+                className="profile-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
         </div>
         <Link to="/profile">
@@ -349,7 +350,17 @@ function HomePage() {
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Link to="/login">
-            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+            <button
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#A52A2A",
+                color: "white",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                border: "none",
+              }}
+            >
               Logout
             </button>
           </Link>
@@ -412,7 +423,9 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit" style={{ padding: "1px"}}>Search</button>
+              <button type="submit" style={{ padding: "1px" }}>
+                Search
+              </button>
             </form>
             <div style={{ position: "relative" }}>
               <button
@@ -546,9 +559,9 @@ function HomePage() {
                     >
                       ♥{" "}
                       {localStorage.getItem("savedHouses") &&
-                        JSON.parse(localStorage.getItem("savedHouses")).includes(
-                          home.zpid
-                        )
+                      JSON.parse(localStorage.getItem("savedHouses")).includes(
+                        home.zpid
+                      )
                         ? "Unsave"
                         : "Save"}
                     </button>
