@@ -5,14 +5,13 @@ import logo from "./images/RuLogo.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/CollegeAveBlue.png";
 import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
 import "./HeaderBar.css";
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 
 const getSyntheticPrice = (zpid) => {
   const seed = parseInt(String(zpid).slice(-5), 10);
@@ -287,22 +286,23 @@ function HomePage() {
               </button>
             </Link>
 
-            <Link to="/profile">
-              <button
-                className="profile-button"
-                style={{
-                  backgroundColor: "#A52A2A",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  border: "none",
-                  fontWeight: "bold",
-                }}
-              >
-                Profile
-              </button>
-            </Link>
+<Link to="/profile">
+  <button
+    className="profile-button"
+    style={{
+      backgroundColor: "#A52A2A",
+      color: "white",
+      padding: "8px 16px",
+      borderRadius: "5px",
+      cursor: "pointer",
+      border: "none",
+      fontWeight: "bold",
+    }}
+  >
+    Profile
+  </button>
+</Link>
+
           </div>
         </div>
         <Link to="/profile">
@@ -349,18 +349,7 @@ function HomePage() {
         {/* SEARCH BAR RESTORED EXACTLY AS ORIGINAL - Search bar taken out from nav bar */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Link to="/login">
-            <button
-              className="top-search-button"
-              style={{
-                padding: "6px 14px",
-                backgroundColor: "#800000",
-                color: "white",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                border: "none",
-              }}
-            >
+            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
               Logout
             </button>
           </Link>
@@ -376,7 +365,7 @@ function HomePage() {
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
-          minHeight: "calc(100vh - 130px)",
+          minHeight: "100vh",
           padding: "40px",
           display: "flex",
           justifyContent: "center",
@@ -423,9 +412,7 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit" style={{ padding: "1px" }}>
-                Search
-              </button>
+              <button type="submit" style={{ padding: "1px"}}>Search</button>
             </form>
             <div style={{ position: "relative" }}>
               <button
@@ -559,9 +546,9 @@ function HomePage() {
                     >
                       ♥{" "}
                       {localStorage.getItem("savedHouses") &&
-                      JSON.parse(localStorage.getItem("savedHouses")).includes(
-                        home.zpid
-                      )
+                        JSON.parse(localStorage.getItem("savedHouses")).includes(
+                          home.zpid
+                        )
                         ? "Unsave"
                         : "Save"}
                     </button>
