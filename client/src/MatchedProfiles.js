@@ -7,6 +7,8 @@ import avatar from "./images/default_avatar.png";
 import ChatPage from './ChatPage';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+import './HomePage.css';
+
 
 const reportButtonStyle = {
   position: 'fixed',
@@ -63,9 +65,9 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',
   borderRadius: '8px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
   width: '800px'
 };
@@ -447,7 +449,7 @@ function MatchedProfiles() {
           ) : (
             <p>No matching profiles found.</p>
           )}
-          <div style={reportButtonStyle} onClick={handleReportIconClick}>
+          <div className="home-button" style={reportButtonStyle} onClick={handleReportIconClick}>
             Report an Issue with a Roommate
           </div>
           {showReportForm && (

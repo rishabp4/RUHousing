@@ -2,7 +2,8 @@
   transition: background-color 0.3s ease;
 }
 
-.home-button:hover {
+.home-button:hover, 
+.report-button-style:hover {
   background-color: #800000 !important;
 }
 

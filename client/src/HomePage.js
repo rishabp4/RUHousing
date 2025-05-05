@@ -11,7 +11,7 @@ import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
 import "./HeaderBar.css";
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 import axios from "axios";
 
 const getSyntheticPrice = (zpid) => {
@@ -386,12 +386,12 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
             maxWidth: "1200px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
           {/* Search bar and Filter Button (Restored EXACTLY) */}

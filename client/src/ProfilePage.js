@@ -194,7 +194,9 @@ function ProfilePage() {
         justifyContent: "center",
         alignItems: "flex-start",
       }}>
-        <div className="profile-page" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <div className="profile-page" 
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.7)",
+            boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',}}>
           <div>
             {/* Profile Photo */}
             <section className="photo-section">
