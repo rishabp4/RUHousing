@@ -13,6 +13,7 @@ import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
 import "./HeaderBar.css";
 import building from "./images/Building.png";
+import axios from "axios";
 
 const getSyntheticPrice = (zpid) => {
   const seed = parseInt(String(zpid).slice(-5), 10);
@@ -115,21 +116,22 @@ function HomePage() {
   // code that call sthe zilow API
   const fetchProperties = async () => {
     try {
-      const res = await throttledAxios({
-        method: "GET",
-        url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
-        params: {
-          location: query,
-          home_type: homeTypeFilter || undefined,
-          status_type: statusTypeFilter || undefined,
-          page: page,
-          sort: sortOrder,
-        },
-        headers: {
-          "X-RapidAPI-Key": "PUT ZILLOW API KEY HERE REPLACE THIS", // Replace with your actual API key in the qoutes on this line
-          "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
-        },
-      });
+      const res = await axios.get(
+        "http://localhost:5002/api/zillow/propertyExtendedSearch",
+        {
+          params: {
+            location: query,
+            home_type: homeTypeFilter || undefined,
+            status_type: statusTypeFilter || undefined,
+            page: page,
+            sort: sortOrder,
+          },
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_ZILLOW_API_KEY}`,
+          },
+        }
+      );
+
       const patched = (res.data.props || []).map((home) => {
         if (!home.price) {
           const synthetic = getSyntheticPrice(home.zpid);
