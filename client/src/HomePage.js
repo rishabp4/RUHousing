@@ -5,16 +5,20 @@ import logo from "./images/RuLogo.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import avatar from "./images/default_avatar.png";
-import collegeAveBg from "./images/CollegeAveBlue.png";
 import header from "./images/Header.png";
 import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
-import './HeaderBar.css';
-import building from "./images/Building.png";
+import "./HeaderBar.css";
+import building from "./images/clearBuilding.png";
+import axios from "axios";
 
-
+const getSyntheticPrice = (zpid) => {
+  const seed = parseInt(String(zpid).slice(-5), 10);
+  const step = seed % 46;
+  return 1000 + step * 100;
+};
 
 function HomePage() {
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -111,22 +115,31 @@ function HomePage() {
   // code that call sthe zilow API
   const fetchProperties = async () => {
     try {
-      const res = await throttledAxios({
-        method: "GET",
-        url: "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
-        params: {
-          location: query,
-          home_type: homeTypeFilter || undefined,
-          status_type: statusTypeFilter || undefined,
-          page: page,
-          sort: sortOrder,
-        },
-        headers: {
-          "X-RapidAPI-Key": "PUT API key here", // Replace with your actual API key in the qoutes on this line
-          "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
-        },
+      const res = await axios.get(
+        "http://localhost:5002/api/zillow/propertyExtendedSearch",
+        {
+          params: {
+            location: query,
+            home_type: homeTypeFilter || undefined,
+            status_type: statusTypeFilter || undefined,
+            page: page,
+            sort: sortOrder,
+          },
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_ZILLOW_API_KEY}`,
+          },
+        }
+      );
+
+      const patched = (res.data.props || []).map((home) => {
+        if (!home.price) {
+          const synthetic = getSyntheticPrice(home.zpid);
+          return { ...home, price: `$${synthetic}/mo`, _synthetic: true };
+        }
+        return home;
       });
-      setProperties(res.data.props || []);
+      setProperties(patched);
+
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       console.error(err);
@@ -154,12 +167,10 @@ function HomePage() {
   }, []);
   // Function to determine if a house is available or not
   const isHouseAvailable = (house) => {
-    if (!house.price) {
-      return false; // Automatically unavailable if no price listed
-    }
-    // Consistent random assignment using Zillow's unique ID (zpid)
-    const randomSeed = parseInt(house.zpid.slice(-3), 10);
-    return randomSeed % 10 !== 0; // 90% available, 10% unavailable
+    if (house._synthetic) return true; // always green for synthetic
+    // original 90 % logic for “real” Zillow prices
+    const seed = parseInt(house.zpid.slice(-3), 10);
+    return seed % 10 !== 0;
   };
 
   // Helper function to generate consistent star ratings
@@ -261,39 +272,38 @@ function HomePage() {
               </button>
             </Link>
             <Link to="/chat">
-  <button
-    className="chat-button"
-    style={{
-      backgroundColor: "#A52A2A",
-      color: "white",
-      padding: "8px 16px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      border: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Chats
-  </button>
-</Link>
+              <button
+                className="chat-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Chats
+              </button>
+            </Link>
 
-<Link to="/profile">
-  <button
-    className="profile-button"
-    style={{
-      backgroundColor: "#A52A2A",
-      color: "white",
-      padding: "8px 16px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      border: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Profile
-  </button>
-</Link>
-
+            <Link to="/profile">
+              <button
+                className="profile-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
         </div>
         <Link to="/profile">
@@ -341,10 +351,9 @@ function HomePage() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Link to="/login">
             <button
-              className="top-search-button"
               style={{
                 padding: "6px 14px",
-                backgroundColor: "#800000",
+                backgroundColor: "#A52A2A",
                 color: "white",
                 borderRadius: "4px",
                 cursor: "pointer",
@@ -367,7 +376,7 @@ function HomePage() {
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
-          minHeight: "calc(100vh - 130px)",
+          minHeight: "100vh",
           padding: "40px",
           display: "flex",
           justifyContent: "center",
@@ -377,12 +386,12 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
             maxWidth: "1200px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
           {/* Search bar and Filter Button (Restored EXACTLY) */}
@@ -391,7 +400,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#F5F5F5", 
+              backgroundColor: "#F5F5F5",
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
@@ -414,7 +423,9 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit" style={{ padding: "1px"}}>Search</button>
+              <button type="submit" style={{ padding: "1px" }}>
+                Search
+              </button>
             </form>
             <div style={{ position: "relative" }}>
               <button

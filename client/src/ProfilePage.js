@@ -5,22 +5,10 @@ import avatar from "./images/default_avatar.png";
 import RoommatesForm from './RoommatesForm';// Adjust the path if necessary
 import FindUsers from "./FindUsers";// julio was here again!
 import ChatWindow from "./ChatWindow";//FOR THE Chat duh, julio here!
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 import './ProfilePage.css';
-
-//import collegeAveBg from "./images/CollegeAveBlue.png";
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
-
-const profilesContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '80px',
-  backgroundColor: '#f6f6f6',
-  borderRadius: '8px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  margin: '20px',
-};
 
 function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -187,17 +175,7 @@ function ProfilePage() {
 
         <div>
           <Link to="/login">
-            <button
-              style={{
-                padding: "6px 14px",
-                backgroundColor: "#800000",
-                color: "white",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                border: "none",
-              }}
-            >
+            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
               Logout
             </button>
           </Link>
@@ -216,8 +194,10 @@ function ProfilePage() {
         justifyContent: "center",
         alignItems: "flex-start",
       }}>
-        <div className="profile-page" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}>
-          <div style={profilesContainerStyle}>
+        <div className="profile-page" 
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.7)",
+            boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',}}>
+          <div>
             {/* Profile Photo */}
             <section className="photo-section">
               <img
@@ -262,22 +242,30 @@ function ProfilePage() {
                 />
               </div>
 
-              <button className="save-profile-button" onClick={handleSave}>
-                Save Profile
-              </button>
+              <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "10px" }}>
+                <button className="save-profile-button" onClick={handleSave}>
+                  Save Profile
+                </button>
+              </div>
             </section>
 
-            <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
-              Find Roommates
-            </button>
+            <hr style={{ border: "none", height: "4px", backgroundColor: "var(--rutgers-red)", margin: "30px 0", borderRadius: "2px" }} />
 
-            <Link to="/chat">
-              <button
-                className="find-roommates-button"
-              >
-                Go to Chats
+            <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "5px" }}>
+              <button className="find-roommates-button" onClick={() => setShowFindUsers(true)}>
+                Find Roommates
               </button>
-            </Link>
+
+              <Link to="/chat">
+                <button
+                  className="find-roommates-button" style={{ width: "160px" }}>
+                  Go to Chats
+                </button>
+              </Link>
+            </div>
+
+            <hr style={{ border: "none", height: "4px", backgroundColor: "var(--rutgers-red)", margin: "30px 0", borderRadius: "2px" }} />
+
 
           </div>
           <section className="roommates-form-section">

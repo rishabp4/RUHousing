@@ -140,17 +140,7 @@ function ChatPage({photoUrl = avatar}) {
 
       <div>
         <Link to="/login">
-          <button
-            style={{
-              padding: "6px 14px",
-              backgroundColor: "#800000",
-              color: "white",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              border: "none",
-            }}
-          >
+        <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
             Logout
           </button>
         </Link>

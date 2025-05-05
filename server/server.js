@@ -8,12 +8,12 @@ const path = require("path");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const http = require("http"); //!julio was here 
-const { Server } = require("socket.io");// real time updates, chat, etc.
-// const Message = require('./models/Message'); 
+const http = require("http"); //!julio was here
+const { Server } = require("socket.io"); // real time updates, chat, etc.
+// const Message = require('./models/Message');
 
-
-
+require("dotenv").config();
+const axios = require("axios");
 
 const app = express();
 app.use(cors());
@@ -102,8 +102,24 @@ app.get("/api/houses/:id/reviews", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
+app.get("/api/zillow/propertyExtendedSearch", async (req, res) => {
+  try {
+    const { data } = await axios.get(
+      "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch",
+      {
+        params: req.query,
+        headers: {
+          "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+          "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
+        },
+      }
+    );
+    res.json(data);
+  } catch (err) {
+    console.error("Zillow proxy failed:", err?.response?.data || err.message);
+    res.status(500).json({ error: "Zillow lookup failed" });
+  }
+});
 // Review get/post
 app.post("/api/houses/:id/reviews", async (req, res) => {
   console.log("Review submission received:", req.params, req.body);
@@ -130,9 +146,6 @@ app.post("/api/houses/:id/reviews", async (req, res) => {
   }
 });
 
-
-
-
 // --------- Route to get saved houses ----------- //
 app.get("/api/house/:userId", async (req, res) => {
   try {
@@ -158,7 +171,6 @@ app.get("/api/house/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 // ---------- Route to delete saved house -------- //
 app.delete("/api/house/:id", async (req, res) => {
@@ -187,7 +199,6 @@ app.delete("/api/house/:id", async (req, res) => {
   }
 });
 
-
 // ---------- Upload profile picture (expects field name 'photo') -------- //
 app.post("/api/profile-photo", upload.single("photo"), async (req, res) => {
   try {
@@ -201,14 +212,18 @@ app.post("/api/profile-photo", upload.single("photo"), async (req, res) => {
     const oldUser = await usersCollection.findOne({ uid });
     if (oldUser && oldUser.photoId) {
       const bucket = getGridFSBucket();
-      try { 
+      try {
         await bucket.delete(new ObjectId(oldUser.photoId));
-      } catch { /* Ignore if not found */ }
+      } catch {
+        /* Ignore if not found */
+      }
     }
 
     // Store new image in GridFS
     const bucket = getGridFSBucket();
-    const uploadStream = bucket.openUploadStream(uid + path.extname(req.file.originalname));
+    const uploadStream = bucket.openUploadStream(
+      uid + path.extname(req.file.originalname)
+    );
     uploadStream.end(req.file.buffer, async (err) => {
       if (err) return res.status(500).json({ error: "Upload error" });
       // Save the file id reference in user profile
@@ -235,7 +250,9 @@ app.get("/api/profile-photo/:uid", async (req, res) => {
       return res.status(404).send("No photo");
     }
     const bucket = getGridFSBucket();
-    const downloadStream = bucket.openDownloadStream(new ObjectId(user.photoId));
+    const downloadStream = bucket.openDownloadStream(
+      new ObjectId(user.photoId)
+    );
     res.set("Content-Type", "image/jpeg"); // Set content-type or detect from DB
     downloadStream.pipe(res);
   } catch (err) {
@@ -347,28 +364,52 @@ app.post("/api/submit-preferences", async (req, res) => {
       first_name: first_name ? first_name.trim() : "",
       last_name: last_name ? last_name.trim() : "",
       graduation_year: graduation_year ? graduation_year.trim() : "",
-      graduation_year_importance: graduation_year_importance ? graduation_year_importance.trim() : "not important", 
+      graduation_year_importance: graduation_year_importance
+        ? graduation_year_importance.trim()
+        : "not important",
       major: major ? major.trim() : "",
-      major_importance: major_importance ? major_importance.trim() : "not important", 
+      major_importance: major_importance
+        ? major_importance.trim()
+        : "not important",
       preferred_location: preferred_location ? preferred_location.trim() : "",
-      preferred_location_importance: preferred_location_importance ? preferred_location_importance.trim() : "not important", 
+      preferred_location_importance: preferred_location_importance
+        ? preferred_location_importance.trim()
+        : "not important",
       duration_of_stay: duration_of_stay ? duration_of_stay.trim() : "",
-      duration_of_stay_importance: duration_of_stay_importance ? duration_of_stay_importance.trim() : "not important", 
+      duration_of_stay_importance: duration_of_stay_importance
+        ? duration_of_stay_importance.trim()
+        : "not important",
       allergies: allergies ? allergies.trim() : "",
-      allergies_importance: allergies_importance ? allergies_importance.trim() : "not important", 
+      allergies_importance: allergies_importance
+        ? allergies_importance.trim()
+        : "not important",
       has_pets: has_pets ? has_pets.trim() : "",
-      has_pets_importance: has_pets_importance ? has_pets_importance.trim() : "not important", 
+      has_pets_importance: has_pets_importance
+        ? has_pets_importance.trim()
+        : "not important",
       cooking_frequency: cooking_frequency ? cooking_frequency.trim() : "",
-      cooking_frequency_importance: cooking_frequency_importance ? cooking_frequency_importance.trim() : "not important", 
+      cooking_frequency_importance: cooking_frequency_importance
+        ? cooking_frequency_importance.trim()
+        : "not important",
       sleep_schedule: sleep_schedule ? sleep_schedule.trim() : "",
-      sleep_schedule_importance: sleep_schedule_importance ? sleep_schedule_importance.trim() : "not important", 
+      sleep_schedule_importance: sleep_schedule_importance
+        ? sleep_schedule_importance.trim()
+        : "not important",
       study_habits: study_habits ? study_habits.trim() : "",
-      study_habits_importance: study_habits_importance ? study_habits_importance.trim() : "not important", 
+      study_habits_importance: study_habits_importance
+        ? study_habits_importance.trim()
+        : "not important",
       cleanliness: cleanliness ? cleanliness.trim() : "",
-      cleanliness_importance: cleanliness_importance ? cleanliness_importance.trim() : "not important", 
+      cleanliness_importance: cleanliness_importance
+        ? cleanliness_importance.trim()
+        : "not important",
       gender: gender ? gender.trim() : "",
-      gender_importance: gender_importance ? gender_importance.trim() : "not important", 
-      self_description: req.body.self_description ? req.body.self_description.trim() : "", 
+      gender_importance: gender_importance
+        ? gender_importance.trim()
+        : "not important",
+      self_description: req.body.self_description
+        ? req.body.self_description.trim()
+        : "",
     });
 
     console.log(
@@ -398,7 +439,7 @@ app.post("/api/matched-profiles", async (req, res) => {
     const usersCollection = db.collection("users");
     const potentialMatches = await roommatePreferencesCollection
       .find({
-        userId: { $ne: userId }, 
+        userId: { $ne: userId },
       })
       .toArray();
 
@@ -412,44 +453,78 @@ app.post("/api/matched-profiles", async (req, res) => {
         case "important":
           return 2;
         case "not important":
-          return 1; 
+          return 1;
         default:
           return 1; // Default weight
       }
     };
-    
+
     let matchScore = 0;
 
     for (const profile of potentialMatches) {
-      const trimmedUserPreferences = { 
-        first_name: userPreferences.first_name ? userPreferences.first_name.trim() : "",
-        last_name: userPreferences.last_name ? userPreferences.last_name.trim() : "",
-        graduation_year: userPreferences.graduation_year ? userPreferences.graduation_year.trim(): "",
+      const trimmedUserPreferences = {
+        first_name: userPreferences.first_name
+          ? userPreferences.first_name.trim()
+          : "",
+        last_name: userPreferences.last_name
+          ? userPreferences.last_name.trim()
+          : "",
+        graduation_year: userPreferences.graduation_year
+          ? userPreferences.graduation_year.trim()
+          : "",
         major: userPreferences.major ? userPreferences.major.trim() : "",
-        preferred_location: userPreferences.preferred_location ? userPreferences.preferred_location.trim() : "",
-        duration_of_stay: userPreferences.duration_of_stay ? userPreferences.duration_of_stay.trim() : "",
-        allergies: userPreferences.allergies ? userPreferences.allergies.trim() : "",
-        has_pets: userPreferences.has_pets ? userPreferences.has_pets.trim() : "",
-        cooking_frequency: userPreferences.cooking_frequency ? userPreferences.cooking_frequency.trim() : "",
-        sleep_schedule: userPreferences.sleep_schedule ? userPreferences.sleep_schedule.trim() : "",
-        study_habits: userPreferences.study_habits ? userPreferences.study_habits.trim() : "",
-        cleanliness: userPreferences.cleanliness ? userPreferences.cleanliness.trim() : "",
+        preferred_location: userPreferences.preferred_location
+          ? userPreferences.preferred_location.trim()
+          : "",
+        duration_of_stay: userPreferences.duration_of_stay
+          ? userPreferences.duration_of_stay.trim()
+          : "",
+        allergies: userPreferences.allergies
+          ? userPreferences.allergies.trim()
+          : "",
+        has_pets: userPreferences.has_pets
+          ? userPreferences.has_pets.trim()
+          : "",
+        cooking_frequency: userPreferences.cooking_frequency
+          ? userPreferences.cooking_frequency.trim()
+          : "",
+        sleep_schedule: userPreferences.sleep_schedule
+          ? userPreferences.sleep_schedule.trim()
+          : "",
+        study_habits: userPreferences.study_habits
+          ? userPreferences.study_habits.trim()
+          : "",
+        cleanliness: userPreferences.cleanliness
+          ? userPreferences.cleanliness.trim()
+          : "",
         gender: userPreferences.gender ? userPreferences.gender.trim() : "",
-        self_description: userPreferences.self_description ? userPreferences.self_description.trim() : "",
+        self_description: userPreferences.self_description
+          ? userPreferences.self_description.trim()
+          : "",
       };
 
       const trimmedProfile = {
         ...profile,
         first_name: profile.first_name ? profile.first_name.trim() : "",
         last_name: profile.last_name ? profile.last_name.trim() : "",
-        graduation_year: profile.graduation_year ? profile.graduation_year.trim() : "",
+        graduation_year: profile.graduation_year
+          ? profile.graduation_year.trim()
+          : "",
         major: profile.major ? profile.major.trim() : "",
-        preferred_location: profile.preferred_location ? profile.preferred_location.trim() : "",
-        duration_of_stay: profile.duration_of_stay ? profile.duration_of_stay.trim(): "",
+        preferred_location: profile.preferred_location
+          ? profile.preferred_location.trim()
+          : "",
+        duration_of_stay: profile.duration_of_stay
+          ? profile.duration_of_stay.trim()
+          : "",
         allergies: profile.allergies ? profile.allergies.trim() : "",
         has_pets: profile.has_pets ? profile.has_pets.trim() : "",
-        cooking_frequency: profile.cooking_frequency ? profile.cooking_frequency.trim() : "",
-        sleep_schedule: profile.sleep_schedule ? profile.sleep_schedule.trim() : "",
+        cooking_frequency: profile.cooking_frequency
+          ? profile.cooking_frequency.trim()
+          : "",
+        sleep_schedule: profile.sleep_schedule
+          ? profile.sleep_schedule.trim()
+          : "",
         study_habits: profile.study_habits ? profile.study_habits.trim() : "",
         cleanliness: profile.cleanliness ? profile.cleanliness.trim() : "",
         gender: profile.gender ? profile.gender.trim() : "",
@@ -468,16 +543,25 @@ app.post("/api/matched-profiles", async (req, res) => {
         getWeight(userPreferences.cleanliness_importance) +
         getWeight(userPreferences.gender_importance);
 
-      if (trimmedProfile.graduation_year === trimmedUserPreferences.graduation_year) {
+      if (
+        trimmedProfile.graduation_year ===
+        trimmedUserPreferences.graduation_year
+      ) {
         matchScore += getWeight(userPreferences.graduation_year_importance);
       }
       if (trimmedProfile.major === trimmedUserPreferences.major) {
         matchScore += getWeight(userPreferences.major_importance);
       }
-      if (trimmedProfile.preferred_location === trimmedUserPreferences.preferred_location) {
+      if (
+        trimmedProfile.preferred_location ===
+        trimmedUserPreferences.preferred_location
+      ) {
         matchScore += getWeight(userPreferences.preferred_location_importance);
       }
-      if (trimmedProfile.duration_of_stay === trimmedUserPreferences.duration_of_stay) {
+      if (
+        trimmedProfile.duration_of_stay ===
+        trimmedUserPreferences.duration_of_stay
+      ) {
         matchScore += getWeight(userPreferences.duration_of_stay_importance);
       }
       if (trimmedProfile.allergies === trimmedUserPreferences.allergies) {
@@ -486,10 +570,15 @@ app.post("/api/matched-profiles", async (req, res) => {
       if (trimmedProfile.has_pets === trimmedUserPreferences.has_pets) {
         matchScore += getWeight(userPreferences.has_pets_importance);
       }
-      if (trimmedProfile.cooking_frequency === trimmedUserPreferences.cooking_frequency) {
+      if (
+        trimmedProfile.cooking_frequency ===
+        trimmedUserPreferences.cooking_frequency
+      ) {
         matchScore += getWeight(userPreferences.cooking_frequency_importance);
       }
-      if (trimmedProfile.sleep_schedule === trimmedUserPreferences.sleep_schedule) {
+      if (
+        trimmedProfile.sleep_schedule === trimmedUserPreferences.sleep_schedule
+      ) {
         matchScore += getWeight(userPreferences.sleep_schedule_importance);
       }
       if (trimmedProfile.study_habits === trimmedUserPreferences.study_habits) {
@@ -498,11 +587,14 @@ app.post("/api/matched-profiles", async (req, res) => {
       if (trimmedProfile.cleanliness === trimmedUserPreferences.cleanliness) {
         matchScore += getWeight(userPreferences.cleanliness_importance);
       }
-      if (trimmedProfile.gender === trimmedUserPreferences.gender || trimmedUserPreferences.gender === "Any") {
+      if (
+        trimmedProfile.gender === trimmedUserPreferences.gender ||
+        trimmedUserPreferences.gender === "Any"
+      ) {
         matchScore += getWeight(userPreferences.gender_importance);
       }
 
-      let matchLevel = "Fair Match"; // Default 
+      let matchLevel = "Fair Match"; // Default
 
       //Score thresholds here (adjust as needed)
       const bestMatchThreshold = maxPossibleScore * 0.8; // 80% or higher
@@ -510,15 +602,20 @@ app.post("/api/matched-profiles", async (req, res) => {
 
       if (matchScore >= bestMatchThreshold) {
         matchLevel = "Best Match";
-
       } else if (matchScore >= goodMatchThreshold) {
         matchLevel = "Good Match";
       }
-      const matchedUser = await usersCollection.findOne({ userId: profile.userId }); 
+      const matchedUser = await usersCollection.findOne({
+        userId: profile.userId,
+      });
       const photoId = matchedUser ? matchedUser.photoId : null;
 
-      matchedProfilesWithLevel.push({ ...profile, matchLevel, matchScore, photoId }); // Include score for potential debugging or more info
-
+      matchedProfilesWithLevel.push({
+        ...profile,
+        matchLevel,
+        matchScore,
+        photoId,
+      }); // Include score for potential debugging or more info
     }
 
     // Sort profiles by match score (descending from best to good percentages)
@@ -530,7 +627,6 @@ app.post("/api/matched-profiles", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch and match profiles." });
   }
 });
-
 
 // ------------ Reporting Issue Form ----------- //
 app.post("/api/report-issue", async (req, res) => {
@@ -563,14 +659,14 @@ app.post("/api/report-issue", async (req, res) => {
   }
 });
 
-
 //!chat beings here
- // ------------ Save a chat message ----------- //
-app.post('/api/chat', async (req, res) => {
+// ------------ Save a chat message ----------- //
+app.post("/api/chat", async (req, res) => {
   if (!db) {
-    return res.status(500).json({ error: 'Database connection not established.' });
+    return res
+      .status(500)
+      .json({ error: "Database connection not established." });
   }
-
 
   const { senderId, receiverId, message } = req.body;
 
@@ -599,13 +695,13 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-
 // -- Get chat history between two users --- //
-app.get('/api/chat', async (req, res) => {
+app.get("/api/chat", async (req, res) => {
   if (!db) {
-    return res.status(500).json({ error: 'Database connection not established.' });
+    return res
+      .status(500)
+      .json({ error: "Database connection not established." });
   }
-
 
   const { user1, user2 } = req.query;
 
@@ -632,8 +728,6 @@ app.get('/api/chat', async (req, res) => {
   }
 });
 
-
-
 //!chat ends
 //!get all users
 // Get all users (for Find Users page)
@@ -648,10 +742,8 @@ app.get("/api/all-users", async (req, res) => {
   }
 });
 
-
-app.get('/', (req, res) => {
-  res.send('Hello from the RUHousing Express server!');
-
+app.get("/", (req, res) => {
+  res.send("Hello from the RUHousing Express server!");
 });
 
 // ---------- Login Routes ----------- //
@@ -719,9 +811,15 @@ app.get("/api/chat/rooms", async (req, res) => {
     const chatsCollection = db.collection("chats");
     const usersCollection = db.collection("users");
 
-    const sent = await chatsCollection.distinct("receiverId", { senderId: userId });
-    const received = await chatsCollection.distinct("senderId", { receiverId: userId });
-    const allUserIds = Array.from(new Set([...sent, ...received])).filter(id => id !== userId);
+    const sent = await chatsCollection.distinct("receiverId", {
+      senderId: userId,
+    });
+    const received = await chatsCollection.distinct("senderId", {
+      receiverId: userId,
+    });
+    const allUserIds = Array.from(new Set([...sent, ...received])).filter(
+      (id) => id !== userId
+    );
 
     const chatRooms = [];
 
@@ -731,32 +829,31 @@ app.get("/api/chat/rooms", async (req, res) => {
           $or: [
             { senderId: userId, receiverId: uid },
             { senderId: uid, receiverId: userId },
-          ]
+          ],
         },
         { sort: { timestamp: -1 }, projection: { message: 1, timestamp: 1 } }
       );
-      
 
       const userProfile = await usersCollection.findOne({ uid });
 
       if (userProfile) {
         chatRooms.push({
           ...userProfile,
-          lastMessage: lastMessage?.message || '',
-          lastMessageTime: lastMessage?.timestamp || new Date(0)
+          lastMessage: lastMessage?.message || "",
+          lastMessageTime: lastMessage?.timestamp || new Date(0),
         });
-        
       }
     }
 
-    chatRooms.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+    chatRooms.sort(
+      (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
+    );
     res.json(chatRooms);
   } catch (error) {
     console.error("Error in chat rooms:", error);
     res.status(500).json({ error: "Failed to fetch chat rooms." });
   }
 });
-
 
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
@@ -781,11 +878,11 @@ app.post("/api/upload-image", upload.single("image"), async (req, res) => {
   }
 });
 // post say hello!
-app.post('/api/send-message', async (req, res) => {
+app.post("/api/send-message", async (req, res) => {
   const { senderId, recipientId, content } = req.body;
 
   if (!senderId || !recipientId || !content) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
@@ -798,35 +895,32 @@ app.post('/api/send-message', async (req, res) => {
     };
 
     await chatsCollection.insertOne(newMessage); // ✅ stored in chats, like your other messages
-    res.status(200).json({ message: 'Message sent successfully' });
+    res.status(200).json({ message: "Message sent successfully" });
   } catch (err) {
-    console.error('Error saving message:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error saving message:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-
-
-
 const server = http.createServer(app);
-
 
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 io.on("connection", (socket) => {
   console.log("🟢 New client connected:", socket.id);
 
   socket.on("sendMessage", (data) => {
-
     socket.broadcast.emit("receiveMessage", data);
-    io.emit("messageSent", { senderId: data.senderId, receiverId: data.receiverId }); // NEW
+    io.emit("messageSent", {
+      senderId: data.senderId,
+      receiverId: data.receiverId,
+    }); // NEW
   });
-  
 
   // Add these two handlers for typing
   socket.on("typing", ({ to, from }) => {
@@ -842,9 +936,9 @@ io.on("connection", (socket) => {
   });
 });
 
-
 const PORT = process.env.PORT || 5002;
 server.listen(PORT, () => {
-  console.log(`🚀 WebSocket + Express server running at http://localhost:${PORT}`);
+  console.log(
+    `🚀 WebSocket + Express server running at http://localhost:${PORT}`
+  );
 });
-

@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
 import { Link } from "react-router-dom";
-import building from "./images/Building.png";
+import building from "./images/clearBuilding.png";
 import avatar from "./images/default_avatar.png";
 import ChatPage from './ChatPage';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+import './HomePage.css';
+
 
 const reportButtonStyle = {
   position: 'fixed',
   bottom: '20px',
   right: '20px',
-  backgroundColor: '#f44336',
+  backgroundColor: '#A52A2A',
   color: 'white',
   borderRadius: '4px',
   padding: '12px 20px',
@@ -61,10 +65,11 @@ const matchedProfilesContainerStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',
   borderRadius: '8px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   margin: '20px',
+  width: '800px'
 };
 
 const headingStyle = {
@@ -94,14 +99,15 @@ const profilePreviewInfoStyle = {
 };
 
 const profileImageContainerStyle = {
-  width: '100px',
-  height: '100px',
+  width: '150px',
+  height: '150px',
   borderRadius: '50%',
   overflow: 'hidden',
   backgroundColor: '#ccc',
   gridColumn: '2 / 3',
-  gridRow: '1 / 3',
-  justifySelf: 'center', // Center the image container in its grid cell
+  gridRow: '1 / 2',
+  justifySelf: 'start', // Center the image container in its grid cell
+  marginLeft: '-100px',
 };
 
 const profileImageStyle = {
@@ -113,7 +119,7 @@ const profileImageStyle = {
 const profileInfoStyle = {
   textAlign: 'left',
   marginTop: '10px',
-  gridColumn: '1 / 2',
+  gridColumn: '1 / 3',
   maxHeight: '0',
   overflow: 'hidden',
   transition: 'max-height 0.3s ease-in-out',
@@ -172,7 +178,7 @@ const sayHelloButtonStyle = {
 
 const defaultAvatar = require('./images/default_avatar.png'); // Import your default avatar
 
-function MatchedProfiles({ photoUrl = avatar }) {
+function MatchedProfiles() {
   const [helloStatus, setHelloStatus] = useState({});
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -182,6 +188,23 @@ function MatchedProfiles({ photoUrl = avatar }) {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportData, setReportData] = useState({ name: '', ruid: '', issue: '' });
   const [reportStatus, setReportStatus] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(avatar);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+        setPhotoUrl(
+          `http://localhost:5002/api/profile-photo/${user.uid}?t=${Date.now()}`
+        );
+      } else {
+        setUserId(null);
+        setPhotoUrl(avatar);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchMatchedProfiles = async () => {
@@ -272,14 +295,12 @@ function MatchedProfiles({ photoUrl = avatar }) {
       });
 
       if (response.ok) {
-        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Sent!" }));
-        setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Message sent!" })); 
       } else {
-        throw new Error("Failed to send");
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" })); 
       }
     } catch (error) {
       setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" }));
-      setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
     }
   };
 
@@ -313,7 +334,7 @@ function MatchedProfiles({ photoUrl = avatar }) {
             </button>
           </Link>
           <Link to="/login">
-            <button style={{ padding: "6px 14px", backgroundColor: "#800000", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
+            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
               Logout
             </button>
           </Link>
@@ -399,22 +420,36 @@ function MatchedProfiles({ photoUrl = avatar }) {
                   />
                 </div>
                 <div style={buttonsContainerStyle}>
-                  <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
-                    {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
-                  </button>
-                  <button
-                    onClick={() => handleSayHello(profile.userId)}
-                    style={sayHelloButtonStyle}
-                  >
-                    Say Hello
-                  </button>
-                </div>
+  <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
+    {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
+  </button>
+  <button
+    onClick={() => handleSayHello(profile.userId)}
+    style={sayHelloButtonStyle}
+    disabled={helloStatus[profile.userId] !== undefined} // Added disabled state
+  >
+    {helloStatus[profile.userId] === "Message sent!" ?
+      "Message Sent!" :
+      (helloStatus[profile.userId] === "Error" ? "Error" : "Say Hello")
+    }
+  </button>
+  {helloStatus[profile.userId] === "Message sent!" && (
+    <div style={{ marginLeft: '10px', color: 'green' }}>
+      Message sent to Roommate! Please visit the Chats to look at your messages.
+    </div>
+  )}
+  {helloStatus[profile.userId] === "Error" && (
+    <div style={{ marginLeft: '10px', color: 'red' }}>
+      Failed to send message. Please try again.
+    </div>
+  )}
+</div>
               </div>
             ))
           ) : (
             <p>No matching profiles found.</p>
           )}
-          <div style={reportButtonStyle} onClick={handleReportIconClick}>
+          <div className="home-button" style={reportButtonStyle} onClick={handleReportIconClick}>
             Report an Issue with a Roommate
           </div>
           {showReportForm && (
