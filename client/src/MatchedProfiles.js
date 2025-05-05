@@ -273,14 +273,12 @@ function MatchedProfiles({ photoUrl = avatar }) {
       });
 
       if (response.ok) {
-        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Sent!" }));
-        setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Message sent!" })); 
       } else {
-        throw new Error("Failed to send");
+        setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" })); 
       }
     } catch (error) {
       setHelloStatus((prev) => ({ ...prev, [recipientId]: "Error" }));
-      setTimeout(() => setHelloStatus((prev) => ({ ...prev, [recipientId]: null })), 2000);
     }
   };
 
@@ -400,16 +398,30 @@ function MatchedProfiles({ photoUrl = avatar }) {
                   />
                 </div>
                 <div style={buttonsContainerStyle}>
-                  <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
-                    {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
-                  </button>
-                  <button
-                    onClick={() => handleSayHello(profile.userId)}
-                    style={sayHelloButtonStyle}
-                  >
-                    Say Hello
-                  </button>
-                </div>
+  <button style={knowMoreButtonStyle} onClick={() => handleKnowMoreClick(profile._id)}>
+    {expandedProfiles[profile._id] ? 'Know Less' : 'Know More'}
+  </button>
+  <button
+    onClick={() => handleSayHello(profile.userId)}
+    style={sayHelloButtonStyle}
+    disabled={helloStatus[profile.userId] !== undefined} // Added disabled state
+  >
+    {helloStatus[profile.userId] === "Message sent!" ?
+      "Message Sent!" :
+      (helloStatus[profile.userId] === "Error" ? "Error" : "Say Hello")
+    }
+  </button>
+  {helloStatus[profile.userId] === "Message sent!" && (
+    <div style={{ marginLeft: '10px', color: 'green' }}>
+      Message sent to Roommate! Please visit the Chats to look at your messages.
+    </div>
+  )}
+  {helloStatus[profile.userId] === "Error" && (
+    <div style={{ marginLeft: '10px', color: 'red' }}>
+      Failed to send message. Please try again.
+    </div>
+  )}
+</div>
               </div>
             ))
           ) : (
