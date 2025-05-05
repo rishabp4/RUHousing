@@ -11,18 +11,20 @@ import './HomePage.css';
 
 const reportButtonStyle = {
   position: 'fixed',
-  bottom: '20px',
-  right: '20px',
-  backgroundColor: '#A52A2A',
+  bottom: '15px',
+  right: '14px',
+  background: 'transparent',
+  border: '2px solid white',
   color: 'white',
+  padding: '8px 16px',
   borderRadius: '4px',
-  padding: '12px 20px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   cursor: 'pointer',
   fontSize: '1em',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+  fontWeight: 'bold',
+  boxShadow: '0 0 15px rgba(255, 0, 0, 0.5)',
   zIndex: 1000,
 };
 
