@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeaderBar from "./HeaderBar";
-import { Link } from "react-router-dom";
 import building from "./images/clearBuilding.png";
 import avatar from "./images/default_avatar.png";
 import ChatPage from './ChatPage';
@@ -68,7 +67,7 @@ const matchedProfilesContainerStyle = {
   backgroundColor: "rgba(0, 0, 0, 0.7)",
   boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)',
   borderRadius: '8px',
-  margin: '20px',
+  margin: '5px',
   width: '800px'
 };
 
@@ -320,25 +319,9 @@ function MatchedProfiles() {
           justifyContent: "space-between",
           alignItems: "center",
           backgroundColor: "#A52A2A",
-          padding: "5px 15px",
+          padding: "5px 5px",
         }}
       >
-        <div></div>
-        <h2 style={{ color: "#F5F5F5", fontWeight: "bold", fontSize: "24px", margin: 0, flexGrow: 1 }}>
-          Top Picks for Your Living Style 🏠
-        </h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <Link to="/chat">
-            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
-              Chats
-            </button>
-          </Link>
-          <Link to="/login">
-            <button style={{ padding: "6px 14px", backgroundColor: "#A52A2A", color: "white", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", border: "none" }}>
-              Logout
-            </button>
-          </Link>
-        </div>
       </div>
       <div
         style={{
