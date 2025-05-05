@@ -11,10 +11,14 @@ import { throttledAxios } from "./utils/throttleAxios";
 import HouseDetailModal from "./HouseDetailModal"; //////
 import "./HomePage.css";
 import FilterDropdown from "./FilterDropdown";
-import './HeaderBar.css';
+import "./HeaderBar.css";
 import building from "./images/Building.png";
 
-
+const getSyntheticPrice = (zpid) => {
+  const seed = parseInt(String(zpid).slice(-5), 10);
+  const step = seed % 46;
+  return 1000 + step * 100;
+};
 
 function HomePage() {
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -122,11 +126,19 @@ function HomePage() {
           sort: sortOrder,
         },
         headers: {
-          "X-RapidAPI-Key": "PUT API key here", // Replace with your actual API key in the qoutes on this line
+          "X-RapidAPI-Key": "PUT ZILLOW API KEY HERE REPLACE THIS", // Replace with your actual API key in the qoutes on this line
           "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com",
         },
       });
-      setProperties(res.data.props || []);
+      const patched = (res.data.props || []).map((home) => {
+        if (!home.price) {
+          const synthetic = getSyntheticPrice(home.zpid);
+          return { ...home, price: `$${synthetic}/mo`, _synthetic: true };
+        }
+        return home;
+      });
+      setProperties(patched);
+
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       console.error(err);
@@ -154,12 +166,10 @@ function HomePage() {
   }, []);
   // Function to determine if a house is available or not
   const isHouseAvailable = (house) => {
-    if (!house.price) {
-      return false; // Automatically unavailable if no price listed
-    }
-    // Consistent random assignment using Zillow's unique ID (zpid)
-    const randomSeed = parseInt(house.zpid.slice(-3), 10);
-    return randomSeed % 10 !== 0; // 90% available, 10% unavailable
+    if (house._synthetic) return true; // always green for synthetic
+    // original 90 % logic for “real” Zillow prices
+    const seed = parseInt(house.zpid.slice(-3), 10);
+    return seed % 10 !== 0;
   };
 
   // Helper function to generate consistent star ratings
@@ -261,39 +271,38 @@ function HomePage() {
               </button>
             </Link>
             <Link to="/chat">
-  <button
-    className="chat-button"
-    style={{
-      backgroundColor: "#A52A2A",
-      color: "white",
-      padding: "8px 16px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      border: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Chats
-  </button>
-</Link>
+              <button
+                className="chat-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Chats
+              </button>
+            </Link>
 
-<Link to="/profile">
-  <button
-    className="profile-button"
-    style={{
-      backgroundColor: "#A52A2A",
-      color: "white",
-      padding: "8px 16px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      border: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Profile
-  </button>
-</Link>
-
+            <Link to="/profile">
+              <button
+                className="profile-button"
+                style={{
+                  backgroundColor: "#A52A2A",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
         </div>
         <Link to="/profile">
@@ -377,7 +386,7 @@ function HomePage() {
         {/* Main Content Window */}
         <div
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
             borderRadius: "12px",
             padding: "30px",
             width: "90%",
@@ -391,7 +400,7 @@ function HomePage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: "#F5F5F5", 
+              backgroundColor: "#F5F5F5",
               padding: "12px 20px",
               borderRadius: "8px",
               marginBottom: "20px",
@@ -414,7 +423,9 @@ function HomePage() {
                 onChange={(e) => setSearchProperties(e.target.value)}
                 placeholder="Enter City or Area"
               />
-              <button type="submit" style={{ padding: "1px"}}>Search</button>
+              <button type="submit" style={{ padding: "1px" }}>
+                Search
+              </button>
             </form>
             <div style={{ position: "relative" }}>
               <button

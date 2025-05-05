@@ -84,7 +84,10 @@ function SavedHousesDetailModel({ isOpen, onRequestClose, house }) {
             }}
           >
             {house.price
-              ? `$${Number(house.price).toLocaleString()}/month`
+              ? typeof house.price === "string" &&
+                house.price.trim().startsWith("$")
+                ? house.price
+                : `$${Number(house.price).toLocaleString()}/month`
               : "Price Not Listed"}
           </h2>
           {/* <p style={{ fontSize: "16px", color: "#555", marginBottom: "15px" }}>
