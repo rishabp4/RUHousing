@@ -18,7 +18,6 @@ function ProfilePage() {
   const [netID, setNetID] = useState("");
   const [showFindUsers, setShowFindUsers] = useState(false);
   const [chattingWith, setChattingWith] = useState(null);
-  // -- photo upload states --
   const [photoFile, setPhotoFile] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(avatar);
   const savedPhoto = localStorage.getItem('photoUrl');
@@ -58,11 +57,9 @@ function ProfilePage() {
     return () => unsubscribe();
   }, []);
 
-  // --- Handlers ---
   const handleFirstNameChange = (e) => setFirstName(e.target.value);
   const handleLastNameChange = (e) => setLastName(e.target.value);
 
-  // 🟡 UPLOAD PROFILE PHOTO (this was missing OUTSIDE handleSave!)
   const handlePhotoUpload = async () => {
     if (!photoFile || !userId) {
       alert("Please select a photo first!");
